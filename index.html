@@ -562,6 +562,20 @@ main:not(.full)~#sndBtn,body:has(main:not(.full)) #sndBtn{bottom:auto;top:calc(8
 .mbups b{font-size:14px}.mbups small{font-size:11.5px;opacity:.8;font-weight:500}
 #p2pBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));z-index:65;max-width:calc(100% - 24px);background:rgba(16,24,18,.92);color:#cfe9d4;border:1.5px solid #2f7a34;border-radius:10px;padding:5px 10px;font:600 12px system-ui,sans-serif;text-align:center;pointer-events:none}
 #p2pBar.err{background:rgba(40,12,10,.95);color:#ffb3a8;border-color:#c4302b}
+/* ===== wybór postaci na komputerze / tablecie poziomo ===== */
+@media (min-width:760px) and (min-aspect-ratio:4/5){
+ #selOv:not(.vs)>:not(.selbg){width:min(470px,100%);margin-left:auto;margin-right:max(20px,6vw);flex-shrink:0}
+ #selOv:not(.vs)>.selhero{flex:1 1 0;min-height:0}
+ #selOv:not(.vs) .selgrid{grid-template-columns:repeat(4,1fr)}
+ #selOv:not(.vs) .seltile span{font-size:14px}
+ #selOv:not(.vs) .seltitle{font-size:clamp(20px,2.2vw,28px)}
+ #selOv .selbg.img{background-size:cover!important}
+ #selOv.vs>*{width:min(980px,100%);margin-left:auto;margin-right:auto}
+ #selOv.vs .vsrow{max-height:78vh}
+}
+@media (min-width:1300px) and (min-aspect-ratio:4/5){
+ #selOv:not(.vs)>:not(.selbg){width:520px;margin-right:8vw}
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
