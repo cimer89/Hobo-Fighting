@@ -2894,43 +2894,47 @@ const _goMenuMB=goMenu;goMenu=function(){try{MB.close()}catch(e){}_goMenuMB()};
 render();
 /* ===================== ONLINE BEZ KONFIGURACJI: P2P (PeerJS / WebRTC) ===================== */
 const P2P=(function(){
- const PFX='hobofight-v1-';
- let peer=null,host=false,conns=[],hostConn=null,docs={},subs=[],queue=[],code=null,ready=false;
+ /* Przekaźnik przez serwer (ntfy.sh, HTTPS, bez konta): działa w każdej sieci z internetem. */
+ const BASE='https://ntfy.sh/',PFX='hobofight-v2-';
+ let topic=null,code=null,docs={},seen={},subs=[],es=null,lastId=null,ready=false,timers={},outbox=[];
  function snap(){return {docs:Object.entries(docs).map(([id,d])=>({id,data:()=>JSON.parse(JSON.stringify(d))}))}}
  function emit(){const s=snap();subs.forEach(f=>{try{f(s)}catch(e){console.warn(e)}})}
- function bcast(){const m={t:'snap',docs};conns=conns.filter(c=>c.open);conns.forEach(c=>{try{c.send(m)}catch(e){}})}
- function fail(msg){net.err=true;net.p2pErr=msg;try{render()}catch(e){}}
- function loadLib(){return new Promise((res,rej)=>{if(window.Peer)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js';s.onload=res;s.onerror=()=>rej(new Error('peerjs'));document.head.appendChild(s)})}
- function startHost(c){host=true;peer=new Peer(PFX+c);
-  peer.on('open',()=>{ready=true;net.p2pState='host';emit();try{render()}catch(e){}});
-  peer.on('connection',cn=>{cn.on('open',()=>{conns.push(cn);cn.send({t:'snap',docs})});
-   cn.on('data',m=>{if(m&&m.t==='set'){docs[m.id]=m.data;emit();bcast()}});
-   cn.on('close',()=>{conns=conns.filter(x=>x!==cn)})});
-  peer.on('error',e=>{if(e.type==='unavailable-id')fail('Ten kod pokoju jest zajęty. Wróć i utwórz pokój jeszcze raz.');else if(e.type!=='peer-unavailable')fail('Błąd połączenia: '+e.type)});
-  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}})}
- function startClient(c){host=false;peer=new Peer();
-  peer.on('open',()=>{hostConn=peer.connect(PFX+c,{reliable:true});
-   hostConn.on('open',()=>{ready=true;net.p2pState='client';queue.forEach(m=>hostConn.send(m));queue=[];try{render()}catch(e){}});
-   hostConn.on('data',m=>{if(m&&m.t==='snap'){docs=m.docs||{};emit()}});
-   hostConn.on('close',()=>fail('Twórca pokoju się rozłączył. Gra online wymaga, żeby jego telefon był włączony.'))});
-  peer.on('error',e=>{if(e.type==='peer-unavailable')fail('Nie znaleziono pokoju '+c+'. Sprawdź kod (twórca pokoju musi mieć grę otwartą).');else fail('Błąd połączenia: '+e.type)});
-  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}})}
+ function ui(){try{render()}catch(e){}}
+ function fail(msg){net.err=true;net.p2pErr=msg;ui()}
+ const b64=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+ async function pack(o){const s=JSON.stringify(o);try{if(window.CompressionStream){const st=new Blob([s]).stream().pipeThrough(new CompressionStream('deflate-raw'));return 'z:'+b64(new Uint8Array(await new Response(st).arrayBuffer()))}}catch(e){}return 'j:'+s}
+ async function unpack(t){if(t.startsWith('j:'))return JSON.parse(t.slice(2));if(t.startsWith('z:')){const bin=atob(t.slice(2)),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);const st=new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return JSON.parse(await new Response(st).text())}return null}
+ async function handle(m){if(!m||m.event!=='message'||!m.message)return;let o;try{o=JSON.parse(m.message)}catch(e){return}if(!o||!o.u||!o.p||!o.s)return;
+  if(seen[o.u]&&seen[o.u]>=o.s)return;let d=null;try{d=await unpack(o.p)}catch(e){return}if(!d)return;if(seen[o.u]&&seen[o.u]>=o.s)return;seen[o.u]=o.s;
+  if(o.u===net.uid&&docs[o.u])return;docs[o.u]=d;emit()}
+ async function send(id,doc,tries){const body=JSON.stringify({u:id,s:Date.now(),p:await pack(doc)});
+  try{const r=await fetch(BASE+topic,{method:'POST',body,headers:{'Content-Type':'text/plain'}});if(!r.ok)throw new Error('HTTP '+r.status);seen[id]=JSON.parse(body).s}
+  catch(e){if((tries||0)<3)setTimeout(()=>send(id,docs[id],(tries||0)+1),1500*((tries||0)+1));else fail('Nie udało się wysłać ruchu ('+e.message+'). Sprawdź internet.')}}
+ function publish(id,doc){docs[id]=doc;emit();clearTimeout(timers[id]);timers[id]=setTimeout(()=>{if(!ready&&!topic){outbox.push(id);return}send(id,docs[id])},250)}
+ async function connect(c){topic=PFX+c.toLowerCase();
+  try{const r=await fetch(BASE+topic+'/json?poll=1&since=12h');if(!r.ok)throw new Error('HTTP '+r.status);const txt=await r.text();
+   for(const line of txt.split('\n')){if(!line.trim())continue;let m;try{m=JSON.parse(line)}catch(e){continue}if(m.id)lastId=m.id;await handle(m)}}
+  catch(e){fail('Brak połączenia z serwerem gry ('+e.message+'). Sprawdź internet i odśwież stronę.');return}
+  if(topic!==PFX+c.toLowerCase())return;
+  es=new EventSource(BASE+topic+'/sse'+(lastId?'?since='+lastId:''));
+  es.onopen=()=>{ready=true;if(net.p2pErr&&net.p2pErr.startsWith('Utracono'))net.p2pErr=null,net.err=false;ui()};
+  es.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(x){return}if(m.id)lastId=m.id;handle(m)};
+  es.onerror=()=>{};
+  ready=true;ui();outbox.splice(0).forEach(id=>send(id,docs[id]));Object.keys(docs).forEach(id=>{if(id===net.uid)send(id,docs[id])})}
  const db={
-  doc(path){const p=path.split('/');return {set(obj){const id=p[3];docs[id]=JSON.parse(JSON.stringify(obj));
-    if(host){emit();bcast()}else{const m={t:'set',id,data:docs[id]};if(hostConn&&hostConn.open)hostConn.send(m);else queue.push(m);emit()}
-    return Promise.resolve()}}},
-  collection(path){const c=path.split('/')[1];return {onSnapshot(cb){subs=[cb];if(code!==c){reset();code=c;if(net._host)startHost(c);else startClient(c)}else emit();return ()=>{subs=[]}}}}};
- function reset(){try{peer&&peer.destroy()}catch(e){}peer=null;conns=[];hostConn=null;docs={};queue=[];ready=false;net.err=false;net.p2pErr=null}
- async function init(){try{await loadLib();let id=null;try{id=sessionStorage.getItem('hf_uid')}catch(e){}if(!id){id='u'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('hf_uid',id)}catch(e){}}
-   net.uid=id;net.db=db;net.p2p=true}catch(e){console.warn('P2P:',e);net.db=null}try{render()}catch(e){}}
- return {init,reset,get ready(){return ready},get host(){return host},db}})();
+  doc(path){const p=path.split('/');return {set(obj){publish(p[3],JSON.parse(JSON.stringify(obj)));return Promise.resolve()}}},
+  collection(path){const c=path.split('/')[1];return {onSnapshot(cb){subs=[cb];if(code!==c){reset();code=c;connect(c)}else emit();return ()=>{subs=[]}}}}};
+ function reset(){try{es&&es.close()}catch(e){}es=null;topic=null;docs={};seen={};lastId=null;ready=false;outbox=[];Object.values(timers).forEach(clearTimeout);timers={};net.err=false;net.p2pErr=null;code=null}
+ async function init(){let id=null;try{id=sessionStorage.getItem('hf_uid')}catch(e){}if(!id){id='u'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('hf_uid',id)}catch(e){}}
+  net.uid=id;net.db=db;net.p2p=true;ui()}
+ return {init,reset,get ready(){return ready},get host(){return false},db}})();
 // wybór silnika: Firebase gdy jest konfiguracja, w przeciwnym razie P2P
 (function(){const fbOk=window.firebase&&typeof FIREBASE_CONFIG!=='undefined'&&FIREBASE_CONFIG.apiKey!=='WPISZ_TUTAJ';if(!fbOk&&!net.db)P2P.init()})();
 const _joinP2P=join;join=function(code){if(net.p2p){const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
 const _goMenuP2P=goMenu;goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}net._host=false;_goMenuP2P()};
 // komunikat o stanie połączenia
 const _rP2P=render;render=function(){_rP2P();try{const old=document.getElementById('p2pBar');if(old)old.remove();if(!net.p2p||!net.code)return;
- const msg=net.p2pErr?('⚠ '+net.p2pErr):(P2P.ready?(P2P.host?'🟢 Pokój '+net.code+' otwarty. Nie zamykaj gry – jesteś gospodarzem.':'🟢 Połączono z pokojem '+net.code):'⏳ Łączenie z pokojem '+net.code+'…');
+ const msg=net.p2pErr?('⚠ '+net.p2pErr):(P2P.ready?'🟢 Połączono z pokojem '+net.code:'⏳ Łączenie z pokojem '+net.code+'… (jeśli trwa długo, sprawdź internet)');
  const d=document.createElement('div');d.id='p2pBar';d.className=net.p2pErr?'err':'';d.textContent=msg;document.body.appendChild(d)}catch(e){}};
 render();
 </script>

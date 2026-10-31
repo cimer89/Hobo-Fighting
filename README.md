@@ -290,12 +290,10 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 
 ## Gra online – działa bez konfiguracji
 
-Tryb online łączy telefony bezpośrednio (WebRTC przez darmowy serwer PeerJS). Nie trzeba zakładać Firebase ani niczego wpisywać.
+Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.
 
 1. Jedna osoba wybiera tryb i rodzaj walki, potem **Utwórz pokój online**. Dostaje 4-literowy kod.
-2. Pozostali na ekranie wyboru trybu wpisują kod i klikają **Dołącz kodem**.
-3. Twórca pokoju jest gospodarzem: jego telefon musi mieć grę otwartą do końca partii. Pasek na dole ekranu pokazuje stan połączenia.
+2. Pozostali na pierwszym ekranie (wybór trybu) wpisują kod i klikają **Dołącz kodem**.
+3. Pasek na dole pokazuje stan połączenia. Nikt nie musi być „gospodarzem”: każdy telefon wysyła swój stan, a pozostali go odbierają. Nie odświeżaj strony w trakcie partii.
 
-Ograniczenia: rzadko, w niektórych sieciach komórkowych lub firmowych bezpośrednie połączenie może się nie udać (wtedy spróbuj innej sieci, np. Wi-Fi). Bitwa baz działa na razie tylko na jednym telefonie.
-
-Jeśli kiedyś wpiszesz konfigurację Firebase w `FIREBASE_CONFIG`, gra użyje Firebase zamiast połączenia bezpośredniego.
+Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz konfigurację Firebase w `FIREBASE_CONFIG`, gra użyje Firebase zamiast ntfy.sh.
