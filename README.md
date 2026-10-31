@@ -297,3 +297,10 @@ Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez kon
 3. Pasek na dole pokazuje stan połączenia. Nikt nie musi być „gospodarzem”: każdy telefon wysyła swój stan, a pozostali go odbierają. Nie odświeżaj strony w trakcie partii.
 
 Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz konfigurację Firebase w `FIREBASE_CONFIG`, gra użyje Firebase zamiast ntfy.sh.
+
+## Animacje 3D i dźwięki
+
+- Postacie zostały wymodelowane w Blenderze jako komiksowe figurki 3D (cel shading z konturem).
+- Na ekranie wyboru postaci w rogu obraca się figurka 3D wybranej postaci. Dotknij jej, żeby zobaczyć animację ataku.
+- W trakcie rundy przy ataku, szarży, dronie, teleporcie itp. wysuwa się przerywnik z animacją 3D postaci.
+- Efekty dźwiękowe wygenerowano w ElevenLabs (28 dźwięków: ataki każdej postaci, trafienia, pudła, nokaut, owca, dron, awans w Bitwie baz, wygrana i inne). Brakujące dźwięki zastępuje syntezator.
