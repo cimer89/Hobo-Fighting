@@ -280,6 +280,10 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - **Kwadrat:** bazy w przeciwległych rogach, pomiędzy las i ścieżki.
 - **Most nad rzeką:** woda dzieli mapę. Przez wodę nie da się przejść (tylko mostami), ale ataki i strzały lecą nad nią. Wielki Menel pilnuje środkowego mostu. Bez strefy. Na razie prosta grafika planszy (do podmiany).
 
+- **Symetria:** każda mapa jest dokładnie symetryczna względem środka (w osiach heksów), więc obie drużyny mają skrzynki, stworki, krzaki i skały w tych samych odległościach od bazy. Labirynt też jest losowany symetrycznie.
+- **Start i odrodzenie w bazie:** wszyscy zaczynają na polu swojej bazy. Własna baza jest przechodnia tylko dla swojej drużyny.
+- **Ruch:** tylko po drodze (bez przeskakiwania skał i wody) i tylko na pola, które drużyna teraz widzi. Wzmocnienie zasięgu ruchu można wziąć raz (+ Buty).
+- **Linia wzroku:** skały i krzaki zasłaniają pola za nimi. Pole z krzakiem widać, ale postać w środku dalej jest ukryta, dopóki nie zaatakuje.
 - **Cel:** zniszczyć wrogą bazę. Baza strzela 1 DMG na fazę do najbliższego wroga w zasięgu 2.
 - **Mgła wojny:** wzrok zaczyna się od 2 pól (rośnie z wzmocnieniami i Lunetą), baza widzi 3 pola. Nieodkryte pola są ciemne, odkryte ale poza wzrokiem przyciemnione.
 - **Krzaki:** postać w krzakach jest niewidoczna dla wrogów, dopóki z nich nie zaatakuje. Wyjście z krzaków i powrót znowu ją chowa.
