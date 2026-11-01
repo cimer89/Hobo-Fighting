@@ -2635,7 +2635,13 @@ const MB=(function(){
    const dq=Math.abs(rq-q),dr=Math.abs(rr-r),ds=Math.abs(rs-s);if(dq>dr&&dq>ds)rq=-rr-rs;else if(dr>ds)rr=-rq-rs;const c=G.cells[K(rq,rr)];if(c&&(c.t==='r'||c.t==='b'))return false}return true};
   return ok(1e-4)||ok(-1e-4)}
  /* pola, na które postać może wejść w tej fazie: po drodze (bez przeskakiwania skał i wody) i tylko w polu widzenia drużyny */
- function moveCells(h,from){const mk=moveKind(h),vs=visSet(h.team),o={};
+ /* pola zasłonięte tylko krzakami: znany teren, nieznana zawartość */
+ function losRock(a,b){const n=dist(a,b);if(n<=1)return true;const ok=e=>{for(let i=1;i<n;i++){const t=i/n,q=a[0]+(b[0]-a[0])*t+e,r=a[1]+(b[1]-a[1])*t+e,s=-q-r;let rq=Math.round(q),rr=Math.round(r),rs=Math.round(s);
+   const dq=Math.abs(rq-q),dr=Math.abs(rr-r),ds=Math.abs(rs-s);if(dq>dr&&dq>ds)rq=-rr-rs;else if(dr>ds)rr=-rq-rs;const c=G.cells[K(rq,rr)];if(c&&c.t==='r')return false}return true};
+  return ok(1e-4)||ok(-1e-4)}
+ function knownSet(team){const vs=visSet(team),s={};const add=(p,r)=>{Object.values(G.cells).forEach(c=>{const k=K(...c.p);if(!vs[k]&&dist(c.p,p)<=r&&losRock(p,c.p))s[k]=1})};
+  G.heroes.forEach(h=>{if(h.team===team&&!h.dead&&h.pos)add(h.pos,visR(h))});add(G.bases[team].pos,3);return s}
+ function moveCells(h,from){const mk=moveKind(h),vs=Object.assign({},visSet(h.team),knownSet(h.team)),o={};
   if(mk.tele){Object.values(G.cells).forEach(c=>{const k=K(...c.p);if(vs[k]&&passable(c.p,h.team)&&dist(c.p,from)<=mk.r&&dist(c.p,from)>0)o[k]=1});return o}
   const dd={},q=[from];dd[K(...from)]=0;while(q.length){const p=q.shift(),d0=dd[K(...p)];if(d0>=mk.r)continue;
    nb(p).forEach(n=>{const k=K(...n);if(dd[k]!==undefined||!passable(n,h.team)||!vs[k])return;dd[k]=d0+1;o[k]=1;q.push(n)})}
@@ -2721,7 +2727,7 @@ const MB=(function(){
  function visSet(team){const s={};const add=(p,r)=>{Object.values(G.cells).forEach(c=>{if(dist(c.p,p)<=r&&losClear(p,c.p))s[K(...c.p)]=1})};
   G.heroes.forEach(h=>{if(h.team===team&&!h.dead&&h.pos)add(h.pos,visR(h))});add(G.bases[team].pos,3);return s}
  function seesHero(team,h,vs){if(h.team===team)return !h.dead;if(h.dead||!h.pos)return false;const k=K(...h.pos);if(!vs[k])return false;return cell(h.pos).t!=='b'||h.rev}
- function updateSeen(){['A','B'].forEach(t=>{const vs=visSet(t);Object.keys(vs).forEach(k=>{G.seen[t][k]=1});
+ function updateSeen(){['A','B'].forEach(t=>{const vs=visSet(t);Object.keys(vs).forEach(k=>{G.seen[t][k]=1});Object.keys(knownSet(t)).forEach(k=>{G.seen[t][k]=1});
   Object.keys(vs).forEach(k=>{delete G.memChest[t][k]});G.chests.forEach(c=>{const k=K(...c.pos);if(vs[k])G.memChest[t][k]=c.item})})}
 
  /* ---------- rozstrzyganie rundy ---------- */
@@ -2806,12 +2812,12 @@ const MB=(function(){
  /* ---------- rysowanie ---------- */
  function hexPts(r){let a=[];for(let i=0;i<6;i++){const t=Math.PI/180*(60*i-30);a.push((r*Math.cos(t)).toFixed(1)+','+(r*Math.sin(t)).toFixed(1))}return a.join(' ')}
  function bounds(){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;Object.values(G.cells).forEach(c=>{const [x,y]=px(c.p);x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)});return [x0-S,y0-S,x1-x0+2*S,y1-y0+2*S]}
- function mapSvg(team,hl){const vs=visSet(team),seen=G.seen[team],[bx,by,bw,bh]=bounds();let g='';const P=hexPts(S-1);
+ function mapSvg(team,hl){const vs=visSet(team),ks=knownSet(team),seen=G.seen[team],[bx,by,bw,bh]=bounds();let g='';const P=hexPts(S-1);
   Object.values(G.cells).forEach(c=>{const k=K(...c.p),[x,y]=px(c.p),v=!!vs[k],sn=!!seen[k];
    let fill={g:'#4b5a3c',b:'#2f7a34',r:'#6f6a66',base:'#4b5a3c',w:'#2b5f8f'}[c.t];
    const h=hl&&hl[k];
    g+='<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" data-mk="'+k+'">'+MBA.cell(c.t,sn,P,k);
-   if(sn&&!v)g+='<polygon points="'+P+'" fill="rgba(5,6,10,.55)"/>';
+   if(sn&&!v)g+=ks[k]?'<polygon points="'+P+'" fill="rgba(40,30,60,.38)"/><g opacity=".75"><path d="M-9,-1 q9,-9 18,0 q-9,9 -18,0z" fill="none" stroke="#fff" stroke-width="1.8"/><circle cy="-1" r="2.6" fill="#fff"/><path d="M-9,7 L9,-9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>':'<polygon points="'+P+'" fill="rgba(5,6,10,.55)"/>';
    if(h)g+='<polygon points="'+hexPts(S-3)+'" fill="'+(h.f||'none')+'" stroke="'+(h.s||'none')+'" stroke-width="3"/>'+(h.t?'<text class="mbl" y="6">'+h.t+'</text>':'');
    g+='</g>'});
   // bazy
@@ -2866,7 +2872,7 @@ const MB=(function(){
  function open(){root=document.getElementById('mbRoot');if(!root){root=document.createElement('div');root.id='mbRoot';document.body.appendChild(root);root.addEventListener('click',onClick)}G=null;MSEL=null;draw()}
  function close(){if(root)root.remove();root=null;G=null}
  function draw(){if(!root)return;let h='';
-  if(!G){h='<div class="mbbox"><h2>Bitwa baz <span class="mbbeta">BETA</span></h2><p>Każda drużyna startuje w swojej bazie. Krzaki i skały zasłaniają widok, a ruch jest możliwy tylko w polu widzenia. Odkrywaj mapę, zbieraj przedmioty, pokonuj stworki dla doświadczenia i zniszcz wrogą bazę. Postacie zaczynają słabe i rosną z poziomami.</p>'
+  if(!G){h='<div class="mbbox"><h2>Bitwa baz <span class="mbbeta">BETA</span></h2><p>Każda drużyna startuje w swojej bazie. Skały zasłaniają widok. Za krzakiem znasz teren, ale nie widzisz, kto tam jest – możesz tam wejść na własne ryzyko (pomarańczowe pola). Odkrywaj mapę, zbieraj przedmioty, pokonuj stworki dla doświadczenia i zniszcz wrogą bazę. Postacie zaczynają słabe i rosną z poziomami.</p>'
    +(MSEL?'<p><b>'+MSEL+'</b> · wybierz mapę</p><div class="mbmaps">'+MAPS[MSEL==='1v1'?'small':'big'].map((m,i)=>'<button class="mbmapb" data-mb="map:'+i+'">'+miniMap(m,MSEL!=='1v1')+'<b>'+m.n+(m.id==='maze'?' 🎲':'')+'</b><small>'+m.d+'</small></button>').join('')+'</div><button data-mb="mback">← Zmień rozmiar</button>'
    :'<button class="mbbig" data-mb="mode:1v1"><b>1 vs 1</b><small>Małe mapy (ok. 75 pól), baza 12 HP</small></button>'
    +'<button class="mbbig" data-mb="mode:2v2"><b>2 vs 2</b><small>Duże mapy (ok. 120 pól), baza 20 HP</small></button>'
@@ -2887,7 +2893,7 @@ const MB=(function(){
   if(G&&G.scr==='plan'){const hh=curHero(),sc=root.querySelector('.mbscroll'),svg=root.querySelector('.mbmap');if(hh&&sc&&svg&&!G._scrolled){G._scrolled=true;const [bx,by]=bounds(),p=px(G._ghost||hh.pos);sc.scrollLeft=(p[0]-bx)*MBZ-sc.clientWidth/2;sc.scrollTop=(p[1]-by)*MBZ-sc.clientHeight/2}else if(sc&&G._sc){sc.scrollLeft=G._sc[0];sc.scrollTop=G._sc[1]}}}
  function posAtPhase(h,ph){let p=h.pos.slice();for(let i=0;i<ph;i++){const a=G.plan[i];if(a&&a.t==='move'&&a.m)p=a.m.slice();if(a&&a.t==='charge'&&a.d!=null){let cur=p;for(let k=0;k<chargeRng(h);k++){const q=step(cur,a.d),c=cell(q);if(!c||c.t==='r'||c.t==='base')break;cur=q}p=cur}}return p}
  function planHL(h){const hl={},ph=G.ph,a=G.plan[ph],p=posAtPhase(h,ph);
-  if(a.t==='move'){Object.keys(moveCells(h,p)).forEach(k=>{hl[k]={f:'rgba(92,255,138,.22)',s:'#5cff8a'}});if(a.m)hl[K(...a.m)]={f:'rgba(242,194,48,.5)',s:'#ffe066',t:'●'}}
+  if(a.t==='move'){const vs0=visSet(h.team);Object.keys(moveCells(h,p)).forEach(k=>{hl[k]=vs0[k]?{f:'rgba(92,255,138,.22)',s:'#5cff8a'}:{f:'rgba(255,170,60,.25)',s:'#ffaa3c',t:'?'}});if(a.m)hl[K(...a.m)]={f:'rgba(242,194,48,.5)',s:'#ffe066',t:'●'}}
   else if(['atk','sheep','charge','puddle','aim'].includes(a.t)){
    if(a.d==null)nb(p).forEach(q=>{hl[K(...q)]={s:'#ff6b5b'}});
    else if(a.t==='charge'){let cur=p;for(let k=0;k<chargeRng(h);k++){const q=step(cur,a.d),c=cell(q);if(!c||c.t==='r')break;hl[K(...q)]={f:'rgba(255,70,50,.35)',s:'#ff6b5b',t:'»'};if(c.t==='base')break;cur=q}}
@@ -2910,7 +2916,7 @@ const MB=(function(){
   return null}
  function planOk(h){const a=G.plan[G.ph];if(!a.t)return false;if(a.t==='move')return !!a.m;if(a.t==='stay'||a.t==='snipe'||a.t==='drone'||a.t==='drone2')return true;return a.d!=null}
  function hint(h){const a=G.plan[G.ph];if(!a.t)return 'Wybierz akcję na tę fazę. Dotknij stworka lub postaci, by zobaczyć statystyki.';
-  return {move:a.m?'Ruch na wybrane pole.':'Dotknij zielonego pola.',stay:'Zostajesz na miejscu.',atk:a.d==null?'Dotknij pola obok, by wybrać kierunek.':'Atak: '+DNAME[a.d]+'. Liczby to obrażenia.',
+  return {move:a.m?(visSet(h.team)[K(...a.m)]?'Ruch na wybrane pole.':'Ruch za krzak – nie widać, kto tam jest. Na własne ryzyko!'):'Dotknij zielonego pola. Pomarańczowe: za krzakiem, nie widać, kto tam jest.',stay:'Zostajesz na miejscu.',atk:a.d==null?'Dotknij pola obok, by wybrać kierunek.':'Atak: '+DNAME[a.d]+'. Liczby to obrażenia.',
    charge:a.d==null?'Kierunek szarży: pole obok.':'Szarża: do '+chargeRng(h)+' pól, '+(chargeDmg(h)+dmgB(h))+' DMG i odrzut.',sheep:a.d==null?'Kierunek owcy: pole obok.':'Owca biegnie 4 pola, 2 DMG każdemu.',
    puddle:a.d==null?'Kierunek kałuży: pole obok.':'Kałuża trucizny na 2 rundy (do '+pudRng(h)+' pól).',aim:a.d==null?'Celowanie: kierunek.':'W fazie II wybierz „Snajperski”.',snipe:'Strzał snajperski: 3 DMG przez całą mapę.',
    drone:'Aktywujesz drona (cała faza I).',drone2:'Dron atakuje najbliższego wroga do '+droneRng(h)+' pól od ciebie ('+(droneDmg(h)+dmgB(h))+' DMG).'}[a.t]||''}

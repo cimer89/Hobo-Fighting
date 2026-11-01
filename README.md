@@ -300,6 +300,7 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - Postacie stoją na mapie jako rysunkowe figurki z otoczką w kolorze drużyny. Aktualny gracz ma pulsujący pierścień pod stopami.
 - Mapa jest większa niż wcześniej i przewija się palcem, a na starcie tury ustawia się na Twojej postaci.
 - Dotknięcie stworka zawsze pokazuje kartę z jego poziomem (z oceną trudności), HP, obrażeniami i nagrodą XP – także wtedy, gdy tym samym dotknięciem wybierasz kierunek ataku.
+- **Za krzakiem (nowe)**: krzak nie chowa już terenu za sobą – wiesz, czy dalej jest trawa, krzak, skała czy woda, ale nie widzisz, kto tam stoi (pole jest przyciemnione z ikoną przekreślonego oka). Przy ruchu dalej niż o 1 pole (buty, skok Byka, teleport Truchela) takie pola są pomarańczowe ze znakiem „?” – można tam wejść, ale na własne ryzyko. Skały dalej zasłaniają wszystko.
 
 ## Koniec rundy: podsumowanie i baner
 
