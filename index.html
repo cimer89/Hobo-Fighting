@@ -3035,7 +3035,7 @@ const G3D=(function(){
   add.forEach(([p,ol])=>p.add(ol));
   const mixer=new THREE.AnimationMixer(root),acts={};
   g.animations.forEach(c=>{const n=c.name.split('|').pop();acts[n]=mixer.clipAction(c)});
-  const I={ch,root,mixer,acts,cur:null,curName:'',once:null,yaw:0,tyaw:0,px:null,py:null,still:0,ko:false,seen:false};
+  const I={ch,root,mixer,acts,cur:null,curName:'',once:null,yaw:0,tyaw:0,px:null,py:null,vx:0,vy:0,still:0,lock:0,hold:0,ko:false,seen:false};
   mixer.addEventListener('finished',()=>{if(I.once&&I.once!=='ko'){I.once=null;play(I,'idle')}});
   root.visible=false;scene.add(root);play(I,'idle');tmpl[ch]=I;loaded++}
  function play(I,name,once){const a=I.acts[name];if(!a)return;if(I.cur===a&&!once)return;
@@ -3057,6 +3057,11 @@ const G3D=(function(){
   cam.left=-W/2;cam.right=W/2;cam.top=H/2;cam.bottom=-H/2;cam.updateProjectionMatrix()}
  function hideAll(){Object.values(tmpl).forEach(I=>I.root.visible=false);document.querySelectorAll('.s3on').forEach(e=>e.classList.remove('s3on'));if(canvas)canvas.style.display='none'}
  function faceTo(I,dx,dy){if(Math.abs(dx)+Math.abs(dy)<1e-3)return;I.tyaw=Math.atan2(dx,dy/SE)}
+ /* pozycja punktu w układzie planszy (atrybuty transform), niezależna od zoomu kamery i trzęsienia ekranu */
+ function upt(n,x,y){const svg=n.ownerSVGElement;let px=x,py=y;
+  for(;n&&n!==svg;n=n.parentNode){const tl=n.transform&&n.transform.baseVal;if(!tl||!tl.numberOfItems)continue;
+   for(let i=tl.numberOfItems-1;i>=0;i--){const m=tl.getItem(i).matrix,nx=m.a*px+m.c*py+m.e;py=m.b*px+m.d*py+m.f;px=nx}}
+  return [px,py]}
  function loop(){requestAnimationFrame(loop);const dt=Math.min(0.05,clock.getDelta());
   const svg=document.querySelector('#stage svg');const on=enabled()&&loaded&&svg&&svg.isConnected&&svg.getBoundingClientRect().width>0;
   if(!on){if(lastOn)hideAll();lastOn=false;return}
@@ -3072,10 +3077,13 @@ const G3D=(function(){
    el.classList.add('s3on');I.seen=true;
    const cx=r.left+r.width/2,cy=r.top+r.height/2,w=rw.width;
    let hop=0;const hp=el.querySelector('.hop');if(hp){const m=/translate\(\s*[-\d.]+\s*,\s*(-?[\d.]+)/.exec(hp.getAttribute('transform')||'');if(m)hop=-parseFloat(m[1])*(w/64)}
-   if(I.px!==null){const dx=cx-I.px,dy=cy-I.py,sp=Math.hypot(dx,dy)/Math.max(dt,1e-3);
-    if(sp>w*0.6){faceTo(I,dx,dy);I.still=0;if(!I.once)play(I,hop>w*0.12?'jump':'run')}
-    else{I.still+=dt;if(!I.once&&I.still>0.12&&(I.curName==='run'||I.curName==='jump'))play(I,'idle');if(I.still>1.6&&!I.once)I.tyaw*=0.96}}
-   I.px=cx;I.py=cy;
+   const fy=+pm.getAttribute('cy')||0,bp=upt(el,0,fy),bq=upt(el,32,fy),bw=Math.max(1,2*Math.hypot(bq[0]-bp[0],bq[1]-bp[1])),now=performance.now();
+   if(I.px!==null){const id=Math.max(dt,1e-3),vx=(bp[0]-I.px)/id,vy=(bp[1]-I.py)/id,sp=Math.hypot(vx,vy),k=Math.min(1,dt*9);
+    I.vx+=(vx-I.vx)*k;I.vy+=(vy-I.vy)*k;
+    if(sp>bw*0.6){if(now>I.lock)faceTo(I,I.vx,I.vy);I.still=0;if(!I.once)play(I,hop>w*0.12?'jump':'run')}
+    else{I.still+=dt;if(!I.once&&I.still>0.12&&(I.curName==='run'||I.curName==='jump'))play(I,'idle');if(I.still>1.6&&!I.once&&now>I.hold)I.tyaw*=0.96}}
+   else{I.vx=I.vy=0}
+   I.px=bp[0];I.py=bp[1];
    if(I.ko&&!st.animating){I.ko=false;I.once=null;play(I,'idle')}
    const s=w/CE*(I.ch==='Owca'?1.45:1.0);
    I.root.scale.setScalar(s);I.root.position.set(cx-cr.left-W/2,Math.max(0,hop)/CE,(cy-cr.top-H/2)/SE);
@@ -3083,14 +3091,24 @@ const G3D=(function(){
   Object.values(tmpl).forEach(I=>{I.root.visible=I.seen;if(!I.seen)I.px=null;I.mixer.update(dt)});
   renderer.render(scene,cam)}
  function cell(c){try{return cellC(c)}catch(e){return null}}
- function ev(e){if(state!==2)return;const ch=(typeof chOfId==='function')?chOfId(e.id):null;const I=ch&&tmpl[ch];
-  if(e.k==='atk'&&I){const a=cell(e.from),b=cell(e.end||(e.cells&&e.cells[0])||e.from);if(a&&b)faceTo(I,b[0]-a[0],b[1]-a[1]);play(I,'attack',true)}
-  else if(e.k==='dmg'&&I&&!I.ko)play(I,'hit',true);
-  else if(e.k==='out'&&I){I.ko=true;play(I,'ko',true)}
-  else if((e.k==='droneon'||e.k==='drone'||e.k==='puddle'||e.k==='summon'||e.k==='scharge')&&I&&!e.none){if(e.to){const a=cell(e.from||e.to),b=cell(e.to);if(a&&b&&e.from)faceTo(I,b[0]-a[0],b[1]-a[1])}play(I,'attack',true)}
-  else if(e.k==='charge'&&I){const a=cell(e.from),b=cell(e.to);if(a&&b)faceTo(I,b[0]-a[0],b[1]-a[1])}}
+ /* kierunek ustawiony przez zdarzenie walki: ruch kamery/odrzut go nie nadpisuje (lock), a powrót przodem do kamery czeka (hold) */
+ function faceP(I,a,b,ms){if(!a||!b)return;const dx=b[0]-a[0],dy=b[1]-a[1];if(Math.abs(dx)+Math.abs(dy)<1)return;
+  faceTo(I,dx,dy);const now=performance.now();I.lock=Math.max(I.lock,now+ms);I.hold=Math.max(I.hold,now+ms+900);I.still=0}
+ function bpos(id){const p=(typeof st!=='undefined'&&st.curPos)?st.curPos[id]:null;return p?[p[0],p[1]]:null}
+ let ATT=null;
+ function ev(e){if(state!==2)return;const ch=(typeof chOfId==='function')?chOfId(e.id):null;const I=ch&&tmpl[ch],now=performance.now();
+  if(e.k==='atk'){const a=cell(e.from),b=cell(e.end||(e.cells&&e.cells[0])||e.from);ATT={id:e.id,p:a,t:now};
+   if(I){faceP(I,a,b,1500);play(I,'attack',true)}}
+  else if(e.k==='charge'){const a=cell(e.from),b=cell(e.to),dur=Math.max(520,260*Math.max(1,e.steps||1));ATT={id:e.id,p:b,t:now};
+   if(I){faceP(I,a,b,dur+1300);if(e.hit)setTimeout(()=>{if(!I.ko)play(I,'attack',true)},Math.max(0,dur-180))}}
+  else if((e.k==='drone'||e.k==='scharge')&&!e.none){const b=cell(e.to);ATT={id:e.id,p:b,t:now};if(I){faceP(I,bpos(e.id),b,1500);play(I,'attack',true)}}
+  else if((e.k==='puddle'||e.k==='summon')&&!e.none&&I){faceP(I,bpos(e.id),cell(e.to),1300);play(I,'attack',true)}
+  else if(e.k==='droneon'&&I)play(I,'attack',true);
+  else if(e.k==='dmg'&&I&&!I.ko){if(ATT&&ATT.id!==e.id&&now-ATT.t<4500&&e.w!=='strefa'&&e.w!=='ścisk')faceP(I,bpos(e.id),ATT.p,1600);play(I,'hit',true)}
+  else if((e.k==='knock'||e.k==='push')&&I&&!I.ko){I.lock=Math.max(I.lock,now+1100);I.hold=Math.max(I.hold,now+2000);play(I,'hit',true)}
+  else if(e.k==='out'&&I){I.ko=true;play(I,'ko',true)}}
  function win(ch){const I=tmpl[ch];if(I)play(I,'win',true)}
- return {init,ev,win,setEnabled,enabled,get ready(){return state===2&&loaded>0},get status(){return 'state='+state+' loaded='+loaded+' err='+ERR.join('|')}}})();
+ return {get _t(){return tmpl},init,ev,win,setEnabled,enabled,get ready(){return state===2&&loaded>0},get status(){return 'state='+state+' loaded='+loaded+' err='+ERR.join('|')}}})();
 /* znaczniki pozycji w żetonach (stopy i szerokość podstawki) */
 const _standee3=standee;standee=function(ch,delay){return '<g data-s3="'+ch+'"><circle class="s3p" cx="0" cy="12" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="11.5" width="64" height="1" fill="none" stroke="none"/>'+_standee3(ch,delay)+'</g>'};
 /* owca Pasterza też jako model 3D */
