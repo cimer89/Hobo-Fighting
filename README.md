@@ -322,7 +322,10 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 
 - Grafika rozgrywki jest w stylu rysunkowym (wariant B z propozycji): jasne kolory, miękkie cieniowanie, cienki kontur, postacie w proporcjach chibi.
 - **Postacie**: każda postać i owca Pasterza to rysunkowe sprite'y (przód 3/4, tył 3/4, poza ataku), narysowane w ChatGPT na podstawie kart postaci. Kierunki w lewo to lustrzane odbicie.
-- **Obracanie jak w grach anime**: przy zmianie kierunku postać „zwija się” w poziomie i rozwija z nowym ujęciem (przód/tył, lewo/prawo).
+- **6 kierunków jak 6 ścian heksa**: każda postać ma ujęcia przodem, tyłem, 3/4 z przodu i 3/4 z tyłu (lewo to lustrzane odbicie prawa). Przy zmianie kierunku postać „zwija się” w poziomie i rozwija z nowym ujęciem, jak w grach anime.
+- **Kierunek w spoczynku**: postać patrzy na najbliższego przeciwnika, a gdy dwóch jest podobnie blisko – między nich. W ruchu patrzy w stronę marszu.
+- **Ataki celują w pole**: osobna poza ataku dla każdego z 6 kierunków (broń wycelowana w trafiane pola), krótki zamach i wypad w stronę celu zgrany z błyskiem pól i linią strzału. Byku i owca w czasie szarży mają pozę szarży przez cały bieg, Pasterz wskazuje kijem cel szarży owcy, Przemo przy wysyłaniu drona obraca się do celu.
+- Postać stoi na środku swojego heksa.
 - **Animacje**: oddech w spoczynku, podskoki przy biegu, wypad z pozą ataku, biały błysk i odrzut przy trafieniu, upadek przy nokaucie, skoki przy wygranej.
 - Postacie stoją bezpośrednio na planszy, bez podstawek. W trybie drużynowym (2 vs 2) każda postać ma otoczkę w kolorze drużyny: niebieską albo czerwoną (owca ma kolor drużyny Pasterza).
 - Postać schowana za wyższą postacią stojącą bliżej jest dorysowana półprzezroczyście, żeby było ją widać.
