@@ -301,6 +301,11 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - Mapa jest większa niż wcześniej i przewija się palcem, a na starcie tury ustawia się na Twojej postaci.
 - Dotknięcie stworka zawsze pokazuje kartę z jego poziomem (z oceną trudności), HP, obrażeniami i nagrodą XP – także wtedy, gdy tym samym dotknięciem wybierasz kierunek ataku.
 
+## Koniec rundy: podsumowanie i baner
+
+- Po animacji rundy wyskakuje animowana karta **KONIEC RUNDY N** z podsumowaniem dla każdej postaci: portret, pasek HP spadający od stanu sprzed rundy do aktualnego, ile HP straciła, ile obrażeń zadała i pieczątka **ODPADA** przy nokaucie. Karta znika sama po ok. 5 s albo po dotknięciu i nie blokuje przycisków pod spodem.
+- Gdy zaczyna się kolejna runda, na środku ekranu pojawia się baner **RUNDA N** („twój ruch” online, „zaplanuj ruchy” na jednym telefonie), więc od razu widać, że kolejka się skończyła.
+
 ## Gra online – działa bez konfiguracji
 
 Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.
