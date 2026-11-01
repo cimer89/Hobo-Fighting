@@ -322,7 +322,7 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 
 - Plansza i postacie są w stylu low poly: płaskie cieniowanie, ostre krawędzie, bez konturów.
 - Plansza: kamienne heksy z fazą (gdzieniegdzie mech i ziemia), pofałdowana trawa, kanciaste skały, drzewa i krzaki. Kamera patrzy pod kątem 40° (wcześniej 51°), a siatka pól jest liczona do tego kąta, więc wybieranie pól działa jak wcześniej.
-- Postacie: modele z Blendera uproszczone do ok. 3300 ścian (owca 2500), z tymi samymi animacjami. Razem 1,6 MB zamiast 4,2 MB.
+- Postacie: modele z Blendera uproszczone do ok. 3300 ścian (owca 2500), z tymi samymi animacjami. W spoczynku każda ma własną postawę (ugięte kolana, ciężar na jednej nodze, skręt tułowia; Byku w gardzie, Truchel przygarbiony, Przemo „na spocznij”). Razem 1,6 MB zamiast 4,2 MB.
 
 ## Plansza 3D
 
