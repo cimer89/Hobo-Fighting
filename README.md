@@ -293,6 +293,14 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - **Śmierć:** odrodzenie w bazie po 2 rundach.
 - **Rozwój postaci:** na poziomie 1 każdy ma ruch o 1 pole i atak 1 DMG na sąsiednie pole. Poziomy 2 i 3 odblokowują umiejętności postaci (lista w panelu „Umiejętności postaci”), a każdy awans daje wybór wzmocnienia.
 
+## Bitwa baz – oprawa rysunkowa
+
+- Mapa Bitwy baz ma ten sam rysunkowy styl co zwykła rozgrywka: trawiaste heksy, rysowane krzaki i głazy, woda z falami, morze dookoła i mgła wojny na nieodkrytych polach.
+- Bazy drużyn to szałasy menelów z blachy, palet i opon z niebieską albo czerwoną plandeką i flagą. Skrzynki, kałuże trucizny i stworki mają własne grafiki: **Szczury** (grupka trzech szczurów) i **Wielki Menel** (boss z butelką i kijem).
+- Postacie stoją na mapie jako rysunkowe figurki z otoczką w kolorze drużyny. Aktualny gracz ma pulsujący pierścień pod stopami.
+- Mapa jest większa niż wcześniej i przewija się palcem, a na starcie tury ustawia się na Twojej postaci.
+- Dotknięcie stworka zawsze pokazuje kartę z jego poziomem (z oceną trudności), HP, obrażeniami i nagrodą XP – także wtedy, gdy tym samym dotknięciem wybierasz kierunek ataku.
+
 ## Gra online – działa bez konfiguracji
 
 Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.
