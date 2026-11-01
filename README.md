@@ -324,6 +324,7 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 - **Postacie**: każda postać i owca Pasterza to rysunkowe sprite'y (przód 3/4, tył 3/4, poza ataku), narysowane w ChatGPT na podstawie kart postaci. Kierunki w lewo to lustrzane odbicie.
 - **Obracanie jak w grach anime**: przy zmianie kierunku postać „zwija się” w poziomie i rozwija z nowym ujęciem (przód/tył, lewo/prawo).
 - **Animacje**: oddech w spoczynku, podskoki przy biegu, wypad z pozą ataku, biały błysk i odrzut przy trafieniu, upadek przy nokaucie, skoki przy wygranej.
+- Postacie stoją bezpośrednio na planszy, bez podstawek. W trybie drużynowym (2 vs 2) każda postać ma otoczkę w kolorze drużyny: niebieską albo czerwoną (owca ma kolor drużyny Pasterza).
 - Postać schowana za wyższą postacią stojącą bliżej jest dorysowana półprzezroczyście, żeby było ją widać.
 - **Plansza**: wyspa z trawiastych heksów z klifami i pianą, morze, a na brzegach głazy, krzaki, skrzynki, beczka, opony i kwiatki. Rysuje się bez three.js, więc działa też bez internetu.
 - W panelu dźwięku (🔊) są przełączniki **Postacie rysunkowe** i **Nowa plansza**. Po wyłączeniu wracają żetony i stara plansza.

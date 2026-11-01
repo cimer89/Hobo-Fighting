@@ -591,6 +591,8 @@ main:not(.full)~#sndBtn,body:has(main:not(.full)) #sndBtn{bottom:auto;top:calc(8
 #s2d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}
 [data-s3].s3on .hop{visibility:hidden}
 [data-s3].s3on .ibob{visibility:hidden}
+[data-s3].s3on .gnd{visibility:hidden}
+[data-s3].s3on>ellipse{visibility:hidden}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -3080,6 +3082,11 @@ const S2D=(function(){
  function load(src){return new Promise(res=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
  /* biała sylwetka do błysku przy trafieniu (canvas filter nie działa w Safari) */
  function sil(im){const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);return c}
+ /* otoczka drużyny: rozszerzona sylwetka w kolorze drużyny */
+ function outl(I,k,col){const key=k+col;I.ol=I.ol||{};if(I.ol[key])return I.ol[key];const s=I.sils[k],p=Math.max(6,Math.round(s.height*0.028));
+  const c=document.createElement('canvas');c.width=s.width+2*p;c.height=s.height+2*p;const x=c.getContext('2d');
+  for(let i=0;i<16;i++){const a=i/16*Math.PI*2;x.drawImage(s,p+Math.cos(a)*p,p+Math.sin(a)*p)}x.drawImage(s,p,p);
+  x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,c.width,c.height);return I.ol[key]={c,p}}
  async function init(){if(state||!enabled()||typeof SPR2D==='undefined')return;state=1;
   canvas=document.createElement('canvas');canvas.id='s2d';g=canvas.getContext('2d');
   await Promise.all(Object.keys(SPR2D).map(async ch=>{const ims=await Promise.all(SPR2D[ch].map(load));if(ims.some(i=>!i))return;
@@ -3147,6 +3154,8 @@ const S2D=(function(){
   /* cień */
   const sh=Math.max(0.35,1-Math.max(0,hop)/(w*1.2));g.fillStyle='rgba(30,40,20,'+(0.28*sh)+')';g.beginPath();g.ellipse((cx+ox*0.6)*DPR,cy*DPR,w*0.36*DPR*sh,w*0.13*DPR*sh,0,0,7);g.fill();
   g.translate(X,Y);g.rotate(rot);g.scale(I.fx*sx*turn*DPR,sy*DPR);
+  {const tm=(typeof teamOfCh==='function'&&typeof TCOL!=='undefined')?teamOfCh(I.ch==='Owca'?'Pasterz':I.ch):null;
+   if(tm&&TCOL[tm]){const o=outl(I,img,TCOL[tm]),k2=hgt/im.height;g.drawImage(o.c,-wid*ax-o.p*k2,-hgt-o.p*k2,o.c.width*k2,o.c.height*k2)}}
   g.drawImage(im,-wid*ax,-hgt,wid,hgt);
   {const m=g.getTransform();D.tf=[m.a,m.b,m.c,m.d,m.e,m.f];D.im=im;D.dr=[-wid*ax,-hgt,wid,hgt];const X0=X-wid*(I.fx>0?ax:1-ax)*DPR,Y0=Y-hgt*DPR;D.bb=[X0+wid*DPR*0.2,Y0+hgt*DPR*0.1,X0+wid*DPR*0.8,Y];}
   if(flash>0){g.globalAlpha=alpha*flash*0.85;g.drawImage(I.sils[img],-wid*ax,-hgt,wid,hgt)}
