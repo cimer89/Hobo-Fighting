@@ -318,23 +318,14 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 - Utwory są wbudowane w grę (działa też w artefakcie bez folderu `audio/`), a kopie leżą w `audio/music_menu.mp3` i `audio/music_battle.mp3`.
 - Muzyka gra od dotknięcia „Naciśnij żeby rozpocząć” i nie zaczyna się od nowa przy kolejnych dotknięciach. Głośność muzyki ustawisz w panelu 🔊.
 
-## Styl low poly
+## Styl rysunkowy (mobilny cartoon)
 
-- Plansza i postacie są w stylu low poly: płaskie cieniowanie, ostre krawędzie, bez konturów.
-- Plansza: kamienne heksy z fazą (gdzieniegdzie mech i ziemia), pofałdowana trawa, kanciaste skały, drzewa i krzaki. Kamera patrzy pod kątem 40° (wcześniej 51°), a siatka pól jest liczona do tego kąta, więc wybieranie pól działa jak wcześniej.
-- Postacie: modele z Blendera uproszczone do ok. 3300 ścian (owca 2500), z tymi samymi animacjami. W spoczynku każda ma własną postawę (ugięte kolana, ciężar na jednej nodze, skręt tułowia; Byku w gardzie, Truchel przygarbiony, Przemo „na spocznij”). Razem 1,6 MB zamiast 4,2 MB.
+- Grafika rozgrywki jest w stylu rysunkowym (wariant B z propozycji): jasne kolory, miękkie cieniowanie, cienki kontur, postacie w proporcjach chibi.
+- **Postacie**: każda postać i owca Pasterza to rysunkowe sprite'y (przód 3/4, tył 3/4, poza ataku), narysowane w ChatGPT na podstawie kart postaci. Kierunki w lewo to lustrzane odbicie.
+- **Obracanie jak w grach anime**: przy zmianie kierunku postać „zwija się” w poziomie i rozwija z nowym ujęciem (przód/tył, lewo/prawo).
+- **Animacje**: oddech w spoczynku, podskoki przy biegu, wypad z pozą ataku, biały błysk i odrzut przy trafieniu, upadek przy nokaucie, skoki przy wygranej.
+- Postać schowana za wyższą postacią stojącą bliżej jest dorysowana półprzezroczyście, żeby było ją widać.
+- **Plansza**: wyspa z trawiastych heksów z klifami i pianą, morze, a na brzegach głazy, krzaki, skrzynki, beczka, opony i kwiatki. Rysuje się bez three.js, więc działa też bez internetu.
+- W panelu dźwięku (🔊) są przełączniki **Postacie rysunkowe** i **Nowa plansza**. Po wyłączeniu wracają żetony i stara plansza.
+- Gra nie potrzebuje już modeli 3D ani three.js, plik jest mniejszy (~10 MB).
 
-## Plansza 3D
-
-- Plansza jest sceną 3D złomowiska zbudowaną w three.js: wypukłe heksy z ubitej ziemi i trawy, właz na środku, a dookoła bar z szyldem i lampkami, kanapa, beczki (jedna z ogniem), palety, skrzynki z butelkami, opony, parasol, krzesła, grill, lodówka turystyczna, bus ze smajlem, brama, ogrodzenie, kontener pod plandeką i drzewa. Scena ma cienie i ten sam rysunkowy styl co postacie.
-- Scena renderuje się raz w tle podczas menu do obrazu planszy (2048×2048), więc zoom kamery, podświetlenia pól i dotykanie heksów działają jak wcześniej.
-- W trybie 3D siatka heksów jest regularna (dopasowana do starej planszy), a obrysy pól leżą dokładnie na krawędziach heksów 3D.
-- Przycisk **Plansza 3D** w panelu dźwięku (🔊) włącza i wyłącza planszę 3D. Bez internetu (brak three.js) gra pokazuje rysowaną planszę.
-
-## Postacie 3D na planszy
-
-- Każda postać (oraz owca Pasterza) to model 3D z Blendera ze szkieletem, zrobiony na podstawie arkuszy postaci (przód, bok, tył).
-- Na planszy zamiast żetonów-portretów stoją figurki 3D: biegają przy ruchu, skaczą, wykonują swój atak (obrót z toporem, pchnięcie włócznią, strzał z karabinu, cios byka, czar, uderzenie kijem i szarża owcy, rzut fiolką, strzał z pistoletu), reagują na trafienie i padają po nokaucie.
-- Modele odwracają się w stronę ruchu i ataku, a przy zbliżeniu kamery rosną razem z planszą.
-- Postacie 3D można wyłączyć w panelu dźwięku (ikona głośnika) – wtedy wracają żetony.
-- Do wyświetlania używana jest biblioteka three.js wczytywana z CDN (jsDelivr). Bez internetu gra działa dalej z żetonami 2D.
