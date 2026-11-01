@@ -304,3 +304,11 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 - Na ekranie wyboru postaci w rogu obraca się figurka 3D wybranej postaci. Dotknij jej, żeby zobaczyć animację ataku.
 - W trakcie rundy przy ataku, szarży, dronie, teleporcie itp. wysuwa się przerywnik z animacją 3D postaci.
 - Efekty dźwiękowe wygenerowano w ElevenLabs (28 dźwięków: ataki każdej postaci, trafienia, pudła, nokaut, owca, dron, awans w Bitwie baz, wygrana i inne). Brakujące dźwięki zastępuje syntezator.
+
+## Postacie 3D na planszy
+
+- Każda postać (oraz owca Pasterza) to model 3D z Blendera ze szkieletem, zrobiony na podstawie arkuszy postaci (przód, bok, tył).
+- Na planszy zamiast żetonów-portretów stoją figurki 3D: biegają przy ruchu, skaczą, wykonują swój atak (obrót z toporem, pchnięcie włócznią, strzał z karabinu, cios byka, czar, uderzenie kijem i szarża owcy, rzut fiolką, strzał z pistoletu), reagują na trafienie i padają po nokaucie.
+- Modele odwracają się w stronę ruchu i ataku, a przy zbliżeniu kamery rosną razem z planszą.
+- Postacie 3D można wyłączyć w panelu dźwięku (ikona głośnika) – wtedy wracają żetony.
+- Do wyświetlania używana jest biblioteka three.js wczytywana z CDN (jsDelivr). Bez internetu gra działa dalej z żetonami 2D.
