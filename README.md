@@ -133,6 +133,7 @@ W menu głównym wybierasz tryb, a potem sposób gry (jeden telefon albo pokój 
 - Przedmioty nigdy nie pojawiają się na polu zajętym przez gracza ani innego przedmiotu.
 - Przedmiot podnosisz, kończąc rundę na jego polu. Jeśli na polu stoi kilku graczy, nikt go nie bierze.
 - Nie podniesiesz przedmiotu, gdy masz już aktywny, niewykorzystany bonus. Leczenie nie zajmuje miejsca, ale nie podniesiesz go przy pełnym zdrowiu.
+- **Pasterz w trybie specjalnym** gra w nowej wersji z Testów: 7 HP, zaczyna z owcą na polu obok, szarża owcy zadaje 2 DMG każdej postaci w linii, a nowa akcja **Kij** bije 2 pola przed nim za 2 DMG każdemu. Zderzenie szarży Byka z szarżującą owcą też kosztuje Byka 2 HP. Opis na karcie i przykłady akcji pokazują tę wersję.
 
 **Kod pokoju online:** pierwsza litera kodu mówi o trybie. Kod zaczynający się od **S** to tryb specjalny, każdy inny to tryb klasyczny. Osoba dołączająca kodem nie musi wybierać trybu.
 
@@ -304,6 +305,13 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 - Na ekranie wyboru postaci w rogu obraca się figurka 3D wybranej postaci. Dotknij jej, żeby zobaczyć animację ataku.
 - W trakcie rundy przy ataku, szarży, dronie, teleporcie itp. wysuwa się przerywnik z animacją 3D postaci.
 - Efekty dźwiękowe wygenerowano w ElevenLabs (28 dźwięków: ataki każdej postaci, trafienia, pudła, nokaut, owca, dron, awans w Bitwie baz, wygrana i inne). Brakujące dźwięki zastępuje syntezator.
+
+## Plansza 3D
+
+- Plansza jest sceną 3D złomowiska zbudowaną w three.js: wypukłe heksy z ubitej ziemi i trawy, właz na środku, a dookoła bar z szyldem i lampkami, kanapa, beczki (jedna z ogniem), palety, skrzynki z butelkami, opony, parasol, krzesła, grill, lodówka turystyczna, bus ze smajlem, brama, ogrodzenie, kontener pod plandeką i drzewa. Scena ma cienie i ten sam rysunkowy styl co postacie.
+- Scena renderuje się raz w tle podczas menu do obrazu planszy (2048×2048), więc zoom kamery, podświetlenia pól i dotykanie heksów działają jak wcześniej.
+- W trybie 3D siatka heksów jest regularna (dopasowana do starej planszy), a obrysy pól leżą dokładnie na krawędziach heksów 3D.
+- Przycisk **Plansza 3D** w panelu dźwięku (🔊) włącza i wyłącza planszę 3D. Bez internetu (brak three.js) gra pokazuje rysowaną planszę.
 
 ## Postacie 3D na planszy
 
