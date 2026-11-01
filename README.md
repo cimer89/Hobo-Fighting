@@ -306,6 +306,14 @@ Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz ko
 - W trakcie rundy przy ataku, szarży, dronie, teleporcie itp. wysuwa się przerywnik z animacją 3D postaci.
 - Efekty dźwiękowe wygenerowano w ElevenLabs (28 dźwięków: ataki każdej postaci, trafienia, pudła, nokaut, owca, dron, awans w Bitwie baz, wygrana i inne). Brakujące dźwięki zastępuje syntezator.
 
+## Muzyka (ElevenLabs)
+
+- Dwa utwory instrumentalne z ElevenLabs Music v2.5, po ok. minucie, przerobione na pętle bez przerwy (końcówka płynnie przechodzi w początek):
+  - **menu i wybór postaci:** „Junkyard Swagger”, luźny hip-hop z gitarą slide, harmonijką i trąbką,
+  - **walka:** „Junkyard Rumble Loop”, energiczny funk-rock z basem slap, gitarą wah i dęciakami.
+- Utwory są wbudowane w grę (działa też w artefakcie bez folderu `audio/`), a kopie leżą w `audio/music_menu.mp3` i `audio/music_battle.mp3`.
+- Muzyka gra od dotknięcia „Naciśnij żeby rozpocząć” i nie zaczyna się od nowa przy kolejnych dotknięciach. Głośność muzyki ustawisz w panelu 🔊.
+
 ## Plansza 3D
 
 - Plansza jest sceną 3D złomowiska zbudowaną w three.js: wypukłe heksy z ubitej ziemi i trawy, właz na środku, a dookoła bar z szyldem i lampkami, kanapa, beczki (jedna z ogniem), palety, skrzynki z butelkami, opony, parasol, krzesła, grill, lodówka turystyczna, bus ze smajlem, brama, ogrodzenie, kontener pod plandeką i drzewa. Scena ma cienie i ten sam rysunkowy styl co postacie.
