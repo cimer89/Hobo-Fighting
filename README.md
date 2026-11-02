@@ -325,6 +325,15 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - W trybie Free for all online w jednym pokoju może grać do **6 graczy** (na jednym telefonie dalej do 5).
 - Siódma osoba, która spróbuje dołączyć, dostaje komunikat **POKÓJ PEŁNY** i wraca do menu.
 
+## Profile graczy, ranking i statystyki (Firebase)
+
+- W menu (po „Start”) są przyciski **👤 Profil** i **🏆 Ranking**.
+- **Profil**: gracz wpisuje nick (3–16 znaków, unikalny). Profil jest przypisany do telefonu, bez hasła.
+- **Nick widać**: w poczekalni i przy wyborze postaci online, nad postacią na planszy, w podsumowaniu rundy, w wynikach rundy i w tabeli końcowej.
+- **Statystyki** (z gier online): gry, wygrane, % wygranych, nokauty, zadane obrażenia, punkty oraz gry i wygrane każdą postacią.
+- **Ranking**: top 50 graczy według wygranych, punktów albo nokautów.
+- Wymaga podłączenia bazy Firebase (wklejenie konfiguracji w `index.html`, stała `PROF_FB`) i reguł z pliku `firestore.rules`. Bez tego gra działa jak wcześniej, a okna profilu pokazują informację, że baza nie jest podłączona.
+
 ## Gra online – działa bez konfiguracji
 
 Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.

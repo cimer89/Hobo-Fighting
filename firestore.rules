@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Profile graczy: każdy może czytać (ranking), zapisuje tylko właściciel
+    match /players/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.nick is string
+        && request.resource.data.nick.size() >= 3 && request.resource.data.nick.size() <= 16;
+      allow delete: if false;
+    }
+    // Rezerwacja nicków (unikalność)
+    match /nicks/{nick} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+  }
+}
