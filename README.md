@@ -320,6 +320,11 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - Skok na pole przeciwnika – zarówno o 1, jak i o 2 pola: **3 DMG**.
 - Szarża: **2 DMG** i odrzucenie o 1 pole.
 
+## Online: do 6 graczy
+
+- W trybie Free for all online w jednym pokoju może grać do **6 graczy** (na jednym telefonie dalej do 5).
+- Siódma osoba, która spróbuje dołączyć, dostaje komunikat **POKÓJ PEŁNY** i wraca do menu.
+
 ## Gra online – działa bez konfiguracji
 
 Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.
