@@ -270,7 +270,7 @@ We wszystkich trybach owca zostaje na polu, na którym skończyła szarżę. Sza
 
 Po końcu gry przycisk **Menu główne** wraca do wyboru trybu bez przeładowania strony.
 
-## Bitwa baz (tryb Testy, BETA)
+## Bitwa baz (BETA)
 
 Wejście: Testy → Bitwa baz → rozmiar → mapa. Gra na jednym telefonie, drużyny 1v1 (małe mapy, baza 12 HP), 2v2 lub 3v3 (duże mapy, baza 20 HP).
 
@@ -333,6 +333,20 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - **Statystyki** (z gier online): gry, wygrane, % wygranych, nokauty, zadane obrażenia, punkty oraz gry i wygrane każdą postacią.
 - **Ranking**: top 50 graczy według wygranych, punktów albo nokautów.
 - Wymaga podłączenia bazy Firebase (wklejenie konfiguracji w `index.html`, stała `PROF_FB`) i reguł z pliku `firestore.rules`. Bez tego gra działa jak wcześniej, a okna profilu pokazują informację, że baza nie jest podłączona.
+
+## Bitwa baz online i w głównym menu
+
+- **Bitwa baz** jest teraz w głównym menu, obok trybów klasycznego, specjalnego i Testów.
+- W menu Bitwy baz są dwie sekcje: **Na jednym telefonie** (jak dotąd) i **Online – każdy na swoim telefonie**.
+- **Załóż pokój**: wybierasz rozmiar (1v1, 2v2, 3v3) i mapę, dostajesz 4-znakowy kod. **Dołącz**: wpisujesz kod znajomego.
+- W poczekalni każdy wybiera wolne miejsce w drużynie i postać (widać nicki z profilu). Gdy wszystkie miejsca są zajęte, założyciel naciska **Zaczynamy!**.
+- Każdy planuje tylko swoją postać i widzi mapę tylko oczami swojej drużyny. Po zatwierdzeniu planu widać, kto jeszcze planuje. Gdy wszyscy skończą, runda rozgrywa się na wszystkich telefonach jednocześnie.
+- Wszystkie telefony liczą tę samą grę (wspólne ziarno losowania i te same plany), więc wynik jest identyczny u wszystkich. Połączenie idzie przez ten sam przekaźnik co zwykła gra online.
+- Ograniczenie: po odświeżeniu strony albo zamknięciu przeglądarki w trakcie gry nie da się wrócić do tej rozgrywki.
+
+## Menu na małych telefonach
+
+- Menu główne przewija się, a na niskich ekranach chowa obrazek i opisy przycisków, więc wszystkie przyciski są widoczne.
 
 ## Gra online – działa bez konfiguracji
 

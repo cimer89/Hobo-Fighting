@@ -593,6 +593,8 @@ main:not(.full)~#sndBtn,body:has(main:not(.full)) #sndBtn{bottom:auto;top:calc(8
 .mbmap{width:auto!important;max-width:none!important}
 .mbme>ellipse.mbring{animation:mbme2 1.2s ease-in-out infinite}
 @keyframes mbme2{50%{stroke:#ffe066;stroke-width:4px}}
+
+.mbonl{display:flex;flex-direction:column;gap:8px;border-top:2px solid rgba(200,149,74,.4);padding-top:10px}
 #s2d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}
 [data-s3].s3on .hop{visibility:hidden}
 [data-s3].s3on .ibob{visibility:hidden}
@@ -2869,15 +2871,82 @@ const MB=(function(){
  function miniMap(m,big){const s=7,sq=Math.sqrt(3);let g='',x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const col={'.':'#4b5a3c','*':'#2f7a34','#':'#77706b','w':'#2b6fa8','?':'#b07a3c','c':'#8a6a4a','C':'#7a2e8a','A':'#3e8ef7','B':'#ef4a3c'};
   mapCells(m,big).forEach(({a,ch})=>{const x=s*sq*(a[0]+a[1]/2),y=s*1.5*a[1];x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);g+='<polygon transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" points="'+hexPts(s-.6)+'" fill="'+(col[ch]||'#4b5a3c')+'"/>'});
   return '<svg viewBox="'+(x0-s)+' '+(y0-s)+' '+(x1-x0+2*s)+' '+(y1-y0+2*s)+'">'+g+'</svg>'}
+
+ /* ---------- ONLINE ---------- */
+ let ON=null;
+ function seedRng(seed){let s=(seed>>>0)%2147483647||1;return ()=>{s=(s*16807)%2147483647;return (s-1)/2147483646}}
+ function withSeed(seed,f){const o=Math.random;Math.random=seedRng(seed);try{return f()}finally{Math.random=o}}
+ const onNick=()=>{try{return (typeof PROF!=='undefined'&&PROF.nick)||null}catch(e){return null}};
+ function onDb(){if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
+ function onPub(){if(!ON||!ON.code)return;const r={};Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3).forEach(k=>r[k]=ON.myR[k]);
+  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r};if(ON.host)d.host=ON.hostInfo;
+  onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d)}
+ function onSub(){onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
+ function onHostInfo(){if(!ON)return null;if(ON.host)return ON.hostInfo;const h=Object.values(ON.docs||{}).find(d=>d&&d.host);return h?h.host:null}
+ function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];
+  for(let i=0;i<n;i++){const cl=Object.entries(ON.docs).filter(([,d])=>d&&d.slot===i).sort((a,b)=>(a[1].ts-b[1].ts)||(a[0]<b[0]?-1:1));own.push(cl.length?{id:cl[0][0],d:cl[0][1]}:null)}
+  const used={};own.forEach(o=>{if(!o||!o.d.ch)return;if(used[o.d.ch])o.dup=true;else used[o.d.ch]=1});return own}
+ function onCreate(mode,mi){const code=Math.random().toString(36).slice(2,6).toUpperCase().replace(/[^A-Z0-9]/g,'X');
+  ON={code,host:true,hostInfo:{mode,mi,seed:Math.floor(Math.random()*2e9)+1,start:false},docs:{},myR:{},ups:{},slot:0,ts:Date.now(),ch:null};onSub();onPub();draw()}
+ function onJoin(code){code=(code||'').trim().toUpperCase();if(code.length!==4)return false;ON={code,host:false,docs:{},myR:{},ups:{},slot:null,ts:0,ch:null};onSub();onPub();draw();return true}
+ function onLeave(){try{P2P.reset()}catch(e){}ON=null}
+ function onStartGame(hi){if(G&&G._on)return;const asg=hi.assign;
+  withSeed(hi.seed,()=>newGame(hi.mode,hi.mi));G._on=true;
+  asg.forEach((a,i)=>{G.heroes[i].ch=a[1];G.heroes[i].nick=a[2]||''});
+  startPositions();updateSeen();ON.slot=asg.findIndex(a=>a[0]===net.uid);G.cur=ON.slot;G.scr='opass';G.pickI=G.heroes.length;draw()}
+ function onSync(){if(!ON)return;const hi=onHostInfo();
+  if(hi&&hi.start&&hi.assign&&!G){if(hi.assign.some(a=>a[0]===net.uid))onStartGame(hi);else{ON.full=true;draw()}return}
+  if(G&&G._on&&G.scr==='owait')onTry();
+  else if(!G||!G._on)draw()}
+ function onSubmit(){const h=G.heroes[ON.slot],r=G.round;ON.myR[r]={p:h.plans?JSON.parse(JSON.stringify(h.plans)):null,u:ON.ups[r]||[]};onPub();G.scr='owait';onTry()}
+ function onTry(){if(!G||G.scr!=='owait')return draw();const hi=onHostInfo(),r=G.round,ents=[];
+  for(let i=0;i<hi.assign.length;i++){const d=ON.docs[hi.assign[i][0]],e=d&&d.r&&d.r[r];if(!e)return draw();ents.push(e)}
+  ents.forEach((e,i)=>{if(i===ON.slot)return;const h=G.heroes[i];(e.u||[]).forEach(ix=>{const o=upOpts(h)[ix];if(o&&!o.dis){applyUp(h,o);h.pend=Math.max(0,(h.pend||0)-1)}});h.plans=e.p?JSON.parse(JSON.stringify(e.p)):null});
+  withSeed(hi.seed+r*7919,()=>resolveRound());G.cur=ON.slot;G.scr=G.winner?'over':'opass';draw()}
+ function onDraw(){let h='';
+  if(!G){if(ON.pending)return false;
+   const hi=onHostInfo();
+   if(ON.full)h='<div class="mbbox"><h2>Pokój '+ON.code+'</h2><p class="mbwarn">Gra w tym pokoju już się zaczęła.</p><button data-mb="on:leave">← Wróć</button></div>';
+   else if(!hi)h='<div class="mbbox"><h2>Pokój '+ON.code+'</h2><p>Łączenie z pokojem… Jeśli to trwa długo, sprawdź kod i internet.</p><button data-mb="on:leave">← Wróć</button></div>';
+   else{const sl=onSlots(hi),me=sl.findIndex(o=>o&&o.id===net.uid),taken=sl.filter((o,i)=>o&&i!==me&&o.d.ch).map(o=>o.d.ch);
+    const ok=sl.every(o=>o&&o.d.ch&&!o.dup);
+    h='<div class="mbbox"><h2>Bitwa baz online</h2><p>Kod pokoju: <b style="font-size:22px;letter-spacing:3px;color:#ffd84a">'+ON.code+'</b><br>'+hi.mode+' · '+MAPS[hi.mode==='1v1'?'small':'big'][hi.mi].n+'. Podaj kod znajomym.</p>'
+     +'<div class="mbteams">'+['A','B'].map(t=>'<div style="border-color:'+TCOL[t]+'"><b style="color:'+TCOL[t]+'">'+TNAME[t]+'</b>'+sl.map((o,i)=>[o,i]).filter(([o,i])=>i%2===(t==='A'?0:1)).map(([o,i])=>
+       '<button data-mb="on:slot:'+i+'" style="margin:3px 0;width:100%;'+(i===me?'outline:3px solid #ffd84a;':'')+'" '+(o&&i!==me?'disabled':'')+'>'+(o?((o.d.nick?hfEsc(o.d.nick):'Gracz')+(o.id===net.uid?' (Ty)':'')+' · '+(o.d.ch?SHORT(o.d.ch)+(o.dup?' ⚠':''):'wybiera…')):'+ Wolne miejsce')+'</button>').join('')+'</div>').join('')+'</div>'
+     +(me>=0?'<p>Wybierz postać:</p><div class="mbgrid">'+Object.keys(C).filter(n=>n!=='Manekin').map(n=>'<button class="mbtile" data-mb="on:ch:'+n+'" '+(taken.includes(n)?'disabled':'')+' style="'+(sl[me].d.ch===n?'outline:3px solid #ffd84a':'')+'"><img src="'+IMG[n]+'" alt=""><span>'+SHORT(n)+'</span></button>').join('')+'</div>':'<p class="mbwarn">Dotknij wolnego miejsca w drużynie.</p>')
+     +(ON.host?'<button class="mbgo" data-mb="on:start" '+(ok?'':'disabled')+'>'+(ok?'Zaczynamy!':'Czekamy, aż wszystkie miejsca będą zajęte…')+'</button>':'<p>'+(ok?'Czekamy, aż założyciel pokoju zacznie grę.':'Czekamy na graczy…')+'</p>')
+     +'<button data-mb="on:leave">← Opuść pokój</button></div>'}
+   root.innerHTML=h;return true}
+  if(G.scr==='opass'){const hh=G.heroes[ON.slot];
+   h='<div class="mbbox"><p>Online · pokój '+ON.code+'</p><h2 style="color:'+TCOL[hh.team]+'">Runda '+G.round+' · '+hh.ch+'</h2><p>'+TNAME[hh.team]+(hh.nick?' · '+hfEsc(hh.nick):'')+'</p>'
+    +(hh.dead?'<p class="mbwarn">Twoja postać nie żyje. Odrodzi się w bazie za '+hh.dead+' '+(hh.dead===1?'rundę':'rundy')+'.</p><button class="mbgo" data-mb="skip">Dalej</button>':'<button class="mbgo" data-mb="ready">Planuj rundę</button>')+'<button data-mb="quit">Opuść grę</button></div>';
+   root.innerHTML=h;return true}
+  if(G.scr==='owait'){const hi=onHostInfo(),r=G.round;
+   const rows=hi.assign.map((a,i)=>{const d=ON.docs[a[0]],ok=!!(d&&d.r&&d.r[r]),hh=G.heroes[i];return '<div style="color:'+TCOL[hh.team]+';margin:2px 0">'+(ok?'✓ ':'⏳ ')+(a[2]?hfEsc(a[2])+' · ':'')+hh.ch+(i===ON.slot?' (Ty)':'')+'</div>'}).join('');
+   h='<div class="mbbox"><h2>Runda '+r+'</h2><p>Twój plan wysłany. Czekamy na pozostałych graczy…</p><div>'+rows+'</div><p style="opacity:.7">Pokój '+ON.code+'</p><button data-mb="quit">Opuść grę</button></div>';
+   root.innerHTML=h;return true}
+  return false}
+ function onClickOn(v){
+  if(v==='on:host'){ON={pending:true};MSEL=null;draw();return true}
+  if(v==='on:join'){const el=root.querySelector('#mbcode');if(!onJoin(el&&el.value)){if(el)el.style.outline='3px solid #ff5a4a'}return true}
+  if(v==='on:leave'){onLeave();draw();return true}
+  if(v==='mback'&&ON&&ON.pending&&!MSEL){ON=null;draw();return true}
+  if(ON&&ON.pending&&v.startsWith('map:')){const mode=MSEL;MSEL=null;onCreate(mode,+v.slice(4));return true}
+  if(!ON||ON.pending)return false;
+  if(v.startsWith('on:slot:')){ON.slot=+v.slice(8);ON.ts=Date.now();ON.ch=null;onPub();draw();return true}
+  if(v.startsWith('on:ch:')){ON.ch=v.slice(6);onPub();draw();return true}
+  if(v==='on:start'&&ON.host){const sl=onSlots(ON.hostInfo);if(!sl.every(o=>o&&o.d.ch&&!o.dup))return true;ON.hostInfo.assign=sl.map(o=>[o.id,o.d.ch,o.d.nick||'']);ON.hostInfo.start=true;onPub();onSync();return true}
+  if(v==='quit'){onLeave();return false}
+  return false}
  function open(){root=document.getElementById('mbRoot');if(!root){root=document.createElement('div');root.id='mbRoot';document.body.appendChild(root);root.addEventListener('click',onClick)}G=null;MSEL=null;draw()}
- function close(){if(root)root.remove();root=null;G=null}
- function draw(){if(!root)return;let h='';
+ function close(){if(root)root.remove();root=null;G=null;if(ON)onLeave()}
+ function draw(){if(!root)return;let h='';if(ON&&onDraw())return;
   if(!G){h='<div class="mbbox"><h2>Bitwa baz <span class="mbbeta">BETA</span></h2><p>Każda drużyna startuje w swojej bazie. Skały zasłaniają widok. Za krzakiem znasz teren, ale nie widzisz, kto tam jest – możesz tam wejść na własne ryzyko (pomarańczowe pola). Odkrywaj mapę, zbieraj przedmioty, pokonuj stworki dla doświadczenia i zniszcz wrogą bazę. Postacie zaczynają słabe i rosną z poziomami.</p>'
    +(MSEL?'<p><b>'+MSEL+'</b> · wybierz mapę</p><div class="mbmaps">'+MAPS[MSEL==='1v1'?'small':'big'].map((m,i)=>'<button class="mbmapb" data-mb="map:'+i+'">'+miniMap(m,MSEL!=='1v1')+'<b>'+m.n+(m.id==='maze'?' 🎲':'')+'</b><small>'+m.d+'</small></button>').join('')+'</div><button data-mb="mback">← Zmień rozmiar</button>'
-   :'<button class="mbbig" data-mb="mode:1v1"><b>1 vs 1</b><small>Małe mapy (ok. 75 pól), baza 12 HP</small></button>'
+   :(ON&&ON.pending?'':'<b>Na jednym telefonie</b>')+'<button class="mbbig" data-mb="mode:1v1"><b>1 vs 1</b><small>Małe mapy (ok. 75 pól), baza 12 HP</small></button>'
    +'<button class="mbbig" data-mb="mode:2v2"><b>2 vs 2</b><small>Duże mapy (ok. 120 pól), baza 20 HP</small></button>'
    +'<button class="mbbig" data-mb="mode:3v3"><b>3 vs 3</b><small>Duże mapy (ok. 120 pól), baza 20 HP</small></button>')
-   +'<button data-mb="quit">← Wróć do menu</button></div>'}
+   +(MSEL?'':(ON&&ON.pending?'<p class="mbwarn">Zakładasz pokój online: wybierz rozmiar, potem mapę.</p><button data-mb="on:leave">Anuluj pokój online</button>':'<div class="mbonl"><b>Online – każdy na swoim telefonie</b><button class="mbbig" data-mb="on:host"><b>Załóż pokój</b><small>Wybierz rozmiar i mapę, dostaniesz kod dla znajomych</small></button><div style="display:flex;gap:6px"><input id="mbcode" maxlength="4" placeholder="KOD" autocapitalize="characters" style="flex:1;min-width:0;font:800 18px system-ui;text-align:center;letter-spacing:3px;padding:8px;border-radius:10px;border:2px solid #c8954a;background:#fff8e8;color:#2a180b;text-transform:uppercase"><button data-mb="on:join" style="flex:1">Dołącz</button></div></div>'))+'<button data-mb="quit">← Wróć do menu</button></div>'}
   else if(G.scr==='pick'){const hh=G.heroes[G.pickI],taken=G.heroes.filter(x=>x.ch).map(x=>x.ch);
    h='<div class="mbbox"><h2 style="color:'+TCOL[hh.team]+'">Gracz '+hh.pl+' · '+TNAME[hh.team]+'</h2><p>Wybierz postać.</p><div class="mbgrid">'
    +Object.keys(C).map(n=>'<button class="mbtile" data-mb="pick:'+n+'" '+(taken.includes(n)?'disabled':'')+'><img src="'+IMG[n]+'" alt=""><span>'+SHORT(n)+'</span></button>').join('')+'</div>'
@@ -2934,19 +3003,19 @@ const MB=(function(){
    +'<div class="mbok">'+(ph>0?'<button data-mb="prev">← Wróć</button>':'')+'<button class="mbgo" data-mb="ok" '+(planOk(h)?'':'disabled')+'>'+(ph<np-1?'Zatwierdź fazę '+['I','II','III'][ph]:'Zatwierdź plan')+'</button></div>'
    +'<details class="mbab"><summary>Umiejętności postaci</summary>'+al.map(x=>'<div class="'+(x.on?'on':'')+'">'+(x.lv?'Poz. '+x.lv+': ':'')+x.t+'</div>').join('')+'</details></div>';
   return s}
- function nextPlayer(){
+ function nextPlayer(){if(ON&&G&&G._on){onSubmit();return}
   for(let i=G.cur+1;i<G.heroes.length;i++){G.cur=i;G.scr='pass';return}
   resolveRound();if(G.winner){G.scr='over';return}G.cur=0;G.scr='pass'}
  function onClick(e){const t=e.target.closest('[data-mb]'),mk=e.target.closest('[data-mk]');
   if(!t&&mk&&G&&G.scr==='plan'){const sc=root.querySelector('.mbscroll');if(sc)G._sc=[sc.scrollLeft,sc.scrollTop];const cp=mk.dataset.mk.split(',').map(Number);G._info=null;const used=tapCell(cp);if(!used||G.creeps.some(c=>c.alive&&eq(c.pos,cp)))G._info=infoAt(cp);draw();return}
-  if(!t)return;e.stopPropagation();let v=t.dataset.mb;try{SND.play('click')}catch(_){}
+  if(!t)return;e.stopPropagation();let v=t.dataset.mb;try{SND.play('click')}catch(_){}if(onClickOn(v))return;
   const sc=root.querySelector('.mbscroll');if(sc)G&&(G._sc=[sc.scrollLeft,sc.scrollTop]);
   if(v==='quit'){close();try{goMenu()}catch(_){}return}
   if(v.startsWith('mode:')){MSEL=v.slice(5);draw();return}
   if(v==='mback'){MSEL=null;draw();return}
   if(v.startsWith('map:')){newGame(MSEL,+v.slice(4));MSEL=null;draw();return}
   if(v.startsWith('pick:')){G.heroes[G.pickI].ch=v.slice(5);G.pickI++;if(G.pickI>=G.heroes.length){startPositions();updateSeen();G.cur=0;G.scr='pass'}draw();return}
-  if(v.startsWith('up:')){const h=G.heroes[G.cur],o=upOpts(h)[+v.slice(3)];if(!o||o.dis)return;applyUp(h,o);h.pend--;G._lastUp=o.l;if(h.pend>0){draw();return}v='ready'}
+  if(v.startsWith('up:')){const h=G.heroes[G.cur],o=upOpts(h)[+v.slice(3)];if(!o||o.dis)return;applyUp(h,o);h.pend--;if(ON&&G&&G._on){(ON.ups[G.round]=ON.ups[G.round]||[]).push(+v.slice(3))}G._lastUp=o.l;if(h.pend>0){draw();return}v='ready'}
   if(v==='ready'&&G.heroes[G.cur].pend>0){G.scr='levelup';draw();return}
   if(v==='ready'){G._info=null;const h=G.heroes[G.cur];G.plan=Array.from({length:nPh(h)},()=>({t:null,m:null,d:null}));G.ph=0;G.scr='plan';G._scrolled=false;G._sc=null;G._showLog=(G.log[h.team]||[]).length>0&&G.round>1;draw();return}
   if(v==='skip'){nextPlayer();draw();return}
@@ -3537,6 +3606,30 @@ function hfNickOfCh(ch){try{if(typeof H!=='undefined'&&H)return null;if(!net||!n
   let pts=0;try{const row=scoreRows(items,Rs).find(r=>r.o.id===net.uid);pts=row?row.total:0}catch(e){}
   PROF.record({win,pts,dmg:acc.key===k?acc.dmg:0,kos:acc.key===k?acc.kos:0,ch:ME.ch,mode:st.gm});
  }catch(e){console.warn('PROF stats',e)}};
+})();
+
+/* ===================== MENU: Bitwa baz w głównym menu + wszystko mieści się na małych telefonach ===================== */
+(function(){
+ const css=`main.full[data-lobby]{overflow-y:auto!important;-webkit-overflow-scrolling:touch;gap:8px!important;padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important}
+main.full[data-lobby]>*{flex-shrink:0}
+main.full[data-lobby] h1{font-size:clamp(28px,8.5vh,46px)!important;margin:0!important}
+main.full[data-lobby]>img{max-height:15vh!important;height:auto!important;width:auto;max-width:100%;align-self:center;object-fit:cover}
+main.full[data-lobby] button.mbtn{min-height:0!important;padding:8px 14px!important}
+main.full[data-lobby] button.mbtn b{font-size:clamp(20px,3.6vh,26px)!important;line-height:1.05}
+main.full[data-lobby] button.mbtn small{font-size:11.5px!important;line-height:1.2!important}
+main.full[data-lobby] .prrow button{min-height:40px!important}
+main.full[data-lobby]>p{margin:0!important}
+main.full[data-lobby]>.row{padding-left:54px}
+@media (max-height:700px){main.full[data-lobby]>img{display:none!important}main.full[data-lobby] button.mbtn small{display:none}}
+.mbtn.mbmain{background:linear-gradient(#e9f3ff,#b9d4f5)!important}`;
+ const s0=document.createElement('style');s0.textContent=css;document.head.appendChild(s0);
+ const _r=render;render=function(){_r.apply(this,arguments);try{
+  const lob=st.scr==='lobby';if(lob)app.setAttribute('data-lobby','1');else app.removeAttribute('data-lobby');
+  if(lob&&!st.gm&&!app.querySelector('.mbmain')){const ms=app.querySelectorAll('[data-mode]'),last=ms[ms.length-1];
+   if(last)last.insertAdjacentHTML('afterend','<button class="mbtn mbmain" data-mbopen="1"><b>Bitwa baz</b><small>Drużyny 1v1, 2v2, 3v3 – na jednym telefonie albo online. Odkrywanie mapy, stworki, poziomy. Zniszcz wrogą bazę.</small></button>')}
+  if(lob&&st.gm==='test')app.querySelectorAll('[data-mbopen]:not(.mbmain)').forEach(e=>e.remove());
+ }catch(e){}};
+ render();
 })();
 
 /* ===================== PLANSZA RYSUNKOWA (styl "mobilny cartoon"): wyspa z trawiastych heksów, klify, morze ===================== */
