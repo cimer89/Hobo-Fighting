@@ -307,6 +307,20 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - Po animacji rundy wyskakuje animowana karta **KONIEC RUNDY N** z podsumowaniem dla każdej postaci: portret, pasek HP spadający od stanu sprzed rundy do aktualnego, ile HP straciła, ile obrażeń zadała i pieczątka **ODPADA** przy nokaucie. Karta znika sama po ok. 5 s albo po dotknięciu i nie blokuje przycisków pod spodem.
 - Gdy zaczyna się kolejna runda, na środku ekranu pojawia się baner **RUNDA N** („twój ruch” online, „zaplanuj ruchy” na jednym telefonie), więc od razu widać, że kolejka się skończyła.
 
+## Trening
+
+- Po wybraniu trybu (klasyczny, specjalny albo Testy) jest przycisk **Trening**: wybierasz postać i grasz sam przeciwko manekinowi, z zasadami wybranego trybu.
+- **Manekin** nie atakuje i stoi w miejscu, ma 10 HP i co rundę odnawia je do pełna. Da się go przesuwać i odrzucać (szarża Byka, Ciotka, owca itd.), więc można sprawdzić wszystkie ataki i efekty.
+- W treningu nie ma strefy zawężającej planszę ani końca gry. Gdy Twoja postać straci całe HP, zaczyna następną rundę z pełnym HP.
+- Pasek **TRENING** u góry: **↺ Manekin na start** ustawia manekina z powrotem na jego polu startowym (podczas planowania), **Zakończ** wraca do menu.
+- Po każdej rundzie widać podsumowanie: ile HP stracił manekin i Twoja postać.
+
+## Byku: nowe obrażenia (wszystkie tryby)
+
+- Skok o 1 pole na pole przeciwnika: **3 DMG**.
+- Dalszy skok (o 2 pola) na pole przeciwnika: **1 DMG**.
+- Szarża: **2 DMG** i odrzucenie o 1 pole.
+
 ## Gra online – działa bez konfiguracji
 
 Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.
