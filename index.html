@@ -3381,13 +3381,13 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
  render();
 })();
 
-/* ===================== BYKU: skok o 1 = 3 DMG, dalszy skok = 1 DMG, szarża = 2 DMG (wszystkie tryby) ===================== */
+/* ===================== BYKU: skok (o 1 i o 2 pola) = 3 DMG, szarża = 2 DMG (wszystkie tryby) ===================== */
 (function(){try{let s=sim.toString();const rep=(a,b)=>{if(!s.includes(a)){console.warn('byku bal: '+a);return}s=s.split(a).join(b)};
  rep("const fj=g.filter(i=>S[i].ch==='Byku'&&(TB()?mv[i]>=1:mv[i]===2));","const fj=g.filter(i=>S[i].ch==='Byku'&&mv[i]>=1);");
- rep("others.forEach(i=>dmg(i,TB()?2:1,'lądowanie Byka',fj[0]));","others.forEach(i=>dmg(i,mv[fj[0]]===2?1:3,'lądowanie Byka',fj[0]));");
+ rep("others.forEach(i=>dmg(i,TB()?2:1,'lądowanie Byka',fj[0]));","others.forEach(i=>dmg(i,3,'lądowanie Byka',fj[0]));");
  rep("dmg(j,(TB()?1:3)+extra,'szarża Byka',i)","dmg(j,2+extra,'szarża Byka',i)");
  sim=(0,eval)('('+s+')')}catch(e){console.warn(e)}
- const TXT='Skok o 1–2 pola: lądowanie na przeciwniku po skoku o 1 pole = 3 DMG, po dalszym skoku = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.';
+ const TXT='Skok o 1–2 pola: lądowanie na przeciwniku = 3 DMG (skok o 1 i o 2 pola). Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.';
  try{C['Byku'].txt=TXT;if(typeof TBORIG!=='undefined')TBORIG['Byku']=TXT;if(typeof TBTXT!=='undefined')TBTXT['Byku']=TXT}catch(e){}
  /* podpowiedź przy szarży */
  const _r=render;render=function(){_r.apply(this,arguments);try{if(st.ch!=='Byku')return;

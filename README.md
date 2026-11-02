@@ -317,8 +317,7 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 
 ## Byku: nowe obrażenia (wszystkie tryby)
 
-- Skok o 1 pole na pole przeciwnika: **3 DMG**.
-- Dalszy skok (o 2 pola) na pole przeciwnika: **1 DMG**.
+- Skok na pole przeciwnika – zarówno o 1, jak i o 2 pola: **3 DMG**.
 - Szarża: **2 DMG** i odrzucenie o 1 pole.
 
 ## Gra online – działa bez konfiguracji
