@@ -3246,18 +3246,56 @@ const S2D=(function(){
    if(!en.length)return;let vx=en[0].dx/en[0].d,vy=en[0].dy/en[0].d;
    if(en[1]&&en[1].d<en[0].d*1.25){vx+=en[1].dx/en[1].d;vy+=en[1].dy/en[1].d}
    if(Math.abs(vx)+Math.abs(vy)>0.05)faceTo(I,vx,vy)});
+  /* ŚCISK: kilka postaci na jednym polu = kreskówkowy kłąb kurzu z ikonkami; w planowaniu własna postać się wyłania */
+  {const groups=[],BG=window.__BRAWLG||{};draw.forEach(d=>{if(d.I.ch==='Owca'||d.I.run>0.25)return;let gg=groups.find(G=>Math.hypot(G.x-d.cx,G.y-d.cy)<d.w*0.3);if(!gg){gg={x:d.cx,y:d.cy,w:d.w,op:d.op,m:[],chs:[]};groups.push(gg)}
+    gg.m.push(d);(BG[d.I.ch]||[d.I.ch]).forEach(c=>{if(!gg.chs.includes(c))gg.chs.push(c)})});
+   const planning=typeof st!=='undefined'&&st.scr==='plan'&&!st.animating;
+   groups.forEach(gg=>{if(gg.chs.length<2)return;const emCh=planning&&gg.chs.includes(st.ch)&&T[st.ch]?st.ch:null;
+    gg.m.forEach(d=>{d.skip=true});
+    if(emCh){const base=gg.m[0],E=T[emCh];if(!E.emT)E.emT=now;E.seen=true;draw.push(Object.assign({},base,{I:E,emerge:true,skip:false}))}
+    draw.push({cloud:true,emg:!!emCh,cx:gg.x,cy:gg.y-0.01,w:gg.w,op:gg.op,mem:gg.chs.filter(c=>c!==emCh),key:gg.chs.slice().sort().join('|')})});
+   Object.values(T).forEach(I=>{if(!draw.some(d=>d.emerge&&d.I===I))I.emT=0})}
   draw.sort((a,b)=>a.cy-b.cy);
-  draw.forEach(d=>paint(d,dt,now));
+  draw.forEach(d=>{if(d.cloud)brawl(d,now);else if(!d.skip)paint(d,dt,now)});
   /* "rentgen": postać schowana za wyższą postacią stojącą bliżej widza jest dorysowana półprzezroczyście */
   draw.forEach((d,i)=>{const a=d.bb;if(!a)return;let cov=0;for(let j=i+1;j<draw.length;j++){const b=draw[j].bb;if(!b)continue;
     const ix=Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0])),iy=Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));cov=Math.max(cov,ix*iy/((a[2]-a[0])*(a[3]-a[1])))}
    if(cov>0.3){g.save();g.globalAlpha=0.4*d.op;g.setTransform(d.tf[0],d.tf[1],d.tf[2],d.tf[3],d.tf[4],d.tf[5]);g.drawImage(d.im,d.dr[0],d.dr[1],d.dr[2],d.dr[3]);g.restore()}});
   Object.values(T).forEach(I=>{if(!I.seen)I.px=null})}
+ const PORT={};function port(ch){if(PORT[ch]!==undefined)return PORT[ch];PORT[ch]=null;if(typeof IMG!=='undefined'&&IMG[ch]){const im=new Image();im.onload=()=>PORT[ch]=im;im.src=IMG[ch]}return null}
+ function brawl(D,now){const {cx,cy,w}=D,t=now/1000,R=w*0.95,X=cx*DPR,Y=cy*DPR,k=DPR;let sd=0;for(const c of D.key)sd=(sd*31+c.charCodeAt(0))%997;
+  g.save();g.globalAlpha=D.op;const sx=Math.sin(t*23)*w*0.02*k,sy=Math.cos(t*19)*w*0.015*k;g.translate(X+sx,Y-R*0.75*k+sy);
+  /* cień */
+  g.fillStyle='rgba(30,40,20,.28)';g.beginPath();g.ellipse(-sx,R*0.75*k,R*1.05*k,R*0.3*k,0,0,7);g.fill();
+  /* kłęby: najpierw kontur, potem wypełnienie */
+  const P=[];for(let i=0;i<11;i++){const a=i/11*Math.PI*2+sd,rr=R*(0.62+0.12*Math.sin(t*9+i*2.1)),r0=R*(0.36+0.08*Math.sin(t*11+i*1.7));P.push([Math.cos(a)*rr*1.15,Math.sin(a)*rr*0.72,r0])}
+  P.push([0,0,R*0.62]);
+  g.fillStyle='#3a2414';P.forEach(([x,y,r])=>{g.beginPath();g.arc(x*k,y*k,(r+w*0.035)*k,0,7);g.fill()});
+  g.fillStyle='#e9d6ae';P.forEach(([x,y,r])=>{g.beginPath();g.arc(x*k,y*k,r*k,0,7);g.fill()});
+  g.fillStyle='#fbf2dc';P.forEach(([x,y,r])=>{g.beginPath();g.arc((x-r*0.25)*k,(y-r*0.3)*k,r*0.55*k,0,7);g.fill()});
+  /* gwiazdki i kreski akcji */
+  for(let i=0;i<5;i++){const ph=(t*1.6+i/5+sd*0.01)%1,a=i*1.3+sd+Math.floor(t*1.6+i/5)*2.4,d=R*(0.9+ph*0.7);const x=Math.cos(a)*d*1.2*k,y=Math.sin(a)*d*0.8*k;
+   g.save();g.globalAlpha=D.op*(1-ph);g.translate(x,y);g.rotate(t*6+i);const s=w*0.07*k*(1-ph*0.4);g.beginPath();for(let j=0;j<10;j++){const rr=j%2?s*0.45:s;g.lineTo(Math.cos(j*Math.PI/5)*rr,Math.sin(j*Math.PI/5)*rr)}g.closePath();
+   g.fillStyle=i%2?'#ffd84a':'#ff7a3c';g.strokeStyle='#3a2414';g.lineWidth=1.5*k;g.fill();g.stroke();g.restore()}
+  g.strokeStyle='#3a2414';g.lineCap='round';g.lineWidth=2.2*k;for(let i=0;i<4;i++){const a=t*3+i*1.57+sd;const r1=R*1.05,r2=R*1.3;g.beginPath();g.moveTo(Math.cos(a)*r1*1.15*k,Math.sin(a)*r1*0.75*k);g.lineTo(Math.cos(a)*r2*1.15*k,Math.sin(a)*r2*0.75*k);g.stroke()}
+  /* ikonki uczestników wyskakujące z kłębu */
+  const n=D.mem.length,ir=w*0.24;
+  D.mem.forEach((ch,i)=>{const a=(i/n)*Math.PI*2+t*1.8+sd,bob=Math.abs(Math.sin(t*7+i*2))*w*0.05,x=(D.emg?(i%2?1:-1)*R*(1.0+0.08*Math.sin(t*2+i))+Math.cos(a)*R*0.08:Math.cos(a)*R*0.42)*k,y=(D.emg?-R*0.15+Math.sin(a)*R*0.12-bob:Math.sin(a)*R*0.28-bob)*k;
+   const im=port(ch);g.save();g.translate(x,y);g.beginPath();g.arc(0,0,(ir+2)*k,0,7);g.fillStyle='#3a2414';g.fill();
+   g.beginPath();g.arc(0,0,ir*k,0,7);g.fillStyle=(typeof C!=='undefined'&&C[ch]&&C[ch].col)||'#888';g.fill();
+   if(im){g.save();g.beginPath();g.arc(0,0,(ir-1)*k,0,7);g.clip();g.drawImage(im,-ir*k,-ir*k,ir*2*k,ir*2*k);g.restore()}
+   const tm=(typeof teamOfCh==='function'&&typeof TCOL!=='undefined')?teamOfCh(ch):null;if(tm&&TCOL[tm]){g.lineWidth=2.5*k;g.strokeStyle=TCOL[tm];g.beginPath();g.arc(0,0,ir*k,0,7);g.stroke()}
+   g.restore()});
+  /* napis */
+  g.save();g.translate(0,R*0.72*k);g.rotate(Math.sin(t*5)*0.08);const fs=Math.round(w*0.36*k);g.font='400 '+fs+'px Bangers, Impact, sans-serif';g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';
+  g.lineWidth=fs*0.22;g.strokeStyle='#3a2414';g.strokeText('BÓJKA!',0,0);g.fillStyle='#ffd84a';g.fillText('BÓJKA!',0,0);g.restore();
+  g.restore()}
  function paint(D,dt,now){const {I,cx,cy,w,hop,op}=D;
   I.mt+=dt;
   if(I.ft>0){const was=I.ft;I.ft-=dt;if(was>0.085&&I.ft<=0.085&&I.pend!==null){I.dir=I.pend;I.pend=null;const nf=IDLE[I.dir][1];if(nf)I.fx=nf}if(I.ft<=0){I.ft=0;if(I.pend!==null&&I.pend!==undefined)I.ft=0.17}}
   const turn=I.ft>0?Math.abs(I.ft-0.085)/0.085:1;
-  const t=now/1000+I.ph;let sx=1,sy=1,ox=0,oy=0,rot=0,flash=0,alpha=op;let [img,fx]=view(I,false);
+  const t=now/1000+I.ph;let sx=1,sy=1,ox=0,oy=0,rot=0,flash=0,alpha=op;
+  if(D.emerge&&I.emT){const e=Math.min(1,(now-I.emT)/450),b=e<1?(1-Math.pow(1-e,3))*(1+0.25*Math.sin(e*Math.PI)):1;sx*=0.3+0.7*b;sy*=0.3+0.7*b;oy+=(1-b)*w*0.3}let [img,fx]=view(I,false);
   /* oddech + chód */
   sy*=1+0.018*Math.sin(t*2.4);sx*=1-0.01*Math.sin(t*2.4);
   if(I.run>0){oy-=Math.abs(Math.sin(t*13))*w*0.07*I.run;rot+=Math.sin(t*13)*0.06*I.run}
@@ -3308,6 +3346,8 @@ const S2D=(function(){
 if(typeof G3D==='undefined'){var G3D=(function(){let P=null;const ls=s=>new Promise((res,rej)=>{const e=document.createElement('script');e.src=s;e.onload=res;e.onerror=rej;document.head.appendChild(e)});
  return {libs(){if(!P)P=(async()=>{if(typeof THREE==='undefined')await ls('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js')})();return P},ev(){},win(){},enabled(){return false},setEnabled(){},init(){}}})()}
 /* znaczniki pozycji w żetonach (stopy i szerokość podstawki) */
+/* które postacie stoją razem na jednym polu (plansza rysuje wtedy jeden żeton) */
+window.__BRAWLG={};const _bdBR=board;board=function(hl){const G2={};try{Object.values(hl||{}).forEach(h=>{if(!h||!h.t)return;const ids=[...new Set([...String(h.t)].filter(c=>INI[c]).map(c=>INI[c]))];if(ids.length>1)G2[ids[0]]=ids})}catch(e){}window.__BRAWLG=G2;return _bdBR.apply(this,arguments)};
 const _standee2=standee;standee=function(ch,delay){return '<g data-s3="'+ch+'"><circle class="s3p" cx="0" cy="4" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="3.5" width="64" height="1" fill="none" stroke="none"/>'+_standee2(ch,delay)+'</g>'};
 const _sheepArt2=sheepArt;sheepArt=function(){return '<g data-s3="Owca"><circle class="s3p" cx="0" cy="6" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="5.5" width="64" height="1" fill="none" stroke="none"/>'+_sheepArt2()+'</g>'};
 runAnim=(0,eval)('('+runAnim.toString().replace('const e=ev[i];','const e=ev[i];try{S2D.ev(e)}catch(_){}')+')');
@@ -3404,8 +3444,8 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
  const s0=document.createElement('style');s0.textContent=css;document.head.appendChild(s0);
  const T=()=>typeof H!=='undefined'&&H&&H.train;
  /* manekin istnieje w C tylko w trakcie treningu, żeby nie pojawiał się w wyborze postaci */
- function addDummy(){INI['µ']=DUMMY;C[DUMMY]={col:'#c9a36b',txt:'Manekin treningowy: nie atakuje, co rundę odnawia HP do '+DHP+', można go przesuwać i odrzucać.'};if(typeof MANEKIN_IMG!=='undefined')IMG[DUMMY]=MANEKIN_IMG}
- function delDummy(){if(C[DUMMY]&&!T()){delete C[DUMMY];delete INI['µ']}}
+ function addDummy(){INI['µ']=DUMMY;INI['M']=DUMMY;C[DUMMY]={col:'#c9a36b',txt:'Manekin treningowy: nie atakuje, co rundę odnawia HP do '+DHP+', można go przesuwać i odrzucać.'};if(typeof MANEKIN_IMG!=='undefined')IMG[DUMMY]=MANEKIN_IMG}
+ function delDummy(){if(C[DUMMY]&&!T()){delete C[DUMMY];delete INI['µ'];delete INI['M']}}
  const _mx=MAXHP;MAXHP=function(ch){return ch===DUMMY?DHP:_mx(ch)};
  /* manekin widoczny na planszy także podczas planowania */
  const _bd=board;board=function(hl){try{if(T()&&st.scr==='plan'&&hl){const q=H.p[1].posr[st.round];if(q){const k=K(...q),e=hl[k]||{};hl[k]=Object.assign({},e,{t:(e.t||'')+'µ'})}}}catch(e){}return _bd.apply(this,arguments)};
