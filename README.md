@@ -341,6 +341,19 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - Po animacji rundy wyskakuje animowana karta **KONIEC RUNDY N** z podsumowaniem dla każdej postaci: portret, pasek HP spadający od stanu sprzed rundy do aktualnego, ile HP straciła, ile obrażeń zadała i pieczątka **ODPADA** przy nokaucie. Karta znika sama po ok. 5 s albo po dotknięciu i nie blokuje przycisków pod spodem.
 - Gdy zaczyna się kolejna runda, na środku ekranu pojawia się baner **RUNDA N** („twój ruch” online, „zaplanuj ruchy” na jednym telefonie), więc od razu widać, że kolejka się skończyła.
 
+## Samouczek
+
+W menu głównym jest przycisk **Samouczek**: 6 krótkich lekcji na prawdziwej planszy. Rundy rozpatruje zwykły silnik gry, więc zasady są te same co w grze.
+
+1. **Poruszanie się:** ruch o 1 pole i zostanie w miejscu.
+2. **Dwie fazy:** cel 2 pola dalej.
+3. **★ Atak i przewidywanie:** najpierw atak w miejsce, gdzie przeciwnik stoi. Przeciwnik się rusza, więc jest pudło i wyjaśnienie, że ruchy są rozpatrywane przed atakami. Potem atak w pole, na które ucieknie.
+4. **Kolizje i HP:** ścisk na jednym polu.
+5. **Kurcząca się strefa:** trzeba wejść na bezpieczne pole.
+6. **Bonusy i umiejętności:** skok Byka z bonusem +1 DMG.
+
+Trener pokazuje pulsującą obwódką przycisk albo pole i nie przepuści innego planu. Po każdej lekcji pokazuje dziennik rundy. Samouczek można w każdej chwili pominąć. Test: `node tests/tutorial_test.js index.html`.
+
 ## Trening
 
 - Po wybraniu trybu (klasyczny, specjalny albo Testy) jest przycisk **Trening**: wybierasz postać i grasz sam przeciwko manekinowi, z zasadami wybranego trybu.
