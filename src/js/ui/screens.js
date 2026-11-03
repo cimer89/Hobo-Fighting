@@ -31,6 +31,8 @@ function render(){
     else D.forEach(([a,b])=>{const q=from[0]+a,r=from[1]+b;if(IN(q,r))hl[K(q,r)]={stroke:'var(--hit)'}});
    }
    extraHL(hl,pl,from,ph);if(!pl.m||K(...pl.m)!==K(...from))hl[K(...from)]=Object.assign({},hl[K(...from)],{fill:c.col,t:st.ch[0]});
+   /* Byku: skok w miejscu (własne pole) = 3 DMG – ikonka i liczba pod postacią */
+   if(st.ch==='Byku'&&pl.t==='move')hl[K(...from)]=Object.assign({},hl[K(...from)],{t:(pl.m&&K(...pl.m)===K(...from)?'':st.ch[0])+'3',ic:'jump',ly:12,stay:1});
   }
   othersOverlay(hl);
   h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span style="display:flex;gap:10px;align-items:center"><img class="av" style="border-color:'+c.col+'" src="'+IMG[st.ch]+'" alt=""><b style="font-size:18px">'+st.ch+'</b></span>'+pips({hp:myHp()},false)+'</div><p>'+c.txt+'</p></div>';
