@@ -593,6 +593,8 @@ main:not(.full)~#sndBtn,body:has(main:not(.full)) #sndBtn{bottom:auto;top:calc(8
 .mbmap{width:auto!important;max-width:none!important}
 .mbme>ellipse.mbring{animation:mbme2 1.2s ease-in-out infinite}
 @keyframes mbme2{50%{stroke:#ffe066;stroke-width:4px}}
+.mbfire{transform-box:fill-box;transform-origin:50% 100%;animation:mbfi .5s ease-in-out infinite alternate}
+@keyframes mbfi{to{transform:scale(.85,1.12)}}
 
 .mbonl{display:flex;flex-direction:column;gap:8px;border-top:2px solid rgba(200,149,74,.4);padding-top:10px}
 #s2d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}
@@ -2568,7 +2570,7 @@ const MB=(function(){
  const DIRS=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
  const DNAME=['wschód','płn.-wschód','płn.-zachód','zachód','płd.-zachód','płd.-wschód'];
  const TCOL={A:'#3e8ef7',B:'#ef4a3c'},TNAME={A:'Drużyna Niebieska',B:'Drużyna Czerwona'};
- const MAPS={"small": [{"id": "open", "n": "Otwarta równina", "d": "Skały i kępy krzaków dzielą środek. Szybkie starcia.", "W": 7, "baseHp": 12, "rows": ["X......", "X......", "X......", "X......", "X......", "c.*C", ".#.*.#.", ".c.#.?.", "*.*...*", "#..*..#", "*..A..*"]}, {"id": "maze", "n": "Labirynt", "d": "Losowy labirynt, inny w każdej grze. Łatwo o zasadzkę.", "W": 7, "baseHp": 12, "rows": ["X.....X", "#..B..#", ".##.##.", ".#?.c#.", ".#.#.#.", "c..C..c", ".#.#.#.", ".#c.?#.", ".##.##.", "#..A..#", "X.....X"]}, {"id": "square", "n": "Kwadrat", "d": "Bazy w przeciwległych rogach, pomiędzy las, skały i ścieżki.", "W": 9, "baseHp": 12, "rows": ["X........", "X........", "X........", "X........", "*.#.C", "..c.**.#.", ".#..*.?..", "..*.#..*.", ".A..**..*"]}, {"id": "river", "n": "Most nad rzeką", "d": "Rzeka dzieli mapę: przejście tylko mostami, ale strzały lecą nad wodą.", "W": 7, "baseHp": 12, "rows": ["X......", "X......", "X......", "X......", "X......", "w.wC", ".#*.*#.", "..*#*..", ".c...?.", "*.#.#.*", "X..A..X"]}], "big": [{"id": "open", "n": "Otwarta równina", "d": "Szeroka mapa z liniami skał i krzaków. Dużo miejsca na manewry i zasadzki.", "W": 9, "baseHp": 20, "rows": ["X........", "X........", "X........", "X........", "X........", "X........", "c.#.C", ".#..*..#.", "..*.#.*..", "*.c...?.*", ".#..*..#.", "*..*.*..*", "..*.A.*.."]}, {"id": "maze", "n": "Labirynt", "d": "Losowy labirynt, inny w każdej grze. Łatwo o zasadzkę.", "W": 9, "baseHp": 20, "rows": ["XX.....XX", "X#..B..#X", ".###.###.", ".#?...c#.", ".#.###.#.", "...#*#...", "##.#.#.##", "c...C...c", "##.#.#.##", "...#*#...", ".#.###.#.", ".#c...?#.", ".###.###.", "X#..A..#X", "XX.....XX"]}, {"id": "square", "n": "Kwadrat", "d": "Bazy w przeciwległych rogach, pomiędzy las, skały i ścieżki.", "W": 11, "baseHp": 20, "rows": ["X..........", "X..........", "X..........", "X..........", "X..........", "**..*C", ".#..*.#.#..", ".c.*..**..#", "..#.#.*.?..", "*.*...#.*..", ".A.**.#...*"]}, {"id": "river", "n": "Most nad rzeką", "d": "Rzeka dzieli mapę: przejście tylko mostami, ale strzały lecą nad wodą.", "W": 9, "baseHp": 20, "rows": ["X........", "X........", "X........", "X........", "X........", "X........", "X........", "w.wwC", "..*#.#*..", "*.#.*.#.*", "..*...*..", ".c.*#*.?.", "#...*...#", "X*.#.#.*X", "XX..A..XX"]}]};
+ const MAPS={"small": [{"id": "open", "n": "Leśne ścieżki", "d": "Ścieżka prowadzi od bazy do środka, a po bokach las z obozowiskami stworów. Zboczysz z drogi – znajdziesz łup.", "W": 7, "baseHp": 12, "rows": ["X......", "X......", "X......", "X......", "X......", "TcTC", "T*.p.*T", ".T.p.cT", "#*?p.TT", "T..p.*T", "TT.A.TT"]}, {"id": "maze", "n": "Labirynt", "d": "Losowy, niesymetryczny labirynt – inny w każdej grze. Łatwo o zasadzkę.", "W": 7, "baseHp": 12, "rows": ["X.....X", "#..B..#", ".##.##.", ".#?.c#.", ".#.#.#.", "c..C..c", ".#.#.#.", ".#c.?#.", ".##.##.", "#..A..#", "X.....X"]}, {"id": "square", "n": "Kwadrat", "d": "Bazy w rogach, ukośna ścieżka przez las. Obozowiska stworów ukryte między drzewami.", "W": 9, "baseHp": 12, "rows": ["X........", "X........", "X........", "X........", "T*.pC", "Tc.p.TT#.", ".T.pT*?..", ".p.TTcT*.", "TAppp.TT*"]}, {"id": "river", "n": "Most nad rzeką", "d": "Rzeka dzieli mapę: ścieżka prowadzi na most, a w lesie po obu stronach czekają stwory.", "W": 7, "baseHp": 12, "rows": ["X......", "X......", "X......", "X......", "X......", "wpwC", ".pT.*#T", "Tp*TcTT", "cTp.T?T", "..p.*.T", "XT.A.TX"]}], "big": [{"id": "open", "n": "Leśne ścieżki", "d": "Szeroka droga od bazy do środka z odnogą w las. Obozowiska stworów i skrzynie czekają z dala od ścieżek.", "W": 9, "baseHp": 20, "rows": ["X........", "X........", "X........", "X........", "X........", "X........", "TcT.C", "T*..pTcTT", ".TTTp*.?#", "*?T.p..TT", "TT.ppp.*T", "T*..p.p.T", "TT..A..TT"]}, {"id": "maze", "n": "Labirynt", "d": "Losowy, niesymetryczny labirynt – inny w każdej grze. Łatwo o zasadzkę.", "W": 9, "baseHp": 20, "rows": ["XX.....XX", "X#..B..#X", ".###.###.", ".#?...c#.", ".#.###.#.", "...#*#...", "##.#.#.##", "c...C...c", "##.#.#.##", "...#*#...", ".#.###.#.", ".#c...?#.", ".###.###.", "X#..A..#X", "XX.....XX"]}, {"id": "square", "n": "Kwadrat", "d": "Bazy w rogach, ścieżka po skosie przez las. Stwory obozują w gęstwinie z boku.", "W": 11, "baseHp": 20, "rows": ["X..........", "X..........", "X..........", "X..........", "X..........", "TT.ppC", ".T.p..TT#..", "T.p.*.TcT..", ".Tp.#.TT.?.", "*p..*..TcT*", ".App*.#...*"]}, {"id": "river", "n": "Most nad rzeką", "d": "Ścieżka prowadzi przez las na most. Obozowiska stworów po obu stronach rzeki.", "W": 9, "baseHp": 20, "rows": ["X........", "X........", "X........", "X........", "X........", "X........", "X........", "wpwwC", ".p*#.#TT.", "Tp.TcT.*T", "*Tp.TT.?.", "cTp.*.cTT", "TT.p.TTT#", "X*.p.T.*X", "XX..A..XX"]}]};
  let MSEL=null;
  function genMaze(W,H,big){
   const ax=(c,r)=>[c-((r-(r&1))>>1),r];
@@ -2631,7 +2633,36 @@ const MB=(function(){
   const a=cl.find(x=>x.ch==='A');if(!a||!cl.find(x=>x.ch==='B'))return false;const seen={},q=[a.a];seen[K(...a.a)]=1;
   while(q.length){const p=q.pop();DIRS.forEach(d=>{const n=[p[0]+d[0],p[1]+d[1]],k=K(...n);if(open(k)&&!seen[k]){seen[k]=1;q.push(n)}})}
   return cl.every(x=>'#w'.includes(x.ch)||seen[K(...x.a)])}
- function mapCells(t,big){if(t.id!=='maze')return symCells(t.rows,t.W);for(let i=0;i<40;i++){const r=genMaze(t.W,t.rows.length,big);if(!r)continue;const cl=symCells(r,t.W);if(symOk(cl))return cl}return symCells(t.rows,t.W)}
+ /* labirynt NIESYMETRYCZNY: cała mapa losowana od nowa, bazy na przeciwnych brzegach; uczciwość pilnowana odległościami */
+ function genMazeA(W,H,big){const D=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
+  const nbOff=(c,r)=>{const a=ax(c,r),o=[];D.forEach(d=>{const q=a[0]+d[0],rr=a[1]+d[1];if(rr<0||rr>=H)return;const cc=q+((rr-(rr&1))>>1);if(cc>=0&&cc<W)o.push([cc,rr])});return o};
+  const rnd=a=>a[Math.floor(Math.random()*a.length)],key=(c,r)=>c+','+r;
+  const g=Array.from({length:H},()=>Array(W).fill('#'));
+  const st0=[2*Math.floor(Math.random()*((W+1)>>1)),H-1],vis={};vis[key(...st0)]=1;g[st0[1]][st0[0]]='.';const stack=[st0];
+  while(stack.length){const [c,r]=stack[stack.length-1];
+   const mv=[[2,0],[-2,0],[0,2],[0,-2]].map(([dc,dr])=>[c+dc,r+dr,c+dc/2,r+dr/2]).filter(([nc,nr])=>nc>=0&&nc<W&&nr>=0&&nr<H&&!vis[key(nc,nr)]);
+   if(!mv.length){stack.pop();continue}const [nc,nr,ic,ir]=rnd(mv);vis[key(nc,nr)]=1;g[ir][ic]='.';g[nr][nc]='.';stack.push([nc,nr])}
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(g[r][c]==='#'&&((r%2===0&&c%2===1)||(r%2===1&&c%2===0))&&Math.random()<(big?0.17:0.13))g[r][c]='.';
+  /* bazy: losowa kolumna przy dolnym i górnym brzegu (nie naprzeciw siebie) */
+  const bcA=1+Math.floor(Math.random()*(W-2));let bcB=1+Math.floor(Math.random()*(W-2));if(W>5)while(bcB===W-1-bcA&&Math.random()<.85)bcB=1+Math.floor(Math.random()*(W-2));
+  const A=[bcA,H-1],B=[bcB,0];g[A[1]][A[0]]='A';g[B[1]][B[0]]='B';[A,B].forEach(p=>nbOff(...p).forEach(([c,r])=>g[r][c]='.'));
+  const cr=(H-1)>>1,cc=Math.floor(W/2)+(Math.random()<.5?-1:0)*(W>7?1:0);g[cr][cc]='C';nbOff(cc,cr).forEach(([c,r])=>{if(g[r][c]==='#')g[r][c]='.'});
+  const pas=(c,r)=>g[r][c]!=='#';
+  const bfs=s=>{const d={};d[key(...s)]=0;const q=[s];while(q.length){const p=q.shift();nbOff(...p).forEach(n=>{const k=key(...n);if(d[k]===undefined&&pas(...n)&&!'AB'.includes(g[n[1]][n[0]])){d[k]=d[key(...p)]+1;q.push(n)}})}return d};
+  const dA=bfs(A),dB=bfs(B);const open=[];for(let r=0;r<H;r++)for(let c=0;c<W;c++)if(g[r][c]==='.'||g[r][c]==='C')open.push([c,r]);
+  if(open.some(p=>dA[key(...p)]===undefined))return null;
+  const kC=key(cc,cr);if(Math.abs(dA[kC]-dB[kC])>2)return null;
+  /* każda strona dostaje stworki i skrzynie w "swojej" połowie (bliżej własnej bazy), najchętniej w ślepych zaułkach */
+  const pick=(arr,n)=>{const o=[],a=arr.slice();while(o.length<n&&a.length)o.push(a.splice(Math.floor(Math.random()*a.length),1)[0]);return o};
+  const dead=p=>nbOff(...p).filter(n=>pas(...n)).length===1;
+  const nc=big?2:1,nch=big?2:1;
+  for(const [me,ot] of [[dA,dB],[dB,dA]]){const mine=open.filter(p=>g[p[1]][p[0]]==='.'&&me[key(...p)]>=3&&me[key(...p)]+1<ot[key(...p)]);
+   const dd=mine.filter(dead);pick(dd.length>=nc?dd:mine,nc).forEach(([c,r])=>g[r][c]='c');
+   const rest=mine.filter(p=>g[p[1]][p[0]]==='.'),dr=rest.filter(dead);pick(dr.length>=nch?dr:rest,nch).forEach(([c,r])=>g[r][c]='?');
+   pick(mine.filter(p=>g[p[1]][p[0]]==='.'&&!dead(p)),big?3:2).forEach(([c,r])=>g[r][c]='*')}
+  if(open.filter(p=>g[p[1]][p[0]]==='c').length<2*nc)return null;
+  const out=[];g.forEach((row,r)=>row.forEach((ch,c)=>{if((r===0||r===H-1)&&(c===0||c===W-1)&&ch==='#')return;out.push({a:ax(c,r),ch})}));return out}
+ function mapCells(t,big){if(t.id!=='maze')return symCells(t.rows,t.W);for(let i=0;i<80;i++){const cl=genMazeA(t.W,t.rows.length,big);if(cl&&symOk(cl))return cl}return symCells(t.rows,t.W)}
  /* linia widzenia: skały i krzaki zasłaniają pola za nimi */
  function losClear(a,b){const n=dist(a,b);if(n<=1)return true;const ok=e=>{for(let i=1;i<n;i++){const t=i/n,q=a[0]+(b[0]-a[0])*t+e,r=a[1]+(b[1]-a[1])*t+e,s=-q-r;let rq=Math.round(q),rr=Math.round(r),rs=Math.round(s);
    const dq=Math.abs(rq-q),dr=Math.abs(rr-r),ds=Math.abs(rs-s);if(dq>dr&&dq>ds)rq=-rr-rs;else if(dr>ds)rr=-rq-rs;const c=G.cells[K(rq,rr)];if(c&&(c.t==='r'||c.t==='b'))return false}return true};
@@ -2653,7 +2684,7 @@ const MB=(function(){
  function newGame(mode,mi){
   const t=MAPS[mode==='1v1'?'small':'big'][mi||0],cells={},bases={},creeps=[],chests=[];let ci=0;
   mapCells(t,mode!=='1v1').forEach(({a,ch})=>{const k=K(...a);
-   cells[k]={p:a,t:ch==='#'?'r':ch==='*'?'b':ch==='w'?'w':'g'};
+   cells[k]={p:a,t:ch==='#'?'r':(ch==='*'||ch==='T')?'b':ch==='w'?'w':'g'};if(ch==='T')cells[k].tr=1;if(ch==='p')cells[k].pa=1;if(ch==='c'||ch==='C')cells[k].camp=ch==='C'?2:1;
    if(ch==='A'||ch==='B'){cells[k].t='base';bases[ch]={pos:a,hp:t.baseHp,max:t.baseHp}}
    if(ch==='c'||ch==='C'){const ty=ch==='C'?'boss':'small';creeps.push({id:'c'+(ci++),ty,home:a,pos:a,hp:CREEP[ty].hp,alive:true,resp:0})}
    if(ch==='?')chests.push({pos:a,item:rndItem()})});
@@ -2815,10 +2846,10 @@ const MB=(function(){
  function hexPts(r){let a=[];for(let i=0;i<6;i++){const t=Math.PI/180*(60*i-30);a.push((r*Math.cos(t)).toFixed(1)+','+(r*Math.sin(t)).toFixed(1))}return a.join(' ')}
  function bounds(){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;Object.values(G.cells).forEach(c=>{const [x,y]=px(c.p);x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)});return [x0-S,y0-S,x1-x0+2*S,y1-y0+2*S]}
  function mapSvg(team,hl){const vs=visSet(team),ks=knownSet(team),seen=G.seen[team],[bx,by,bw,bh]=bounds();let g='';const P=hexPts(S-1);
-  Object.values(G.cells).forEach(c=>{const k=K(...c.p),[x,y]=px(c.p),v=!!vs[k],sn=!!seen[k];
+  Object.values(G.cells).sort((a,b)=>a.p[1]-b.p[1]).forEach(c=>{const k=K(...c.p),[x,y]=px(c.p),v=!!vs[k],sn=!!seen[k];
    let fill={g:'#4b5a3c',b:'#2f7a34',r:'#6f6a66',base:'#4b5a3c',w:'#2b5f8f'}[c.t];
    const h=hl&&hl[k];
-   g+='<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" data-mk="'+k+'">'+MBA.cell(c.t,sn,P,k);
+   g+='<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" data-mk="'+k+'">'+MBA.cell(c.t,sn,P,k,c);
    if(sn&&!v)g+=ks[k]?'<polygon points="'+P+'" fill="rgba(40,30,60,.38)"/><g opacity=".75"><path d="M-9,-1 q9,-9 18,0 q-9,9 -18,0z" fill="none" stroke="#fff" stroke-width="1.8"/><circle cy="-1" r="2.6" fill="#fff"/><path d="M-9,7 L9,-9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>':'<polygon points="'+P+'" fill="rgba(5,6,10,.55)"/>';
    if(h)g+='<polygon points="'+hexPts(S-3)+'" fill="'+(h.f||'none')+'" stroke="'+(h.s||'none')+'" stroke-width="3"/>'+(h.t?'<text class="mbl" y="6">'+h.t+'</text>':'');
    g+='</g>'});
@@ -2852,11 +2883,30 @@ const MB=(function(){
   const hsh=k=>{let h=0;for(const ch of k)h=(h*31+ch.charCodeAt(0))|0;return Math.abs(h)};
   function defs(){const t=tex();const ol=(id,c)=>'<filter id="'+id+'" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.4" result="d"/><feFlood flood-color="'+c+'"/><feComposite in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
    return '<pattern id="mbgr" patternUnits="userSpaceOnUse" width="64" height="64"><image href="'+t.gr+'" width="64" height="64"/></pattern><pattern id="mbwa" patternUnits="userSpaceOnUse" width="60" height="60"><image href="'+t.wa+'" width="60" height="60"/></pattern><pattern id="mbfog" patternUnits="userSpaceOnUse" width="40" height="40"><image href="'+t.fog+'" width="40" height="40"/></pattern>'+ol('mbolA',TCOL.A)+ol('mbolB',TCOL.B)}
-  function cell(t,sn,P,k){if(!sn)return '<polygon points="'+P+'" fill="url(#mbfog)" stroke="#262c36" stroke-width="1.2"/>';
-   let s='<polygon points="'+P+'" fill="'+(t==='w'?'url(#mbwa)':'url(#mbgr)')+'" stroke="rgba(250,240,175,.6)" stroke-width="1.4"/>';
+  /* drzewo: rysunkowa korona z konturem, lekko losowana z klucza pola */
+  function tree(k){const h=hsh(k),v=h%3,sc=(0.92+(h%5)*0.04).toFixed(2),dx=(h%7)-3,cs=[['#3f9a3a','#5cbf4a','#86d860'],['#357f34','#4fae43','#7ccc58'],['#4a9a2e','#6cbb3c','#9fd85a']][v];
+   const o='stroke="#173214" stroke-width="2.4"';
+   return '<ellipse cx="1" cy="13" rx="21" ry="6.5" fill="rgba(25,45,18,.38)"/><g transform="translate('+dx+',0) scale('+sc+')">'
+    +'<path d="M-5,14 L-4,-4 L4,-4 L5,14 Q0,16 -5,14Z" fill="#7a4a24" '+o+'/><path d="M-1,10 L-1,-2" stroke="#5a3418" stroke-width="1.6"/>'
+    +'<path d="M-22,-6 Q-26,-22 -12,-26 Q-12,-42 4,-40 Q18,-44 20,-28 Q30,-22 24,-8 Q22,4 6,0 Q-2,6 -10,1 Q-24,4 -22,-6Z" fill="'+cs[0]+'" '+o+'/>'
+    +'<path d="M-14,-12 Q-17,-24 -6,-26 Q-4,-36 8,-33 Q17,-34 16,-22 Q22,-16 15,-9 Q6,-6 -2,-9 Q-10,-5 -14,-12Z" fill="'+cs[1]+'"/>'
+    +'<path d="M-8,-24 Q-4,-31 3,-30 M7,-29 Q13,-28 13,-22" fill="none" stroke="'+cs[2]+'" stroke-width="3" stroke-linecap="round"/>'
+    +(h%4===0?'<circle cx="10" cy="-14" r="2.6" fill="#e2463a" stroke="#173214" stroke-width="1.2"/><circle cx="-9" cy="-18" r="2.6" fill="#e2463a" stroke="#173214" stroke-width="1.2"/>':'')+'</g>'}
+  /* ścieżka: ubita ziemia z kamyczkami */
+  function path(k){const h=hsh(k);let p='<polygon points="'+hexPts(S-3)+'" fill="#c9a46a" stroke="#a9814a" stroke-width="2" stroke-dasharray="7 4" opacity=".95"/><polygon points="'+hexPts(S-9)+'" fill="#d8b77e" opacity=".8"/>';
+   for(let i=0;i<4;i++){const a=((h>>(i*3))%360)*Math.PI/180,r=6+((h>>(i*2))%12);p+='<ellipse cx="'+(Math.cos(a)*r).toFixed(1)+'" cy="'+(Math.sin(a)*r*.8).toFixed(1)+'" rx="2.4" ry="1.6" fill="#9c7a4c"/>'}
+   return p}
+  /* obozowisko stworów: namiot z łat i ognisko */
+  function camp(boss){return '<g transform="translate(-13,-10)"><path d="M-11,9 L0,-10 L11,9Z" fill="'+(boss?'#7a3d8c':'#9c6b3c')+'" stroke="#2a180b" stroke-width="2" stroke-linejoin="round"/><path d="M0,-10 L-3,9 L3,9Z" fill="#2a180b"/><rect x="3" y="-1" width="5" height="5" fill="#d9c27a" stroke="#2a180b" stroke-width="1"/></g>'
+   +'<g transform="translate(15,12)"><path d="M-8,3 L8,-1 M-8,-1 L8,3" stroke="#5a3418" stroke-width="3.2" stroke-linecap="round"/><path class="mbfire" d="M0,-12 Q6,-5 3,1 Q0,3 -3,1 Q-6,-5 0,-12Z" fill="#ff9a2a" stroke="#b5401a" stroke-width="1.4"/><path d="M0,-6 Q2,-2 1,0 Q0,1 -1,0 Q-2,-2 0,-6Z" fill="#ffe36a"/></g>'}
+  function cell(t,sn,P,k,c){if(!sn)return '<polygon points="'+P+'" fill="url(#mbfog)" stroke="#262c36" stroke-width="1.2"/>';
+   c=c||{};let s='<polygon points="'+P+'" fill="'+(t==='w'?'url(#mbwa)':'url(#mbgr)')+'" stroke="rgba(250,240,175,.6)" stroke-width="1.4"/>';
+   if(c.pa)s+=path(k);
+   if(c.camp)s+=camp(c.camp===2);
+   if(t==='b'&&c.tr){s+=tree(k);return s}
    if(t==='b'){const im=PR(hsh(k)%2?'bush':'bush2');s+=im?'<ellipse cx="1" cy="12" rx="20" ry="6" fill="rgba(30,50,20,.3)"/><image href="'+im+'" x="-25" y="-30" width="50" height="48"/>':'<path d="M-10,6 q4,-14 8,0 q4,-16 9,0 q3,-10 5,2" fill="none" stroke="#7fd36a" stroke-width="2.5" stroke-linecap="round"/>'}
    if(t==='r'){const im=PR('rock');s+=im?'<ellipse cx="1" cy="12" rx="21" ry="6" fill="rgba(30,40,20,.3)"/><image href="'+im+'" x="-25" y="-28" width="50" height="45"/>':'<path d="M-14,8 L-6,-10 L4,-4 L12,-12 L16,8 Z" fill="#8c8580" stroke="#3b3836" stroke-width="2"/>'}
-   if(t!=='w'&&t!=='b'&&t!=='r'&&hsh(k)%7===0){const fl=PR('flowers');if(fl)s+='<image href="'+fl+'" x="'+(hsh(k)%2?4:-20)+'" y="2" width="16" height="14" opacity=".9"/>'}
+   if(t!=='w'&&t!=='b'&&t!=='r'&&!c.pa&&!c.camp&&hsh(k)%7===0){const fl=PR('flowers');if(fl)s+='<image href="'+fl+'" x="'+(hsh(k)%2?4:-20)+'" y="2" width="16" height="14" opacity=".9"/>'}
    return s}
   function base(t,b){const im=A('base'+t);if(!im)return null;return '<polygon points="'+hexPts(S-2)+'" fill="'+TCOL[t]+'" fill-opacity=".28" stroke="'+TCOL[t]+'" stroke-width="3"/><ellipse cy="13" rx="24" ry="7" fill="rgba(20,30,15,.35)"/><image href="'+im+'" x="-30" y="-34" width="60" height="52"/><rect x="-18" y="18" width="36" height="6" rx="3" fill="#111"/><rect x="-18" y="18" width="'+(36*b.hp/b.max).toFixed(1)+'" height="6" rx="3" fill="'+TCOL[t]+'"/><text class="mbs" y="-30">'+b.hp+'</text>'}
   function chest(c){const im=A('chest');if(!im)return null;return '<ellipse cy="9" rx="13" ry="4" fill="rgba(20,30,15,.35)"/><image href="'+im+'" x="-15" y="-15" width="30" height="27"/><circle cx="11" cy="-11" r="4.5" fill="'+c+'" stroke="#111" stroke-width="1.2"/>'}
@@ -2868,7 +2918,7 @@ const MB=(function(){
  const MBZ=1.3;
  /* ---------- ekrany ---------- */
  const curHero=()=>G&&G.scr==='plan'?G.heroes[G.cur]:null;
- function miniMap(m,big){const s=7,sq=Math.sqrt(3);let g='',x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const col={'.':'#4b5a3c','*':'#2f7a34','#':'#77706b','w':'#2b6fa8','?':'#b07a3c','c':'#8a6a4a','C':'#7a2e8a','A':'#3e8ef7','B':'#ef4a3c'};
+ function miniMap(m,big){const s=7,sq=Math.sqrt(3);let g='',x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const col={'p':'#b08a55','T':'#1d5424','.':'#4b5a3c','*':'#2f7a34','#':'#77706b','w':'#2b6fa8','?':'#b07a3c','c':'#8a6a4a','C':'#7a2e8a','A':'#3e8ef7','B':'#ef4a3c'};
   mapCells(m,big).forEach(({a,ch})=>{const x=s*sq*(a[0]+a[1]/2),y=s*1.5*a[1];x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);g+='<polygon transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" points="'+hexPts(s-.6)+'" fill="'+(col[ch]||'#4b5a3c')+'"/>'});
   return '<svg viewBox="'+(x0-s)+' '+(y0-s)+' '+(x1-x0+2*s)+' '+(y1-y0+2*s)+'">'+g+'</svg>'}
 

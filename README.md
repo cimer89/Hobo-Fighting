@@ -276,11 +276,11 @@ Wejście: Testy → Bitwa baz → rozmiar → mapa. Gra na jednym telefonie, dru
 
 Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu planszy):
 - **Otwarta równina:** prostokąt z kilkoma przeszkodami.
-- **Labirynt:** generowany losowo przy każdej grze (symetryczny, zawsze z przejściem między bazami), krzaki i stworki w ślepych zaułkach.
+- **Labirynt:** generowany losowo przy każdej grze i **niesymetryczny**: bazy stoją w losowych kolumnach przy przeciwnych brzegach, układ korytarzy jest inny po obu stronach. Uczciwość pilnuje generator: odległość od każdej bazy do Wielkiego Menela różni się najwyżej o 2 pola, a każda drużyna dostaje tyle samo stworków i skrzyń bliżej swojej bazy (najchętniej w ślepych zaułkach).
 - **Kwadrat:** bazy w przeciwległych rogach, pomiędzy las i ścieżki.
 - **Most nad rzeką:** woda dzieli mapę. Przez wodę nie da się przejść (tylko mostami), ale ataki i strzały lecą nad nią. Wielki Menel pilnuje środkowego mostu. Bez strefy. Na razie prosta grafika planszy (do podmiany).
 
-- **Symetria:** każda mapa jest dokładnie symetryczna względem środka (w osiach heksów), więc obie drużyny mają skrzynki, stworki, krzaki i skały w tych samych odległościach od bazy. Labirynt też jest losowany symetrycznie.
+- **Symetria:** każda mapa jest dokładnie symetryczna względem środka (w osiach heksów), więc obie drużyny mają skrzynki, stworki, krzaki i skały w tych samych odległościach od bazy. Wyjątek: labirynt (patrz wyżej).
 - **Start i odrodzenie w bazie:** wszyscy zaczynają na polu swojej bazy. Własna baza jest przechodnia tylko dla swojej drużyny.
 - **Ruch:** tylko po drodze (bez przeskakiwania skał i wody) i tylko na pola, które drużyna teraz widzi. Wzmocnienie zasięgu ruchu można wziąć raz (+ Buty).
 - **Linia wzroku:** skały i krzaki zasłaniają pola za nimi. Pole z krzakiem widać, ale postać w środku dalej jest ukryta, dopóki nie zaatakuje.
@@ -292,6 +292,13 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - **Doświadczenie:** +1 za rundę, stworki 2–5, zabójstwo 4 (pomoc 2), trafienie bazy 1. Poziomy 2–6 (3, 7, 12, 18, 25 XP); każdy poziom +1 HP i **jedno wzmocnienie do wyboru**: +1 DMG albo +1 zasięgu dla odblokowanej umiejętności (atak, ruch/skok/teleport, szarża, owca, kałuża, dron, strzał snajperski) albo +1 do wzroku.
 - **Śmierć:** odrodzenie w bazie po 2 rundach.
 - **Rozwój postaci:** na poziomie 1 każdy ma ruch o 1 pole i atak 1 DMG na sąsiednie pole. Poziomy 2 i 3 odblokowują umiejętności postaci (lista w panelu „Umiejętności postaci”), a każdy awans daje wybór wzmocnienia.
+
+## Bitwa baz – ścieżki, las i obozowiska
+
+- **Ścieżki** (ubita ziemia) prowadzą od każdej bazy do środka mapy, a na „Moście nad rzeką” – na most. To najkrótsza i najbardziej odsłonięta droga.
+- **Las:** drzewa i krzaki. Można w nie wejść i się w nich schować: zasłaniają widok i ukrywają postać przed przeciwnikiem (tak jak krzaki wcześniej).
+- **Obozowiska stworów** (namiot + ognisko) leżą w lesie z boku ścieżek. Żeby zdobyć XP i łup, trzeba zboczyć z drogi.
+- Mapy „Otwarta równina” na małej i dużej planszy zastąpiły **„Leśne ścieżki”**. „Kwadrat” i „Most nad rzeką” też dostały ścieżki, las i obozowiska. Wszystkie te mapy pozostają symetryczne.
 
 ## Bitwa baz – oprawa rysunkowa
 
