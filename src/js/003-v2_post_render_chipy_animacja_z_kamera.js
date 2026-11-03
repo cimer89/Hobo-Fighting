@@ -1,15 +1,6 @@
 /* ===================== V2: post-render, chipy, animacja z kamerą ===================== */
 const NS2='http://www.w3.org/2000/svg';
 (function(){if(!document.getElementById('bgfx')&&document.body){const d=document.createElement('div');d.id='bgfx';d.style.backgroundImage='url('+SPLURI+')';document.body.appendChild(d)}})();
-function injectExtras(){
- const old=document.getElementById('bonBar');if(old)old.remove();
- if(!app||st.scr==='lobby'||st.scr==='splash'||st.scr==='hsetup')return;
- const p=curP();if(!p)return;
- const pl=st.plan&&st.plan[st.ph];
- let h='<div id="bonBar" class="chips"><span>Runda '+st.round+'</span>'+(H?'<span>Gracz '+(H.cur+1)+'</span>':'')+'<span class="bn">Bonus: '+(p.bon?bonName(p.bon.k)+(bonusUsable(p)?'':' (od nast. rundy)'):'brak')+'</span>'+(zoneR(st.round)<3?'<span class="zn">Strefa −1 HP</span>':'');
- if(false)h+='<button data-bdtog="1" class="'+(pl.bd?'on':'')+'">+1 DMG: '+(pl.bd?'TAK':'NIE')+'</button>';
- h+='</div>';
- app.insertAdjacentHTML('afterbegin',h)}
 function v2post(){
  try{
   app.dataset.s=st.scr;
@@ -27,17 +18,9 @@ const EASE=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 function cellC(c){return GEO[c[0]+','+c[1]].c}
 function burst(x,y,col,n){const ov=document.getElementById('ov');if(!ov)return;n=n||9;for(let i=0;i<n;i++){const c=document.createElementNS(NS2,'circle');c.setAttribute('r',5+Math.random()*7);c.setAttribute('fill',i%2?col:'#fff');ov.appendChild(c);const a=Math.PI*2*i/n+Math.random()*.6,d=48+Math.random()*52;c.animate([{transform:'translate('+x+'px,'+y+'px) scale(1)',opacity:1},{transform:'translate('+(x+Math.cos(a)*d)+'px,'+(y+Math.sin(a)*d)+'px) scale(.2)',opacity:0}],{duration:540,easing:'cubic-bezier(.1,.7,.3,1)',fill:'forwards'})}}
 function shakeStage(m){const s=document.getElementById('stage');if(!s)return;m=m||7;s.animate([{transform:'translate(0,0)'},{transform:'translate('+(-m)+'px,'+(m/2)+'px)'},{transform:'translate('+m+'px,'+(-m/2)+'px)'},{transform:'translate('+(-m/2)+'px,0)'},{transform:'translate(0,0)'}],{duration:340})}
-function cam(px,s){const v=document.querySelector('#stage svg');if(!v)return;const p=px||[495,512];v.style.transformOrigin=((p[0]-62)/870*100)+'% '+((p[1]-40)/900*100)+'%';v.style.transition='transform .6s cubic-bezier(.2,.8,.2,1)';v.style.transform='scale('+(s||1)+')'}
 function hpSet(id,hp){const f=document.getElementById('hpf-'+id);if(!f)return;f.style.transform='scaleX('+Math.max(0,hp)/MAXHP(chOfId(id))+')';f.style.fill=hp>2?'#4fc183':hp>1?'#f0a020':'#e0342b'}
 function phaseBanner(t){const d=document.createElement('div');d.className='phb';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1300)}
 function ovAdd(h){const ov=document.getElementById('ov');if(ov)ov.insertAdjacentHTML('beforeend',h)}
-function animView(items){
- board({});const base=BOARD_SVG;let toks='';st.animHp={};
- items.forEach(o=>{const p=st.curPos[o.id];if(!p||!o.q.ch)return;
-  const hp=(o.q.hpr&&o.q.hpr[st.round]!==undefined)?o.q.hpr[st.round]:5;st.animHp[o.id]=hp;
-  toks+='<g id="tk-'+o.id+'" transform="translate('+p[0].toFixed(1)+','+p[1].toFixed(1)+')"><g class="in">'+lab({t:o.q.ch[0]})+'</g><g transform="translate(0,-56)"><rect x="-34" y="-5" width="68" height="10" rx="5" fill="#000" fill-opacity=".7" stroke="#fff" stroke-opacity=".5" stroke-width="2"/><rect id="hpf-'+o.id+'" class="hpf" x="-34" y="-5" width="68" height="10" rx="5" fill="'+(hp>2?'#4fc183':hp>1?'#f0a020':'#e0342b')+'" style="transform:scaleX('+hp/MAXHP(o.q.ch)+')"/></g></g>'});
- BOARD_SVG=base.replace('</svg>',toks+'<g id="ex"></g><g id="ov"></g></svg>');
- return '<div class="card" id="cap" style="text-align:center;font-weight:700">'+(st.capText||'')+'</div><div id="pop" class="pop"></div><button class="go" data-a="skip">Pomiń animację</button>'}
 async function runAnim(){
  const ev=st.animEv||[],seenTrig={};
  try{

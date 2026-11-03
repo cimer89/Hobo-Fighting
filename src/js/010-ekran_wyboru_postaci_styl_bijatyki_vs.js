@@ -14,27 +14,8 @@ function selPickerH(){
  h+='<div class="selgrid">'+Object.keys(C).map(n=>{const tk=taken(n);return '<button class="seltile'+(n===st.ch?' on':'')+(tk?' taken':'')+'" data-ch="'+n+'" data-p="'+pn+'" style="--c:'+C[n].col+(tc?';--tc:'+tc:'')+'" '+(tk?'disabled':'')+'><img src="'+IMG[n]+'" alt=""><span>'+SHORT(n)+'</span>'+(tk?'<em>ZAJĘTA</em>':'')+'</button>'}).join('')+'</div>';
  h+='<button class="selgo" data-a="chok" '+(ok?'':'disabled')+'>WYBIERAM</button>';
  return {h,col:c.col}}
-function vsH(){
- const ps=H.p.map((q,i)=>({q,i}));let L,Rr;
- if(isTeam()){L=ps.filter(o=>o.q.tm==='A');Rr=ps.filter(o=>o.q.tm==='B')}else{const k=Math.ceil(ps.length/2);L=ps.slice(0,k);Rr=ps.slice(k)}
- const fx=(o,j)=>{const tc=isTeam()&&o.q.tm?TCOL[o.q.tm]:'';return '<div class="fx" style="--c:'+C[o.q.ch].col+(tc?';--tc:'+tc:'')+';animation-delay:'+(j*.12)+'s">'+((typeof BGART!=='undefined'&&BGART[o.q.ch])?'<img class="cov" style="object-position:'+((typeof BGPOS!=='undefined'&&BGPOS[o.q.ch])||'42% 22%')+'" src="'+BGART[o.q.ch]+'" alt="">':'<img src="'+ART[o.q.ch]+'" alt="">')+'<span class="pl">GRACZ '+(o.i+1)+(isTeam()?' · '+o.q.tm:'')+'</span><div class="nm">'+o.q.ch.toUpperCase()+'</div></div>'};
- return '<div class="selbg" style="--c:#ff7a00"></div><div class="seltop"><span class="seltitle">'+(isTeam()?'DRUŻYNA A KONTRA DRUŻYNA B':'WSZYSCY NA WSZYSTKICH')+'</span></div><div class="vsrow"><div class="side left">'+L.map(fx).join('')+'</div><div class="side right">'+Rr.map(fx).join('')+'</div><div class="vsmark">VS</div><div class="flash"></div></div><button class="selgo" data-a="vsgo">ROZSTAWIENIE</button>'}
-function selectOverlay(){
- let ov=document.getElementById('selOv');
- const pick=st.scr==='pick'&&!st.chOk,vs=!!H&&st.scr==='hpass'&&H.tgt==='vs';
- if(!pick&&!vs){if(ov)ov.remove();if(st._selHid){app.style.display='';st._selHid=false}return}
- ['resModal','modalBar'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove()});
- if(!ov){ov=document.createElement('div');ov.id='selOv';document.body.appendChild(ov)}
- if(pick){const r=selPickerH();ov.className=(typeof BGART!=='undefined'&&BGART[st.ch])?'full':'';ov.style.setProperty('--c',r.col);ov.innerHTML=r.h}
- else{ov.className='vs';ov.style.setProperty('--c','#ff7a00');ov.innerHTML=vsH()}
- app.style.display='none';st._selHid=true}
 function hPassH(){const p=H.p[H.cur];const what=H.tgt==='pick'?'Wybierze postać.':H.tgt==='place'?'Ustawi się w tajemnicy na planszy.':'Zaplanuje rundę '+st.round+'.';
  return '<div class="card" style="text-align:center"><p>Przekaż telefon</p><b style="font:400 36px Bangers,Impact,sans-serif">Gracz '+(H.cur+1)+(p.ch?' ('+p.ch+')':'')+'</b><p>'+what+' Reszta niech nie patrzy.</p></div><button class="go" data-a="hgo">Jestem gotowy</button>'}
-function startPanelH(){
- const c=C[st.ch],ok=!!st.start;
- return '<div class="pp" id="phpanel"><div class="card" style="display:flex;gap:8px;align-items:center;border-color:'+c.col+'"><img class="av" style="border-color:'+c.col+'" src="'+IMG[st.ch]+'" alt=""><div><b>'+st.ch+teamTag({tm:st.team})+'</b><p>'+(ok?'Start: pole '+st.start.join(', '):'Dotknij pola na mapie, żeby wybrać start (w tajemnicy).')+'</p></div></div>'
-  +(H?'':'<div class="row"><button data-a="chback">← Zmień postać</button></div>')
-  +'<button class="go" data-a="confirm" '+(ok?'':'disabled')+'>Zatwierdź start</button></div>'}
 const _r7=render;render=function(){_r7();selectOverlay()};
 window.addEventListener('click',function(e){
  const t=e.target.closest&&e.target.closest('[data-a="chok"],[data-a="hgo"],[data-a="confirm"],[data-a="vsgo"]');if(!t)return;
@@ -49,11 +30,11 @@ window.addEventListener('click',function(e){
   const p=H.p[H.cur];p.start=st.start;p.posr[1]=st.start;
   if(H.cur<H.n-1){H.cur++;H.tgt='place';st.scr='hpass'}else st.scr='hstarts';render();return}},true);
 render();
-Object.assign(IMG,{"Ciotka":"@@asset:img/img_ciotka_2.jpg@@"});
+Object.assign(IMG,{"Ciotka":''});
 render();
 const BGART={};
-Object.assign(IMG,{'Wiatrak':"@@asset:img/img_wiatrak_2.jpg@@"});
-Object.assign(CHA,{'Wiatrak':"@@asset:img/cha_wiatrak_2.jpg@@"});
+Object.assign(IMG,{'Wiatrak':''});
+Object.assign(CHA,{'Wiatrak':''});
 render();
 BGART['Długi']="@@asset:img/bgart_dlugi.jpg@@";
 const BGPOS={'Wiatrak':'42% 18%','Długi':'35% 30%'};
@@ -68,9 +49,9 @@ render();
 BGART["Byku"]="@@asset:img/bgart_byku.jpg@@";BGPOS["Byku"]="55% 25%";
 Object.assign(IMG,{"Byku":"@@asset:img/img_byku_2.jpg@@"});Object.assign(CHA,{"Byku":"@@asset:img/cha_byku_2.jpg@@"});
 BGART["Ciotka"]="@@asset:img/bgart_ciotka.jpg@@";BGPOS["Ciotka"]="50% 18%";
-Object.assign(IMG,{"Ciotka":"@@asset:img/img_ciotka_3.jpg@@"});Object.assign(CHA,{"Ciotka":"@@asset:img/cha_ciotka_2.jpg@@"});
+Object.assign(IMG,{"Ciotka":''});Object.assign(CHA,{"Ciotka":"@@asset:img/cha_ciotka_2.jpg@@"});
 render();
-Object.assign(IMG,{"Ciotka":"@@asset:img/img_ciotka_4.jpg@@"});
+Object.assign(IMG,{"Ciotka":''});
 render();
 Object.assign(IMG,{"Ciotka":"@@asset:img/img_ciotka_5.jpg@@"});
 render();

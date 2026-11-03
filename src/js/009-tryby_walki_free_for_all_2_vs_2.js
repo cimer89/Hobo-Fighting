@@ -1,14 +1,8 @@
 /* ===================== TRYBY WALKI: FREE FOR ALL / 2 VS 2 ===================== */
 const TCOL={A:'#e5484d',B:'#3e8ef7'},TNAME={A:'Drużyna A',B:'Drużyna B'};
 function isTeam(){return st.tm2==='2v2'}
-function teamCount(t){if(H)return H.p.filter((p,i)=>i!==H.cur&&p.tm===t).length;return Object.entries(net.pl||{}).filter(([id,p])=>id!==net.uid&&p.sready&&p.tm===t).length}
 function teamOfCh(ch){if(!isTeam())return null;try{const o=curItems().find(o=>o.q.ch===ch);if(o&&o.q.tm)return o.q.tm}catch(e){}return ch===st.ch?st.team:null}
 function teamTag(q){return isTeam()&&q&&q.tm?'<span class="tmtag" style="background:'+TCOL[q.tm]+'">'+q.tm+'</span>':''}
-function standee(ch,delay){
- const col=C[ch].col,dk=shade(col,-.5),tm=teamOfCh(ch);
- return '<g class="in"><g class="gnd"><ellipse class="sh" cx="5" cy="21" rx="36" ry="12" fill="#000" opacity=".45" filter="url(#bl)"/>'+(tm?'<ellipse cx="0" cy="17" rx="38" ry="14" fill="none" stroke="'+TCOL[tm]+'" stroke-width="6"/>':'')+'<ellipse cx="0" cy="20" rx="31" ry="10" fill="'+dk+'" stroke="#000" stroke-width="2"/><rect x="-31" y="13" width="62" height="7" fill="'+dk+'"/><ellipse cx="0" cy="13" rx="31" ry="10" fill="'+col+'" stroke="#000" stroke-width="2"/><ellipse cx="-6" cy="11" rx="16" ry="4" fill="#fff" opacity=".25"/></g>'
- +'<g class="hop"><g class="md" style="animation-delay:'+delay+'s"><circle cx="2" cy="-17" r="31" fill="#000" fill-opacity=".5"/><circle cx="0" cy="-20" r="31" fill="'+col+'"/><image href="'+IMG[ch]+'" x="-28" y="-48" width="56" height="56" clip-path="url(#cpm)" preserveAspectRatio="xMidYMid slice"/><circle cx="0" cy="-20" r="29.5" fill="none" stroke="'+(tm?TCOL[tm]:'#fff')+'" stroke-opacity=".95" stroke-width="'+(tm?4:2.5)+'"/><path d="M-19,-38 A29,29 0 0 1 12,-46" stroke="#fff" stroke-opacity=".4" stroke-width="4" fill="none" stroke-linecap="round"/>'
- +(tm?'<g transform="translate(25,-45)"><circle r="12" fill="'+TCOL[tm]+'" stroke="#fff" stroke-width="2.5"/><text y="5" text-anchor="middle" font-size="14" font-weight="900" fill="#fff" style="font-family:system-ui,sans-serif">'+tm+'</text></g>':'')+'</g></g></g>'}
 
 /* --- menu --- */
 function lobbyH(){
@@ -67,24 +61,8 @@ function scoreTable(items,Rs){
  return h+'</table><p>1 pkt za 1 obrażenie, +1 za każdego dodatkowego trafionego przeciwnika jednym atakiem, 1 pkt za przedmiot, 5 pkt dla '+(isTeam()?'każdego żywego gracza zwycięskiej drużyny':'ostatniego na polu')+'.</p></div>'}
 
 /* --- podnoszenie przedmiotu --- */
-async function pickAnim(){
- if(!isSp()||st.skipReq)return;
- for(const p of (st.animPick||[])){
-  if(st.skipReq)break;ovSet('');
-  const g=GEO[p.k],el=document.getElementById(iid(p.k)),ico=el&&el.querySelector('.ico'),col=ITEM[p.t].c;
-  const tp=st.curPos[p.id]||g.c,dx=tp[0]-g.c[0],dy=(tp[1]-62)-(g.c[1]+4);
-  capSet(nmOf(p.id)+' podnosi: '+ITEM[p.t].n);burst(g.c[0],g.c[1]-10,col,10);
-  if(ico){const a=ico.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate(0,-55px) scale(1.35)',opacity:1,offset:.38},{transform:'translate('+dx+'px,'+dy+'px) scale(.12)',opacity:.3}],{duration:780,easing:'cubic-bezier(.3,.7,.3,1)',fill:'forwards'});try{await a.finished}catch(e){}}
-  else await wait(500);
-  if(el)el.remove();
-  ovAdd('<g transform="translate('+tp[0]+','+(tp[1]-62)+')"><g class="pkring"><circle r="16" fill="none" stroke="'+col+'" stroke-width="7"/></g></g>');
-  burst(tp[0],tp[1]-62,col,14);burst(tp[0],tp[1]-62,'#fff6c8',8);shakeTok(p.id);
-  ovAdd('<g transform="translate('+tp[0]+','+(tp[1]-140)+')"><text class="fl big" style="fill:'+col+'">+ '+ITEM[p.t].n+'</text></g>');
-  if(p.t===1){st.animHp[p.id]=Math.min(MAXHP(chOfId(p.id)),(st.animHp[p.id]||5)+1);hpSet(p.id,st.animHp[p.id])}
-  await wait(900)}}
 
 /* --- pasek informacji z drużyną --- */
-function teamChip(){if(!isTeam())return '';const p=curP(),t=(p&&p.tm)||st.team;return t?'<span style="border-color:'+TCOL[t]+';color:'+TCOL[t]+'">'+TNAME[t]+'</span>':''}
 
 /* --- obsługa kliknięć (przed starszymi obsługami) --- */
 window.addEventListener('click',function(e){
@@ -100,5 +78,5 @@ window.addEventListener('click',function(e){
  if(d.a==='chok'&&isTeam()&&(!st.team||teamCount(st.team)>=2)){e.stopImmediatePropagation();render();return}
  if(d.a==='confirm'&&isTeam()){const q=H?H.p[H.cur]:ME;if(q)q.tm=st.team}},true);
 render();
-Object.assign(CHA,{"Pasterz": "@@asset:img/cha_pasterz_3.jpg@@", "Truchel": "@@asset:img/cha_truchel_3.jpg@@", "Sierżant Przemo": "@@asset:img/cha_sierzant_przemo_3.jpg@@"});
+Object.assign(CHA,{"Pasterz": '', "Truchel": '', "Sierżant Przemo": ''});
 render();

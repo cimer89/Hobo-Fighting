@@ -12,18 +12,6 @@
 @media (min-width:1300px) and (min-aspect-ratio:4/5){
  #selOv:not(.vs)>:not(.selbg){width:520px;margin-right:8vw}
 }
-#cutin{position:fixed;left:6px;bottom:96px;z-index:80;pointer-events:none;display:flex;align-items:flex-end;animation:ciin .28s cubic-bezier(.2,.9,.3,1.2) both}
-#cutin.out{animation:ciout .28s ease-in both}
-#cutin .ci-bg{position:absolute;left:-14px;right:-22px;bottom:6px;height:62%;background:linear-gradient(100deg,var(--c) 0%,var(--c) 55%,transparent 100%);transform:skewX(-14deg);border-top:3px solid #fff;border-bottom:3px solid #000;box-shadow:0 6px 18px rgba(0,0,0,.45);opacity:.92}
-#cutin .ci-spr{position:relative;background-repeat:no-repeat;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
-#cutin .ci-nm{position:relative;margin:0 0 14px -6px;font:900 20px/1 system-ui,sans-serif;color:#fff;letter-spacing:1px;-webkit-text-stroke:1.2px #000;paint-order:stroke;text-shadow:0 2px 0 #000;font-style:italic;white-space:nowrap}
-@keyframes ciin{from{transform:translateX(-110%) skewX(-8deg);opacity:0}to{transform:none;opacity:1}}
-@keyframes ciout{to{transform:translateX(-120%);opacity:0}}
-#fig3d{position:absolute;z-index:5;right:8px;top:62px;height:min(28vh,210px);min-height:120px;width:auto;max-width:none;margin:0;padding:4px;border-radius:14px;border:2px solid rgba(255,255,255,.35);background:radial-gradient(ellipse at 50% 88%,rgba(255,255,255,.25),rgba(12,14,20,.78) 72%);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.4)}
-#fig3d .f3s{background-repeat:no-repeat;flex:none}
-#fig3d span{position:absolute;left:6px;top:4px;font:900 12px/1 system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px;border-radius:6px;letter-spacing:1px}
-#fig3d:active{transform:scale(.97)}
-@media (min-width:900px){#fig3d{top:auto;right:auto;left:28px;bottom:28px;height:min(46vh,380px)}}
 
 .mbscroll{background:radial-gradient(ellipse at 50% 40%,#2f8ad8,#1d5f9e)!important}
 .mbmap{width:auto!important;max-width:none!important}

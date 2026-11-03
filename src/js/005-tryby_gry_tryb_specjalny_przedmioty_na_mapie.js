@@ -50,28 +50,8 @@ function itemSvg(it){
  const nw=(it.sr&&it.sr===st.round&&!st.animating&&(st.scr==='rev'||st.scr==='hrev'));
  return '<g id="'+iid(it.k)+'" transform="translate('+x+','+(y+4)+') scale('+s.toFixed(3)+')" style="pointer-events:none"><ellipse cx="3" cy="19" rx="25" ry="8" fill="#000" opacity=".4" filter="url(#bl)"/><g class="ico'+(nw?' newi':'')+'"><g class="ibob"><circle r="26" cy="3" fill="'+shade(col,-.45)+'"/><circle r="26" fill="'+col+'" stroke="#fff" stroke-width="3"/>'+glyph(it.t)+'</g></g></g>'}
 function lastActor(){return !!H&&H.p.findIndex((q,i)=>i>H.cur&&alive(q,st.round))<0}
-async function pickAnim(){
- if(!isSp()||st.skipReq)return;
- for(const p of (st.animPick||[])){
-  if(st.skipReq)break;ovSet('');
-  const g=GEO[p.k],el=document.getElementById(iid(p.k)),ico=el&&el.querySelector('.ico');
-  capSet(nmOf(p.id)+' podnosi: '+ITEM[p.t].n);burst(g.c[0],g.c[1]-20,'#f6cf55',12);
-  if(ico)ico.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:'translateY(-70px) scale(1.5)',opacity:0}],{duration:750,easing:'ease-out',fill:'forwards'});
-  ovAdd('<g transform="translate('+g.c[0]+','+(g.c[1]-90)+')"><text class="fl big" style="fill:'+ITEM[p.t].c+'">'+ITEM[p.t].n+'</text></g>');
-  if(p.t===1){st.animHp[p.id]=Math.min(MAXHP(chOfId(p.id)),(st.animHp[p.id]||5)+1);hpSet(p.id,st.animHp[p.id])}
-  await wait(950)}}
 
 /* --- menu --- */
-function lobbyH(){
- const ban='<img src="'+BAN+'" alt="Postacie Hobo Fighting" style="width:100%;max-height:22vh;object-fit:cover;border:2px solid var(--ink);border-radius:12px;display:block;margin:0;flex:none">';
- if(!st.gm)return ban+'<p>Wybierz tryb gry.</p>'
-  +'<button class="mbtn" data-mode="classic"><b>Tryb klasyczny</b><small>Czysta walka, bez bonusów i przedmiotów.</small></button>'
-  +'<button class="mbtn" data-mode="special"><b>Tryb specjalny</b><small>Zamiast losowania zbierasz przedmioty rozrzucone po mapie.</small></button>'
-  +(net.db?'<div class="row"><input id="code" maxlength="4" placeholder="KOD" aria-label="Kod pokoju" style="flex:1;min-height:46px;font:700 20px system-ui;text-transform:uppercase;text-align:center;border:2px solid var(--ink);border-radius:10px;background:var(--panel);color:var(--ink)"><button data-a="joinb">Dołącz kodem</button></div>':'');
- return ban+'<div class="chips"><span class="bn">'+(st.gm==='special'?'Tryb specjalny':st.gm==='test'?'Testy (nowy balans)':'Tryb klasyczny')+'</span></div><p>Jak gracie?</p>'
-  +'<button data-a="hot">Jeden telefon, przekazujemy sobie</button>'
-  +(net.db?'<button class="go" data-a="create">Utwórz pokój online</button>':'<div class="card">Łączenie online… Jeśli to nie zniknie, sprawdź internet i odśwież stronę.</div>')
-  +'<button data-a="modeback">← Zmień tryb</button>'}
 document.addEventListener('click',function(e){
  ICACHE={};
  const t=e.target.closest('[data-mode],[data-a="modeback"],[data-a="create"],[data-a="joinb"],[data-n],[data-leg]');if(!t)return;
@@ -85,19 +65,6 @@ document.addEventListener('click',function(e){
 const _r5=render;render=function(){ICACHE={};_r5()};
 
 /* --- chipy + legenda --- */
-function injectExtras(){
- const old=document.getElementById('bonBar');if(old)old.remove();
- const oldl=document.getElementById('legBar');if(oldl)oldl.remove();
- if(!app||st.scr==='lobby'||st.scr==='splash'||st.scr==='hsetup')return;
- const p=curP();if(!p)return;
- const pl=st.plan&&st.plan[st.ph];
- let n=0;try{n=boardItems().length}catch(e){}
- let h='<div id="bonBar" class="chips"><span>Runda '+st.round+'</span>'+(H?'<span>Gracz '+(H.cur+1)+'</span>':'')+'<span class="bn">Bonus: '+(p.bon?bonName(p.bon.k)+(bonusUsable(p)?'':' (od nast. rundy)'):'brak')+'</span>'+(isSp()?'<span>Przedmioty: '+n+'</span>':'')+(zoneR(st.round)<3?'<span class="zn">Strefa −1 HP</span>':'');
- if(isSp())h+='<button data-leg="1" style="min-height:30px;padding:2px 10px;font-size:13px">Legenda</button>';
- if(false)h+='<button data-bdtog="1" class="'+(pl.bd?'on':'')+'">+1 DMG: '+(pl.bd?'TAK':'NIE')+'</button>';
- h+='</div>';
- if(isSp()&&st.legend)h+='<div id="legBar" class="legend">'+ITYPES.map(t=>'<span><svg viewBox="-28 -28 56 56"><circle r="26" fill="'+ITEM[t].c+'" stroke="#fff" stroke-width="3"/>'+glyph(t)+'</svg>'+ITEM[t].n+'</span>').join('')+'</div>';
- app.insertAdjacentHTML('afterbegin',h)}
 
 document.addEventListener('click',function(e){
  if(!isSp())return;

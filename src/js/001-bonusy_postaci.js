@@ -6,64 +6,10 @@ function playerOf(id){if(H){const i=+String(id).slice(1);return H.p[i]||null}if(
 function saveP(p){if(!H&&p===ME)save()}
 function bonusUsable(p){return !!p.bon&&(p.bonR===undefined||p.bonR<st.round)}
 function bonName(k){return {1:'+1 HP',2:'+1 DMG',3:'Dodatkowy ruch',4:'Tarcza',6:'Refleks'}[k]||String(k)}
-function whyTxt(w){return {'Wiatrak':'Wiatrak trafił 2+ przeciwników','Długi':'trafienie na najdalszym polu','Żyleta':'trafienie z 4+ heksów','Byku':'udana szarża','Ciotka':'przesunięcie: kolizja lub strefa','strefa':'zmiana strefy'}[w]||w}
 function posPh2(q){const r=st.round,pl=q.plans&&q.plans[r];let p=q.posr[r];if(!pl)return p;if(pl[0]&&pl[0].t==='move'&&pl[0].m)p=pl[0].m;if(pl[1]&&pl[1].t==='move'&&pl[1].m)p=pl[1].m;return p}
 function pickFrom(pk){const it=curItems().find(o=>o.id===pk.id);if(!it)return null;if(pk.kind==='dg')return posPh2(it.q);const x=resolve(curItems())[pk.id];return x?x.pos:null}
 
-function sim(L,round,pd){
- const S=L.map(x=>({id:x.id,ch:x.ch,pos:x.pos.slice(),hp:x.hp,log:[],out:false,sh:!!x.sh,shUsed:false})),ev=[],pend=[];
- const trig=(id,why)=>ev.push({k:'trig',id,why});
- for(let ph=0;ph<2;ph++){
-  ev.push({k:'phase',ph});
-  const dmg=(i,n,w)=>{
-   if(S[i].sh&&n>0){S[i].sh=false;S[i].shUsed=true;n-=1;S[i].log.push('F'+(ph+1)+': tarcza blokuje');ev.push({k:'shield',id:S[i].id,ph})}
-   if(n<=0)return;
-   S[i].hp-=n;S[i].log.push('F'+(ph+1)+': −'+n+' '+w);ev.push({k:'dmg',id:S[i].id,n,w,ph})};
-  const mv=S.map((x,i)=>{const a=L[i].plan[ph];if(!x.out&&a.t==='move'){const from=x.pos.slice(),ch=K(...a.m)!==K(...x.pos);x.pos=a.m.slice();if(ch)ev.push({k:'move',id:x.id,from,to:a.m.slice(),ph});return ch}return false});
-  if(ph===1)S.forEach((x,i)=>{const d=L[i].dg;if(!x.out&&Array.isArray(d)){const from=x.pos.slice();x.pos=d.slice();ev.push({k:'move',id:x.id,from,to:d.slice(),ph,dodge:true})}});
-  const G={};S.forEach((x,i)=>{if(!x.out)(G[K(...x.pos)]=G[K(...x.pos)]||[]).push(i)});
-  Object.values(G).forEach(g=>{if(g.length<2)return;const bu=g.filter(i=>S[i].ch==='Byku'&&mv[i]);
-   if(bu.length){if(g.some(i=>!bu.includes(i)))trig(S[bu[0]].id,'Byku');g.forEach(i=>{if(!bu.includes(i))dmg(i,3,'szarża Byka')})}
-   else g.forEach(i=>dmg(i,1,'ścisk'))});
-  const pnd=[];
-  S.forEach((x,i)=>{const a=L[i].plan[ph];if(x.out||a.t!=='atk')return;
-   const cs=attack(x.pos,a.d,ph,x.ch),at=(q,r)=>S.map((y,j)=>j!==i&&!y.out&&y.pos[0]===q&&y.pos[1]===r?j:-1).filter(j=>j>=0);
-   const extra=(a.t==='atk'&&a.bd)?1:0,hs=[];let hitIdx=-1,end=cs.length?cs[x.ch==='Wiatrak'?0:cs.length-1].slice(0,2):null;
-   if(x.ch==='Żyleta'||x.ch==='Ciotka'){for(let k=0;k<cs.length;k++){const t=at(cs[k][0],cs[k][1]);if(t.length){hs.push([t[0],cs[k][2]+extra]);end=[cs[k][0],cs[k][1]];hitIdx=k;break}}}
-   else cs.forEach((c,k)=>at(c[0],c[1]).forEach(j=>{hs.push([j,c[2]+extra]);if(hitIdx<0)hitIdx=k}));
-   if(x.ch==='Wiatrak'&&hs.length>=2)trig(x.id,'Wiatrak');
-   if(x.ch==='Długi'&&cs.length===3&&at(cs[2][0],cs[2][1]).length)trig(x.id,'Długi');
-   if(x.ch==='Żyleta'&&hitIdx>=3)trig(x.id,'Żyleta');
-   ev.push({k:'atk',id:x.id,ch:x.ch,ph,from:x.pos.slice(),cells:cs.map(c=>[c[0],c[1]]),end,hit:hs.length>0,line:x.ch!=='Wiatrak',bd:extra>0});
-   hs.forEach(([j,v])=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,v,'atak '+x.ch)});
-   if(ph===1&&x.ch==='Ciotka'&&hs.length)pnd.push({by:x.id,t:hs[0][0]})});
-  pnd.forEach(p=>{const t=S[p.t],dest=pd&&pd[p.by];
-   if(dest){const from=t.pos.slice();t.pos=dest.slice();ev.push({k:'push',id:t.id,from,to:dest.slice()});
-    const g=S.map((y,j)=>!y.out&&K(...y.pos)===K(...dest)?j:-1).filter(j=>j>=0);
-    if(g.length>1){trig(p.by,'Ciotka');g.forEach(j=>dmg(j,1,'kolizja po przesunięciu'))}
-    else if(dist(...dest)>zoneR(round))trig(p.by,'Ciotka')}
-   else{pend.push({by:p.by,id:t.id,pos:t.pos.slice()});ev.push({k:'pending',id:t.id,pos:t.pos.slice()})}});
-  S.forEach(x=>{if(!x.out&&x.hp<=0){x.out=true;ev.push({k:'out',id:x.id})}});
- }
- S.forEach(x=>{if(x.out||dist(...x.pos)<=zoneR(round))return;
-  if(x.sh){x.sh=false;x.shUsed=true;x.log.push('strefa: tarcza blokuje');ev.push({k:'shield',id:x.id});return}
-  x.hp-=1;x.log.push('strefa: −1');ev.push({k:'dmg',id:x.id,n:1,w:'strefa',ph:2});if(x.hp<=0){x.out=true;ev.push({k:'out',id:x.id})}});
- S.ev=ev;S.pend=pend;return S}
 
-function resolve(items){
- const r=st.round;
- const L=items.filter(o=>alive(o.q,r)).map(o=>{const q=o.q,b=q.bon,usable=!!b&&(q.bonR===undefined||q.bonR<r);
-  return {id:o.id,ch:q.ch,pos:q.posr[r],hp:q.hpr&&q.hpr[r]!==undefined?q.hpr[r]:5,plan:q.plans[r],
-   sh:usable&&b.k===4,refl:usable&&b.k===6,dg:(q.dg&&q.dg[r]!==undefined)?q.dg[r]:undefined}});
- const pd={};items.forEach(o=>{if(o.q.push&&o.q.push[r])pd[o.id]=o.q.push[r]});
- const SS=sim(L,r,pd),out={};
- SS.forEach(x=>{const o=items.find(o=>o.id===x.id),ov=o.q.hpo&&o.q.hpo[r];x.eff=ov!==undefined?ov:Math.max(0,x.hp);
-  const xm=o.q.xm&&o.q.xm[r];if(xm&&!x.out)x.pos=xm.slice();out[x.id]=x});
- const hitP1=SS.ev.filter(e=>e.k==='hit'&&e.ph===1).map(e=>e.id);
- out._ev=SS.ev;out._pend=SS.pend;out._trig=SS.ev.filter(e=>e.k==='trig');
- out._alert=L.filter(l=>l.refl&&l.dg===undefined&&hitP1.includes(l.id)).map(l=>l.id);
- if(st.gm==='special'){const pk=pickups(items.filter(o=>out[o.id]),out,r);out._pick=pk;pk.forEach(p=>{if(p.t===1){out[p.id].eff=Math.min(MAXHP(out[p.id].ch),out[p.id].eff+1);out[p.id].healed=true}})}
- return out}
 
 function applyRoll(id,v){const p=playerOf(id);if(!p)return;
  const x=resolve(curItems())[id];const eff=x?x.eff:0;
@@ -153,15 +99,6 @@ function openWheel(id){
   res.innerHTML=h;
   res.querySelectorAll('[data-wok],[data-wc]').forEach(b=>b.addEventListener('click',()=>{const v=+(b.dataset.wok||b.dataset.wc);applyRoll(id,v);ov.remove();render()}))},3350)}
 
-function injectExtras(){
- const old=document.getElementById('bonBar');if(old)old.remove();
- if(!app||st.scr==='lobby'||st.scr==='splash')return;
- const p=curP();if(!p)return;
- const pl=st.plan&&st.plan[st.ph];
- let h='<div id="bonBar" class="card" style="display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px"><span>'+(H?'Gracz '+(H.cur+1)+': ':'')+'Bonus: <b>'+(p.bon?bonName(p.bon.k)+(bonusUsable(p)?'':' (od następnej rundy)'):'brak')+'</b></span>';
- if(false)h+='<button data-bdtog="1" class="'+(pl.bd?'on':'')+'" style="min-height:36px">+1 DMG: '+(pl.bd?'TAK':'NIE')+'</button>';
- h+='</div>';
- app.insertAdjacentHTML('afterbegin',h)}
 
 const _baseRender=render;
 render=function(){_baseRender();injectExtras()};
@@ -198,5 +135,5 @@ document.addEventListener('click',function(e){
 
 render();
 
-const CHA={"Żyleta": "@@asset:img/cha_zyleta.jpg@@", "Byku": "@@asset:img/cha_byku.jpg@@", "Wiatrak": "@@asset:img/cha_wiatrak.jpg@@", "Długi": "@@asset:img/cha_dlugi.jpg@@", "Ciotka": "@@asset:img/cha_ciotka.jpg@@"};
+const CHA={"Żyleta": '', "Byku": '', "Wiatrak": '', "Długi": '', "Ciotka": ''};
 const ART={"Żyleta": "@@asset:img/art_zyleta.webp@@", "Byku": "@@asset:img/art_byku.webp@@", "Wiatrak": "@@asset:img/art_wiatrak.webp@@", "Długi": "@@asset:img/art_dlugi.webp@@", "Ciotka": "@@asset:img/art_ciotka.webp@@"};

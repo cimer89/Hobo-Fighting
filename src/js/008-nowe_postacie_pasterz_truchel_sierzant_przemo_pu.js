@@ -217,16 +217,6 @@ function ptsOf(o,Rs){const q=o.q;let d=0,m=0,it=0;
  if(Rs&&Rs._pick)Rs._pick.forEach(p=>{if(p.id===o.id)it++});
  return {d,m,it}}
 function ptTotal(o,Rs){const p=ptsOf(o,Rs);return p.d+p.m+p.it}
-function scoreRows(items,Rs){
- const surv=items.filter(o=>Rs[o.id]&&Rs[o.id].eff>0),sole=surv.length===1?surv[0]:null;
- return items.filter(o=>o.q.ch).map(o=>{const p=ptsOf(o,Rs),last=(sole&&sole.id===o.id)?5:0;return {o,d:p.d,m:p.m,it:p.it,last,total:p.d+p.m+p.it+last}}).sort((a,b)=>b.total-a.total)}
-function scoreTable(items,Rs){
- const rows=scoreRows(items,Rs);if(!rows.length)return '';
- const top=rows[0].total,wins=rows.filter(r=>r.total===top).map(r=>r.o.q.ch);
- let h='<div class="card" style="border-color:#f2c230"><b>Koniec gry!</b> Najwięcej punktów: '+wins.join(', ')+' ('+top+' pkt).</div>';
- h+='<div class="card"><table class="sc"><tr><th></th><th>Obr.</th><th>Wiel.</th><th>Przedm.</th><th>Ostatni</th><th>Razem</th></tr>';
- rows.forEach(r=>{h+='<tr'+(r.total===top?' class="top"':'')+'><td><img class="av" style="width:22px;height:22px;border-width:2px;border-color:'+C[r.o.q.ch].col+'" src="'+IMG[r.o.q.ch]+'" alt=""> '+r.o.q.ch+'</td><td>'+r.d+'</td><td>'+r.m+'</td><td>'+r.it+'</td><td>'+r.last+'</td><td class="tot">'+r.total+'</td></tr>'});
- return h+'</table><p>1 pkt za 1 obrażenie, +1 za każdego dodatkowego trafionego przeciwnika jednym atakiem, 1 pkt za przedmiot, 5 pkt dla ostatniego na polu.</p></div>'}
 
 /* --- zapis stanu na kolejną rundę --- */
 document.addEventListener('click',function(e){
@@ -241,19 +231,6 @@ document.addEventListener('click',function(e){
   (fin._pudNew||[]).forEach(p=>{if(p.o===o.id){q.pud=q.pud||[];q.pud.push({k:p.k,o:p.o,r0:p.r0,b:p.b})}})});
  if(!H)save();},true);
 render();
-Object.assign(IMG,{"Pasterz": "@@asset:img/img_pasterz_2.jpg@@", "Truchel": "@@asset:img/img_truchel_2.jpg@@", "Sierżant Przemo": "@@asset:img/img_sierzant_przemo_2.jpg@@"});
-Object.assign(CHA,{"Pasterz": "@@asset:img/cha_pasterz_2.jpg@@", "Truchel": "@@asset:img/cha_truchel_2.jpg@@", "Sierżant Przemo": "@@asset:img/cha_sierzant_przemo_2.jpg@@"});
+Object.assign(IMG,{"Pasterz": '', "Truchel": '', "Sierżant Przemo": ''});
+Object.assign(CHA,{"Pasterz": '', "Truchel": '', "Sierżant Przemo": ''});
 Object.assign(ART,{"Pasterz": "@@asset:img/art_pasterz_2.webp@@", "Truchel": "@@asset:img/art_truchel_2.webp@@", "Sierżant Przemo": "@@asset:img/art_sierzant_przemo_2.webp@@"});
-function injectExtras(){
- const old=document.getElementById('bonBar');if(old)old.remove();
- const oldl=document.getElementById('legBar');if(oldl)oldl.remove();
- if(!app||st.scr==='lobby'||st.scr==='splash'||st.scr==='hsetup')return;
- const p=curP();if(!p)return;
- const pl=st.plan&&st.plan[st.ph];
- let n=0;try{n=boardItems().length}catch(e){}
- let h='<div id="bonBar" class="chips"><span>Runda '+st.round+'</span>'+teamChip()+(H?'<span>Gracz '+(H.cur+1)+'</span>':'')+'<span class="bn">Bonus: '+(p.bon?bonName(p.bon.k)+(bonusUsable(p)?'':' (od nast. rundy)'):'brak')+'</span>'+(isSp()?'<span>Przedmioty: '+n+'</span>':'')+(zoneR(st.round)<3?'<span class="zn">Strefa −1 HP</span>':'');
- if(isSp())h+='<button data-leg="1" style="min-height:30px;padding:2px 10px;font-size:13px">Legenda</button>';
- if(false)h+='<button data-bdtog="1" class="'+(pl.bd?'on':'')+'">+1 DMG: '+(pl.bd?'TAK':'NIE')+'</button>';
- h+='</div>';
- if(isSp()&&st.legend)h+='<div id="legBar" class="legend">'+ITYPES.map(t=>'<span><svg viewBox="-28 -28 56 56"><circle r="26" fill="'+ITEM[t].c+'" stroke="#fff" stroke-width="3"/>'+glyph(t)+'</svg>'+ITEM[t].n+'</span>').join('')+'</div>';
- app.insertAdjacentHTML('afterbegin',h)}
