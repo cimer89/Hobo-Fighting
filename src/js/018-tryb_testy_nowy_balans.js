@@ -4,15 +4,6 @@ const TBP={selfLand:false,zylR:9,zyl2:3};
 const TBHP={'Wiatrak':6,'Pasterz':7,'Sierżant Przemo':4};
 function MAXHP(ch){return (TB()&&TBHP[ch])||5}
 function chOfId(id){const o=(st.animItems||[]).find(o=>o.id===id);if(o&&o.q)return o.q.ch;if(H){const p=H.p[+String(id).replace(/\D/g,'')];if(p)return p.ch}const q=net.pl&&net.pl[id];return q?q.ch:null}
-(function(){let s=sim.toString();const rep=(a,b)=>{if(!s.includes(a))throw new Error('TB sim: '+a);s=s.split(a).join(b)};
- rep("dmg(j,3+extra,'szarża Byka',i)","dmg(j,(TB()?1:3)+extra,'szarża Byka',i)");
-  rep("others.forEach(i=>dmg(i,1,'lądowanie Byka',fj[0]));","others.forEach(i=>dmg(i,1,'lądowanie Byka',fj[0]));if(TB()&&TBP.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));");
- rep("dmg(j,1+extra,'szarża owcy',i)","dmg(j,(TB()?2:1)+extra,'szarża owcy',i)");
- rep("if(vs.length){victims=vs;break}cur=[nq,nr];steps++}","if(vs.length){if(TB()){victims=victims.concat(vs)}else{victims=vs;break}}cur=[nq,nr];steps++}");
- rep("dmg(tgt,1+((a.bd||x.dmgb)?1:0),'dron',i)","dmg(tgt,(TB()?2:1)+((a.bd||x.dmgb)?1:0),'dron',i)");
- rep("dmg(j,p.b?2:1,'trucizna'","dmg(j,(p.b?2:1)+(TB()?1:0),'trucizna'");
- rep("s.pos=cur.slice();ev.push({k:'scharge',id:x.id,from,to:cur.slice(),steps,hit:victims.length>0,dir:a.d});","s.pos=victims.length?cur.slice():from.slice();ev.push({k:'scharge',id:x.id,from,to:cur.slice(),steps,hit:victims.length>0,dir:a.d,back:!victims.length});");
- sim=(0,eval)('('+s+')')})();
 (function(){const _a=attack;attack=function(p,d,ph,ch){ch=ch||st.ch;if(!TB())return _a(p,d,ph,ch);
  const out=[],[dq,dr]=D[d];const line=(n,dm)=>{for(let k=1;k<=n;k++){const q=p[0]+dq*k,r=p[1]+dr*k;if(!IN(q,r))break;out.push([q,r,dm(k)])}};
  if(ch==='Wiatrak'){[[d,2],[(d+1)%6,1],[(d+5)%6,1]].forEach(([i,v])=>{const q=p[0]+D[i][0],r=p[1]+D[i][1];if(IN(q,r))out.push([q,r,v])});
@@ -39,10 +30,7 @@ function tbInit(){if(!TB())return;
   if(!H&&net.db)save()})}
 const _rTB=render;render=function(){tbTexts();try{tbInit()}catch(e){console.warn(e)}_rTB()};
 /* przykłady akcji w trybie testów */
-(function(){const ev=(k,pairs)=>{let s=DEMOS[k].toString();pairs.forEach(([a,b])=>{if(!s.includes(a))throw new Error('TB demo '+k+': '+a);s=s.split(a).join(b)});DEMOS[k]=(0,eval)('('+s+')')};
- ev('Truchel',[["a.dmg('f0','−1');a.cap('Wróg wszedł","a.dmg('f0',TB()?'−2':'−1');a.cap('Wróg wszedł"]]);
- ev('Sierżant Przemo',[["a.dmg('f0','−1');a.cap('Dron atakuje <b>najbliższą</b> postać: 1 DMG.')","a.dmg('f0',TB()?'−2':'−1');a.cap('Dron atakuje <b>najbliższą</b> postać: '+(TB()?2:1)+' DMG.')"]]);
- const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
+(function(){const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
   l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:TBTXT['Byku'],T:4800,run(a){const to=N(DH,2,2);a.tok('f0','foe',to).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmAll().filter(c=>dmDist(c,DH)<=2),'opt');a.cap('Faza I: skok do 2 pól. W fazie II tylko o 1 pole.')});
    dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Skaczesz na pole przeciwnika…')});

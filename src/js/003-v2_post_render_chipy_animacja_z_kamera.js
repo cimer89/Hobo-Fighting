@@ -26,7 +26,7 @@ async function runAnim(){
  try{
   await wait(350);
   for(let i=0;i<ev.length;i++){
-   const e=ev[i];if(st.skipReq)break;ovSet('');
+   const e=ev[i];try{S2D.ev(e)}catch(_){}if(st.skipReq)break;ovSet('');
    if(e.k==='phase'){cam(null,1);phaseBanner(['FAZA I','FAZA II','FAZA III'][e.ph]);capSet(['Faza I','Faza II','Faza III'][e.ph]);await wait(1100)}
    else if(e.k==='move'&&e.tele){
     const t=document.getElementById('tk-'+e.id),a=cellC(e.from),c=cellC(e.to);capSet(nmOf(e.id)+' teleportuje się');burst(a[0],a[1]-30,'#b36cff',10);

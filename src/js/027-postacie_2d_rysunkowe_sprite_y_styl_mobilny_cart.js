@@ -171,7 +171,6 @@ if(typeof G3D==='undefined'){var G3D=(function(){let P=null;const ls=s=>new Prom
 window.__BRAWLG={};const _bdBR=board;board=function(hl){const G2={};try{Object.values(hl||{}).forEach(h=>{if(!h||!h.t)return;const ids=[...new Set([...String(h.t)].filter(c=>INI[c]).map(c=>INI[c]))];if(ids.length>1)G2[ids[0]]=ids})}catch(e){}window.__BRAWLG=G2;return _bdBR.apply(this,arguments)};
 const _standee2=standee;standee=function(ch,delay){return '<g data-s3="'+ch+'"><circle class="s3p" cx="0" cy="4" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="3.5" width="64" height="1" fill="none" stroke="none"/>'+_standee2(ch,delay)+'</g>'};
 const _sheepArt2=sheepArt;sheepArt=function(){return '<g data-s3="Owca"><circle class="s3p" cx="0" cy="6" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="5.5" width="64" height="1" fill="none" stroke="none"/>'+_sheepArt2()+'</g>'};
-runAnim=(0,eval)('('+runAnim.toString().replace('const e=ev[i];','const e=ev[i];try{S2D.ev(e)}catch(_){}')+')');
 const _r2dB=render;render=function(){_r2dB();try{if(document.querySelector('#stage svg'))S2D.init()}catch(e){}};
 render();
 /* przełączniki w panelu dźwięku */

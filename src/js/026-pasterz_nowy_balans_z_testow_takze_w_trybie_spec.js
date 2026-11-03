@@ -1,10 +1,5 @@
 /* ===================== PASTERZ: nowy balans (z Testów) także w trybie specjalnym ===================== */
 function PNB(){return TB()||isSp()}
-(function(){try{let s=sim.toString();const rep=(a,b)=>{const n=s.split(a).length-1;if(n!==1)throw new Error('SP Pasterz sim ('+n+'): '+a);s=s.replace(a,b)};
- rep("dmg(j,(TB()?2:1)+extra,'szarża owcy',i)","dmg(j,(PNB()?2:1)+extra,'szarża owcy',i)");
- rep("if(vs.length){if(TB()){victims=victims.concat(vs)}","if(vs.length){if(PNB()){victims=victims.concat(vs)}");
- rep("dmg(i,TB()?2:1,'zderzenie z owcą',shCl.o)","dmg(i,PNB()?2:1,'zderzenie z owcą',shCl.o)");
- sim=(0,eval)('('+s+')')}catch(e){console.warn(e)}})();
 /* 7 HP */
 MAXHP=function(ch){return (TB()&&TBHP[ch])||(isSp()&&ch==='Pasterz'?TBHP['Pasterz']:0)||5};
 /* opis na karcie postaci */

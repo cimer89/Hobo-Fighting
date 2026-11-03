@@ -1,15 +1,6 @@
 /* ===================== ŻYLETA: STRZAŁ SNAJPERSKI (Testy) ===================== */
 TBP.zylR=9;TBP.zyl2=2;
 TBTXT['Żyleta']='Strzał: trafia pierwszą postać, 2 DMG na 2 pierwszych polach, dalej 1 DMG. Strzał snajperski (2 akcje): faza I celowanie, faza II 3 DMG przez całą planszę.';
-(function(){let s=sim.toString();const a="\n  const pnd=[];";if(s.split(a).length!==2)throw new Error('snipe sim');
- s=s.replace(a,"\n  S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='snipe'||ph!==1)return;const a0=L[i].plan[0];if(!a0||a0.t!=='aim'||a0.d==null)return;"
- +"const dd=D[a0.d],extra=(a.bd||x.dmgb)?1:0,from=x.pos.slice(),cs=[];let cur=x.pos.slice(),end=null,hs=[];"
- +"for(;;){const nq=cur[0]+dd[0],nr=cur[1]+dd[1];if(!IN(nq,nr))break;cur=[nq,nr];cs.push(cur.slice());"
- +"const sh=SHP.find(z=>z.alive&&!ally(i,z.o)&&z.pos[0]===nq&&z.pos[1]===nr);if(sh){killSheep(sh);end=cur.slice();break}"
- +"const t=S.map((y,j)=>j!==i&&!ally(i,j)&&!y.out&&y.pos[0]===nq&&y.pos[1]===nr?j:-1).filter(j=>j>=0);if(t.length){hs=[t[0]];end=cur.slice();break}}"
- +"ev.push({k:'atk',id:x.id,ch:x.ch,ph,from,cells:cs,end:end||cur.slice(),hit:hs.length>0,line:true,bd:extra>0,snipe:true});"
- +"hs.forEach(j=>{ev.push({k:'hit',id:S[j].id,ph});dmg(j,3+extra,'strzał snajperski',i)});if(hs.length&&x.dmgb){x.dmgb=false;x.dmgbUsed=true}});"+a);
- sim=(0,eval)('('+s+')')})();
 function zylAim(){const p=st.plan&&st.plan[0];return p&&p.t==='aim'&&p.d!=null?p.d:null}
 const _adS=actDefs;actDefs=function(ch,ph){if(TB()&&ch==='Żyleta'){
  if(ph===0)return [{t:'move',l:'Ruch'},{t:'atk',l:'Strzał'},{t:'aim',l:'Celuj'}];

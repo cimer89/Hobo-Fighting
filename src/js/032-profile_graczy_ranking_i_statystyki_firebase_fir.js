@@ -97,13 +97,6 @@ function hfNickOfCh(ch){try{if(typeof H!=='undefined'&&H)return null;if(!net||!n
  if(ME&&ME.ch===ch&&ME.nick)return ME.nick;const p=Object.values(net.pl).find(q=>q&&q.ch===ch);return p&&p.nick||null}catch(e){return null}}
 (function(){
  const _j=join;join=function(){try{if(PROF.nick)ME.nick=PROF.nick}catch(e){}return _j.apply(this,arguments)};
- const pf=(name,pairs)=>{try{let s=window[name]&&window[name].toString();if(!s)return;let ok=true;pairs.forEach(([a,b])=>{if(!s.includes(a)){ok=false;console.warn('nick patch '+name+': '+a.slice(0,40))}else s=s.split(a).join(b)});if(ok)window[name]=(0,eval)('('+s+')')}catch(e){console.warn(e)}};
- const NK="(q.nick?'<span class=\"prnick\">'+hfEsc(q.nick)+'</span> · ':'')";
- pf('revCore',[["<b>'+pre+q.ch+(o.id===net.uid?' (Ty)':'')+'</b>'","<b>'+pre+"+NK+"+q.ch+(o.id===net.uid?' (Ty)':'')+'</b>'"]]);
- pf('scoreTable',[["alt=\"\"> '+r.o.q.ch+teamTag(r.o.q)","alt=\"\"> '+(r.o.q.nick?'<span class=\"prnick\">'+hfEsc(r.o.q.nick)+'</span> · ':'')+r.o.q.ch+teamTag(r.o.q)"],
-  ["const wins=rows.filter(r=>r.total===top).map(r=>r.o.q.ch)","const wins=rows.filter(r=>r.total===top).map(r=>r.o.q.nick?hfEsc(r.o.q.nick)+' ('+r.o.q.ch+')':r.o.q.ch)"]]);
- pf('waitH',[["(p.sready?'✓ ':'… ')+(p.ch||'wybiera')","(p.sready?'✓ ':'… ')+(p.nick?'<span class=\"prnick\">'+hfEsc(p.nick)+'</span> · ':'')+(p.ch||'wybiera')"]]);
- pf('cwaitH',[["'<b>'+(o.id===net.uid?'TY':'GRACZ')","'<b>'+(q.nick?hfEsc(q.nick)+(o.id===net.uid?' (TY)':''):(o.id===net.uid?'TY':'GRACZ'))"]]);
 })();
 
 /* ---------- zapis statystyk po grze online ---------- */

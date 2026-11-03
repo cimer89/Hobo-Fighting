@@ -1,13 +1,4 @@
 /* ===================== BYKU v3 (Testy) + POWRÓT DO MENU ===================== */
-(function(){let s=sim.toString();const rep=(a,b)=>{if(s.split(a).length!==2)throw new Error('byku3: '+a);s=s.replace(a,b)};
- // skok: lądowanie na wrogu (skok o 1 lub 2 pola) = 2 DMG, Byku bez obrażeń
- rep("const fj=g.filter(i=>S[i].ch==='Byku'&&mv[i]===2);","const fj=g.filter(i=>S[i].ch==='Byku'&&(TB()?mv[i]>=1:mv[i]===2));");
- rep("others.forEach(i=>dmg(i,1,'lądowanie Byka',fj[0]));","others.forEach(i=>dmg(i,TB()?2:1,'lądowanie Byka',fj[0]));");
- // szarża: pudło przy aktywnej strefie = uderzenie w ścianę strefy (−1), Byku zostaje przy ścianie
- rep("let cur=x.pos.slice(),hitCell=null,steps=0,shCl=null;","let cur=x.pos.slice(),hitCell=null,steps=0,shCl=null,crash=false;");
- rep("if(!IN(nq,nr))break;cur=[nq,nr];steps++;\n    shCl=","if(!IN(nq,nr))break;if(TB()&&zoneR(round)<3&&dist(...cur)<=zoneR(round)&&dist(nq,nr)>zoneR(round)){crash=true;break}cur=[nq,nr];steps++;\n    shCl=");
- rep("hit:victims.length>0||!!shCl,dir:a.d,bd:extra>0});\n   x.pos=cur.slice();","hit:victims.length>0||!!shCl,dir:a.d,bd:extra>0,crash});\n   x.pos=cur.slice();if(crash){ev.push({k:'hit',id:x.id,ph});dmg(i,1,'ściana strefy')}");
- sim=(0,eval)('('+s+')')})();
 TBTXT['Byku']='Skok o 1–2 pola (o 2 tylko w fazie I): wylądowanie na polu przeciwnika = 2 DMG, Byku bez obrażeń. Szarża (faza II): przez całą planszę, 1 DMG i odrzut. Pudło przy strefie = uderzenie w ścianę: Byku −1.';
 const _hintB=planHint;planHint=function(pl,ph){if(TB()&&st.ch==='Byku'){
  if(pl.t==='move')return (ph>0?'Faza II: skok o 1 pole':'Skok o 1–2 pola')+'. Wyląduj na przeciwniku: 2 DMG dla niego.';

@@ -39,7 +39,7 @@ function charPickH(){
  return h}
 function waitH(){const ps=Object.entries(net.pl),nA=ps.filter(([,p])=>p.tm==='A').length,nB=ps.filter(([,p])=>p.tm==='B').length;
  const all=(isTeam()?ps.length===4&&nA===2&&nB===2:ps.length>1)&&ps.every(([,p])=>p.sready);
- return (net.err?'<div class="card">Nie udało się zapisać. Potrzebujesz prawa edycji w tym linku.</div>':'')+'<div class="card">'+ps.map(([id,p])=>'<div>'+(p.sready?'✓ ':'… ')+(p.ch||'wybiera')+(isTeam()&&p.tm?' · '+TNAME[p.tm]:'')+(id===net.uid?' (Ty)':'')+'</div>').join('')+'</div>'
+ return (net.err?'<div class="card">Nie udało się zapisać. Potrzebujesz prawa edycji w tym linku.</div>':'')+'<div class="card">'+ps.map(([id,p])=>'<div>'+(p.sready?'✓ ':'… ')+(p.nick?'<span class="prnick">'+hfEsc(p.nick)+'</span> · ':'')+(p.ch||'wybiera')+(isTeam()&&p.tm?' · '+TNAME[p.tm]:'')+(id===net.uid?' (Ty)':'')+'</div>').join('')+'</div>'
   +(all?board(tok(p=>p.posr&&p.posr[1]))+'<p style="text-align:center">Pozycje startowe ujawnione.</p><button class="go" data-a="goplan">Planuj fazę I</button>':'<p style="text-align:center">'+(isTeam()?'2 vs 2: potrzeba 4 graczy, po 2 w drużynie. ':'')+'Czekamy na pozostałych graczy. Kod pokoju: <b>'+net.code+'</b></p>')}
 
 /* --- wynik i punktacja drużynowa --- */
@@ -55,9 +55,9 @@ function scoreTable(items,Rs){
  if(isTeam()){const tt={A:0,B:0};rows.forEach(r=>{if(r.o.q.tm)tt[r.o.q.tm]+=r.total});
   const wt=winTeam(items,Rs)||(tt.A===tt.B?null:(tt.A>tt.B?'A':'B'));
   h+='<div class="card" style="border-color:'+(wt?TCOL[wt]:'#f2c230')+'"><b>Koniec gry!</b> '+(wt?'Wygrywa <span style="color:'+TCOL[wt]+'">'+TNAME[wt]+'</span>.':'Remis drużyn.')+'<br>'+TNAME.A+': <b>'+tt.A+' pkt</b> · '+TNAME.B+': <b>'+tt.B+' pkt</b></div>'}
- else{const wins=rows.filter(r=>r.total===top).map(r=>r.o.q.ch);h+='<div class="card" style="border-color:#f2c230"><b>Koniec gry!</b> Najwięcej punktów: '+wins.join(', ')+' ('+top+' pkt).</div>'}
+ else{const wins=rows.filter(r=>r.total===top).map(r=>r.o.q.nick?hfEsc(r.o.q.nick)+' ('+r.o.q.ch+')':r.o.q.ch);h+='<div class="card" style="border-color:#f2c230"><b>Koniec gry!</b> Najwięcej punktów: '+wins.join(', ')+' ('+top+' pkt).</div>'}
  h+='<div class="card"><table class="sc"><tr><th></th><th>Obr.</th><th>Wiel.</th><th>Przedm.</th><th>Ostatni</th><th>Razem</th></tr>';
- rows.forEach(r=>{h+='<tr'+(r.total===top?' class="top"':'')+'><td><img class="av" style="width:22px;height:22px;border-width:2px;border-color:'+C[r.o.q.ch].col+'" src="'+IMG[r.o.q.ch]+'" alt=""> '+r.o.q.ch+teamTag(r.o.q)+'</td><td>'+r.d+'</td><td>'+r.m+'</td><td>'+r.it+'</td><td>'+r.last+'</td><td class="tot">'+r.total+'</td></tr>'});
+ rows.forEach(r=>{h+='<tr'+(r.total===top?' class="top"':'')+'><td><img class="av" style="width:22px;height:22px;border-width:2px;border-color:'+C[r.o.q.ch].col+'" src="'+IMG[r.o.q.ch]+'" alt=""> '+(r.o.q.nick?'<span class="prnick">'+hfEsc(r.o.q.nick)+'</span> · ':'')+r.o.q.ch+teamTag(r.o.q)+'</td><td>'+r.d+'</td><td>'+r.m+'</td><td>'+r.it+'</td><td>'+r.last+'</td><td class="tot">'+r.total+'</td></tr>'});
  return h+'</table><p>1 pkt za 1 obrażenie, +1 za każdego dodatkowego trafionego przeciwnika jednym atakiem, 1 pkt za przedmiot, 5 pkt dla '+(isTeam()?'każdego żywego gracza zwycięskiej drużyny':'ostatniego na polu')+'.</p></div>'}
 
 /* --- podnoszenie przedmiotu --- */

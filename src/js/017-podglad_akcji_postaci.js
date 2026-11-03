@@ -65,7 +65,7 @@ const DEMOS={
    dmAt(2100,()=>{a.clear();a.mv('h',N(DH,2,2),'fast')});
    dmAt(2500,()=>{a.dmg('f0','−3');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>3 DMG</b> i odrzut o 1 pole. Ściana za plecami = brak odrzutu.')})}},dmCrush()],
  'Ciotka':()=>[dmMove(),dmLine('Atak – faza I',C['Ciotka'].txt,[N(DH,2,2)],[[0,'−2']],{c1:'Linia 3 pól przed tobą.',c2:'W fazie I zaklęcie zadaje <b>2 DMG</b> każdemu w linii.'}),
-  dmLine('Atak – faza II','Faza II: 1 DMG i przesunięcie trafionej postaci o 1 pole. Wepchnięcie na kogoś: obaj −1.',[N(DH,2,2)],[[0,'−1']],{ph:1,T:5600,tag:'faza II',c1:'Faza II: linia 3 pól, 1 DMG…',c2:'…a potem przesuwasz trafionego.',after(a){const f=N(DH,2,2),to=N(f,1);
+  dmLine('Atak – faza II',(TB()?'Faza II: 2 DMG':'Faza II: 1 DMG')+' i przesunięcie trafionej postaci o 1 pole. Wepchnięcie na kogoś: obaj −1.',[N(DH,2,2)],[[0,TB()?'−2':'−1']],{ph:1,T:5600,tag:'faza II',c1:'Faza II: linia 3 pól, '+(TB()?2:1)+' DMG…',c2:'…a potem przesuwasz trafionego.',after(a){const f=N(DH,2,2),to=N(f,1);
    dmAt(3500,()=>{a.clear();a.mark(dmNb(f),'opt');a.cap('Wybierasz, gdzie go przepchniesz.')});
    dmAt(4300,()=>{a.clear();a.mark([to],'pick');a.mv('f0',to)})}}),dmCrush()],
  'Pasterz':()=>[dmMove(),
@@ -93,13 +93,13 @@ const DEMOS={
    dmAt(300,()=>{a.mark(dmNb(DH),'opt');a.cap('Wybierz pole obok siebie.')});
    dmAt(1300,()=>{a.clear();a.tok('pd','puddle',p);a.act('pd','dmpop');a.cap('Kałuża trucizny zostaje na 3 rundy.')});
    dmAt(2300,()=>{a.mv('f0',p,0,[0,-2])});
-   dmAt(3000,()=>{a.dmg('f0','−1');a.cap('Wróg wszedł w kałużę: obrażenia na koniec fazy.')})}},dmCrush()],
+   dmAt(3000,()=>{a.dmg('f0',TB()?'−2':'−1');a.cap('Wróg wszedł w kałużę: obrażenia na koniec fazy.')})}},dmCrush()],
  'Sierżant Przemo':()=>[dmMove(),dmLine('Pistolet','Pistolet strzela na wprost i trafia pierwszą postać: 1 DMG.',[N(DH,2,2),N(DH,2,3)],[[0,'−1']],{nolab:true,shot:N(DH,2,2),col:'#ffb070',c1:'Strzał leci prosto…',c2:'…i trafia <b>pierwszą</b> postać: 1 DMG.'}),
   {t:'Dron',d:'Faza I: aktywujesz drona. Faza II: wysyłasz go nad wybrane pole, a on atakuje najbliższą postać.',T:5400,run(a){const to=[1,-2],f1=[1,-3],f2=[-3,2];a.tok('h','hero',DH).tok('f0','foe',f1).tok('f1','foe',f2);
    dmAt(300,()=>{a.tok('dr','drone',DH);a.act('dr','dmpop');a.cap('<b>Faza I:</b> aktywacja drona (cała akcja fazy).')});
    dmAt(1700,()=>{a.mark([to],'pick');a.cap('<b>Faza II:</b> wybierasz pole, nad które leci dron.')});
    dmAt(2400,()=>{a.clear();a.mv('dr',to)});
-   dmAt(3100,()=>{a.mark([f1],'hit');a.shot(to,f1,'#ff6b5b');a.dmg('f0','−1');a.cap('Dron atakuje <b>najbliższą</b> postać: 1 DMG.')})}},dmCrush()]};
+   dmAt(3100,()=>{a.mark([f1],'hit');a.shot(to,f1,'#ff6b5b');a.dmg('f0',TB()?'−2':'−1');a.cap('Dron atakuje <b>najbliższą</b> postać: '+(TB()?2:1)+' DMG.')})}},dmCrush()]};
 function demoH(){const ch=DM.ch,list=DEMOS[ch](),d=list[DM.i],r=(ROLE[ch]||[''])[0];
  let hx='';cells.forEach(c=>{const [x,y]=dmXY(c);hx+='<polygon class="dmhx" data-dk="'+c[0]+','+c[1]+'" points="'+dmHexPts()+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')"/>'});
  return '<div class="dmbox" style="--c:'+C[ch].col+'"><div class="dmhead"><img src="'+IMG[ch]+'" alt=""><div><small>'+r+'</small><b>'+ch.toUpperCase()+'</b></div><button class="dmx" data-dm="x" aria-label="Zamknij">✕</button></div>'

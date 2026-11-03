@@ -1,25 +1,4 @@
 /* ===================== OWCA vs BYKU, KIJ PASTERSKI ===================== */
-(function(){let s=sim.toString();const rep=(a,b)=>{if(s.split(a).length!==2)throw new Error('sim2: '+a);s=s.replace(a,b)};
- // owca zawsze zostaje tam, gdzie skończyła szarżę
- rep("s.pos=victims.length?cur.slice():from.slice();","s.pos=cur.slice();");
- rep(",back:!victims.length});","});");
- rep("const planOf=i=>L[i].plan[ph]||null;","const planOf=i=>L[i].plan[ph]||null;const CLASH=new Set();");
- // szarża Byka zderza się z owcą
- rep("let cur=x.pos.slice(),hitCell=null,steps=0;","let cur=x.pos.slice(),hitCell=null,steps=0,shCl=null;");
- rep("if(!IN(nq,nr))break;cur=[nq,nr];steps++;\n    if(S.some(","if(!IN(nq,nr))break;cur=[nq,nr];steps++;\n    shCl=SHP.find(z=>z.alive&&z.o!==i&&!ally(i,z.o)&&z.pos[0]===nq&&z.pos[1]===nr)||null;if(shCl)break;\n    if(S.some(");
- rep("ev.push({k:'charge',id:x.id,from,to:cur.slice(),steps,hit:victims.length>0,dir:a.d,bd:extra>0});\n   x.pos=cur.slice();",
-     "ev.push({k:'charge',id:x.id,from,to:cur.slice(),steps,hit:victims.length>0||!!shCl,dir:a.d,bd:extra>0});\n   x.pos=cur.slice();"
-     +"if(shCl){killSheep(shCl);CLASH.add(shCl.o);const sa=planOf(shCl.o);if(sa&&sa.t==='atk'&&S[shCl.o].ch==='Pasterz'&&sa.d===(a.d+3)%6){ev.push({k:'hit',id:x.id,ph});dmg(i,TB()?2:1,'zderzenie z owcą',shCl.o)}}");
- rep("const s=sheepOf(i);if(!s){ev.push({k:'scharge',id:x.id,none:true});return}","const s=sheepOf(i);if(!s){if(!CLASH.has(i))ev.push({k:'scharge',id:x.id,none:true});return}");
- // kij pasterski (Testy): 2 pola przed sobą, 2 DMG, przebija
- const a="\n  const pnd=[];";
- rep(a,"\n  S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='staff'||x.ch!=='Pasterz')return;"
-  +"const dd=D[a.d],extra=(a.bd||x.dmgb)?1:0,cs=[],hs=[];for(let k=1;k<=2;k++){const q=x.pos[0]+dd[0]*k,r=x.pos[1]+dd[1]*k;if(!IN(q,r))break;cs.push([q,r]);"
-  +"SHP.forEach(z=>{if(z.alive&&z.o!==i&&!ally(i,z.o)&&z.pos[0]===q&&z.pos[1]===r)killSheep(z)});"
-  +"S.forEach((y,j)=>{if(j!==i&&!ally(i,j)&&!y.out&&y.pos[0]===q&&y.pos[1]===r)hs.push(j)})}"
-  +"ev.push({k:'atk',id:x.id,ch:x.ch,ph,from:x.pos.slice(),cells:cs,end:cs.length?cs[cs.length-1]:x.pos.slice(),hit:hs.length>0,line:false,bd:extra>0});"
-  +"hs.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,2+extra,'kij pasterski',i)});if(hs.length>=2)x.pts.m+=hs.length-1;if(hs.length&&x.dmgb){x.dmgb=false;x.dmgbUsed=true}});"+a);
- sim=(0,eval)('('+s+')')})();
 /* planowanie: kij */
 const _adP=actDefs;actDefs=function(ch,ph){const d=_adP(ch,ph);if(TB()&&ch==='Pasterz')return d.concat([{t:'staff',l:'Kij'}]);return d};
 const _okP=planOk;planOk=function(pl,ph){if(pl.t==='staff')return pl.d!==null;return _okP(pl,ph)};

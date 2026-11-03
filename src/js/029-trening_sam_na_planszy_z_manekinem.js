@@ -21,7 +21,6 @@
  const _bd=board;board=function(hl){try{if(T()&&st.scr==='plan'&&hl){const q=H.p[1].posr[st.round];if(q){const k=K(...q),e=hl[k]||{};hl[k]=Object.assign({},e,{t:(e.t||'')+'µ'})}}}catch(e){}return _bd.apply(this,arguments)};
  const _zr=zoneR;zoneR=function(r){return T()?3:_zr(r)};
  /* w treningu nie ma końca gry */
- try{let s=revCore.toString();const a='over=(isTeam()?';if(s.includes(a)){s=s.replace(a,'over=!(typeof H!=="undefined"&&H&&H.train)&&(isTeam()?');revCore=(0,eval)('('+s+')')}else console.warn('trening: revCore')}catch(e){console.warn(e)}
  function stay(p,r){const pos=p.posr[r];return Array.from({length:3},()=>({t:'move',m:pos.slice(),d:null}))}
  function goPlan(){const p=H.p[0];H.cur=0;H.tgt='plan';st.scr='plan';st.ch=p.ch;st.start=p.posr[st.round];st.plan=newPlan();st.ph=0;st.done=false}
  function start(ch){addDummy();net.db=null;st.tm2='ffa';st.round=1;st.chOk=true;
