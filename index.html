@@ -1377,7 +1377,7 @@ document.addEventListener('click',function(e){
  const d=t.dataset;
  if(d.mode){st.gm=d.mode;e.stopImmediatePropagation();render();return}
  if(d.a==='modeback'){st.gm=null;e.stopImmediatePropagation();render();return}
- if(d.a==='create'&&net.db){const L='ABCDEFGHIJKLMNOPQRUVWXYZ',R=()=>'ABCDEFGHJKLMNPQRTUVWXYZ23456789'[Math.floor(Math.random()*31)];const code=(st.gm==='special'?'S':st.gm==='test'?'T':L[Math.floor(Math.random()*L.length)])+R()+R()+R();e.stopImmediatePropagation();join(code);return}
+ if(d.a==='create'&&net.db){const L='ACDEFGHIJKLMNOPQRUVWXYZ',R=()=>'ABCDEFGHJKLMNPQRTUVWXYZ23456789'[Math.floor(Math.random()*31)];const code=(st.gm==='special'?'S':st.gm==='test'?'T':L[Math.floor(Math.random()*L.length)])+R()+R()+R();e.stopImmediatePropagation();join(code);return}
  if(d.a==='joinb'&&net.db){const el=document.getElementById('code'),v=((el&&el.value)||'').trim().toUpperCase();e.stopImmediatePropagation();if(v.length===4){st.gm=v[0]==='S'?'special':v[0]==='T'?'test':'classic';join(v)}return}
  if(d.n){st.seed=Math.random().toString(36).slice(2,8);return}
  if(d.leg!==undefined){st.legend=!st.legend;e.stopImmediatePropagation();render()}},true);
@@ -1871,7 +1871,7 @@ window.addEventListener('click',function(e){
  const d=t.dataset;
  if(d.tm){st.tm2=d.tm;e.stopImmediatePropagation();render();return}
  if(d.a==='modeback'&&st.tm2){st.tm2=null;e.stopImmediatePropagation();render();return}
- if(d.a==='create'&&net.db){const L='ABCDEFGHJKLMNPQRUVWXYZ',R='ABCDEFGHJKLMNPQRTUVWXYZ3456789',pk=s=>s[Math.floor(Math.random()*s.length)];
+ if(d.a==='create'&&net.db){const L='ACDEFGHJKLMNPQRUVWXYZ',R='ABCDEFGHJKLMNPQRTUVWXYZ3456789',pk=s=>s[Math.floor(Math.random()*s.length)];
   const code=(st.gm==='special'?'S':st.gm==='test'?'T':pk(L))+(isTeam()?'2':pk(R))+pk(R)+pk(R);e.stopImmediatePropagation();st.team=null;join(code);return}
  if(d.a==='joinb'){const el=document.getElementById('code'),v=((el&&el.value)||'').trim().toUpperCase();if(v.length===4)st.tm2=v[1]==='2'?'2v2':'ffa';st.team=null;return}
  if(d.a==='hgo'){st.team=null;return}
@@ -2936,7 +2936,7 @@ const MB=(function(){
  function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];
   for(let i=0;i<n;i++){const cl=Object.entries(ON.docs).filter(([,d])=>d&&d.slot===i).sort((a,b)=>(a[1].ts-b[1].ts)||(a[0]<b[0]?-1:1));own.push(cl.length?{id:cl[0][0],d:cl[0][1]}:null)}
   const used={};own.forEach(o=>{if(!o||!o.d.ch)return;if(used[o.d.ch])o.dup=true;else used[o.d.ch]=1});return own}
- function onCreate(mode,mi){const code=Math.random().toString(36).slice(2,6).toUpperCase().replace(/[^A-Z0-9]/g,'X');
+ function onCreate(mode,mi){const R='ACDEFGHJKLMNPQRTUVWXYZ23456789',code='B'+[0,1,2].map(()=>R[Math.floor(Math.random()*R.length)]).join('');
   ON={code,host:true,hostInfo:{mode,mi,seed:Math.floor(Math.random()*2e9)+1,start:false},docs:{},myR:{},ups:{},slot:0,ts:Date.now(),ch:null};onSub();onPub();draw()}
  function onJoin(code){code=(code||'').trim().toUpperCase();if(code.length!==4)return false;ON={code,host:false,docs:{},myR:{},ups:{},slot:null,ts:0,ch:null};onSub();onPub();draw();return true}
  function onLeave(){try{P2P.reset()}catch(e){}ON=null}
@@ -2978,7 +2978,9 @@ const MB=(function(){
   return false}
  function onClickOn(v){
   if(v==='on:host'){ON={pending:true};MSEL=null;draw();return true}
-  if(v==='on:join'){const el=root.querySelector('#mbcode');if(!onJoin(el&&el.value)){if(el)el.style.outline='3px solid #ff5a4a'}return true}
+  if(v==='on:join'){const el=root.querySelector('#mbcode'),cv=((el&&el.value)||'').trim().toUpperCase();
+   if(cv.length===4&&cv[0]!=='B'){if(el){el.style.outline='3px solid #ff5a4a';let w=root.querySelector('.mbcw');if(!w){w=document.createElement('p');w.className='mbwarn mbcw';el.parentNode.insertAdjacentElement('afterend',w)}w.textContent='Kody Bitwy baz zaczynają się od litery B. Ten kod jest do zwykłej gry – wpisz go w menu głównym w „Dołącz kodem”.'}return true}
+   if(!onJoin(cv)){if(el)el.style.outline='3px solid #ff5a4a'}return true}
   if(v==='on:leave'){onLeave();draw();return true}
   if(v==='mback'&&ON&&ON.pending&&!MSEL){ON=null;draw();return true}
   if(ON&&ON.pending&&v.startsWith('map:')){const mode=MSEL;MSEL=null;onCreate(mode,+v.slice(4));return true}
@@ -3721,6 +3723,12 @@ main.full[data-lobby]>.row{padding-left:54px}
  }catch(e){}};
  render();
 })();
+/* kod pokoju Bitwy baz (zaczyna się od B) wpisany w zwykłe „Dołącz kodem” prowadzi do lobby Bitwy baz zamiast do zwykłej poczekalni */
+window.addEventListener('click',function(e){const t=e.target.closest&&e.target.closest('[data-a="joinb"]');if(!t)return;
+ const el=document.getElementById('code'),v=((el&&el.value)||'').trim().toUpperCase();if(v.length!==4||v[0]!=='B')return;
+ e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
+ const ob=document.querySelector('[data-mbopen]');if(ob)ob.click();else{try{MB.open()}catch(_){}}
+ setTimeout(()=>{const c=document.querySelector('#mbcode'),j=document.querySelector('[data-mb="on:join"]');if(c&&j){c.value=v;j.click()}},120)},true);
 
 /* ===================== ONLINE: poczekalnia → drużyny → wybór postaci po kolei (losowa kolejka) ===================== */
 (function(){
