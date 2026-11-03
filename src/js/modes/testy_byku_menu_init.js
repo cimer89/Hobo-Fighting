@@ -1,11 +1,11 @@
 /* ===================== BYKU v3 (Testy) + POWRÓT DO MENU ===================== */
 const _hintB=planHint;
 planHint=function(pl,ph){if(TB()&&st.ch==='Byku'){
- if(pl.t==='move')return (ph>0?'Faza II: skok o 1 pole':'Skok o 1–2 pola')+' albo w miejscu. Wyląduj na przeciwniku: 3 DMG dla niego.';
+ if(pl.t==='move')return ph>0?'Faza II: skok o 1 pole albo w miejscu. Wyląduj na przeciwniku: 3 DMG dla niego.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.';
  if(pl.t==='atk'&&pl.d!==null)return 'Szarża: '+DN[pl.d]+' (2 DMG i odrzut).'+(zoneR(st.round)<3?' Uwaga: pudło = uderzenie w ścianę strefy, −1 HP.':'')}
  return _hintB(pl,ph)};
 (function(){const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
- l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:'Skok o 1–2 pola. Wylądowanie dokładnie na polu przeciwnika zadaje mu 3 DMG, Byku nie traci HP.',T:4600,run(a){const to=N(DH,2);a.tok('f0','foe',to).tok('h','hero',DH);
+ l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:'Skok o 1 pole (albo w miejscu): wylądowanie na polu przeciwnika zadaje mu 3 DMG. Dalszy skok o 2 pola: 1 DMG. Byku nie traci HP.',T:4600,run(a){const to=N(DH,2);a.tok('f0','foe',to).tok('h','hero',DH);
   dmAt(300,()=>{a.mark(dmAll().filter(c=>dmDist(c,DH)<=2&&dmDist(c,DH)>0),'opt');a.cap('Zasięg skoku: 1–2 pola (2 pola tylko w fazie I).')});
   dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Musisz trafić <b>dokładnie</b> w pole przeciwnika…')});
   dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});

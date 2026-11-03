@@ -32,7 +32,7 @@ Listopad 2026. Ten dokument opisuje, co znalazłem w kodzie, co zmieniłem, jak 
 
 ### Konflikty i możliwe błędy (nie naprawiałem, bo zmieniłyby to, co widać w grze; czekają na Twoją decyzję)
 
-1. ~~Nieaktualna podpowiedź przy skoku Byka~~ – **naprawione**. Podpowiedzi w panelu, liczby na polach skoku i przykłady akcji (demo) pokazują teraz obowiązujące wartości: skok, także w miejscu, = 3 DMG; szarża = 2 DMG.
+1. ~~Nieaktualna podpowiedź przy skoku Byka~~ – **naprawione**. Podpowiedzi w panelu, liczby na polach skoku i przykłady akcji (demo) pokazują teraz obowiązujące wartości. Później zmieniono też zasadę skoku: skok o 1 pole albo w miejscu = 3 DMG, dalszy skok o 2 pola = 1 DMG, szarża = 2 DMG. Na polach skoku jest ikonka i liczba obrażeń.
 2. **Przyciski „Profil” i „Ranking” są widoczne, ale nie działają,** dopóki nie zostanie wpisana konfiguracja Firebase (`PROF_FB` w `online/profiles.js`).
 3. **Wersja na GitHub zawsze pobiera biblioteki Firebase** (3 pliki), choć konfiguracja jest pusta i gra działa bez nich, przez P2P. To spowalnia start.
 4. ~~Podpowiedź przy szarży poprawiana przeszukiwaniem strony~~ – **naprawione**. Tekst jest poprawiony u źródła, a przeszukiwanie strony po każdym renderze usunięte.

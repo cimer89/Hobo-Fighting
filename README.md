@@ -281,9 +281,12 @@ We wszystkich trybach owca zostaje na polu, na którym skończyła szarżę. Sza
 
 Po końcu gry przycisk **Menu główne** wraca do wyboru trybu bez przeładowania strony.
 
-## Byku: skok w miejscu
+## Byku: obrażenia ze skoku
 
-Byku może wybrać skok na swoje własne pole: podskakuje i ląduje w tym samym miejscu. Jeśli w tej fazie przeciwnik wejdzie na jego pole (albo już na nim stoi), dostaje **3 DMG** – tak samo jak przy skoku o 1 lub 2 pola. Byku nie dostaje wtedy obrażeń ze ścisku. Gdy Byku w tej fazie nie skacze (np. szarżuje), na wspólnym polu działa zwykły ścisk (−1 dla obu).
+- **Skok o 1 pole albo w miejscu:** lądowanie na przeciwniku = **3 DMG**. Przy skoku w miejscu liczy się też przeciwnik, który wejdzie na pole Byka albo już na nim stoi.
+- **Dalszy skok (o 2 pola):** **1 DMG**.
+- **Szarża:** 2 DMG i odrzucenie o 1 pole.
+- **Na planszy:** przy planowaniu skoku pola mają ikonkę skoku i liczbę obrażeń (3 na polach o 1, 1 na polach o 2).
 
 ## Kody pokojów Bitwy baz
 

@@ -49,7 +49,7 @@ function sim(L,round,pd,PUD){
   Object.values(G).forEach(g=>{if(g.length<2)return;
    if(ph===2&&!g.some(i=>act[i]))return;
    const fj=g.filter(i=>S[i].ch==='Byku'&&(mv[i]>=1||(planOf(i)&&planOf(i).t==='move')));
-   if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i));others.forEach(i=>dmg(i,3,'lądowanie Byka',fj[0]));if(TB()&&TBP.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
+   if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i));others.forEach(i=>dmg(i,mv[fj[0]]===2?1:3,'lądowanie Byka',fj[0]));if(TB()&&TBP.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
    else if(!g.every(i=>S[i].tm&&S[i].tm===S[g[0]].tm))g.forEach(i=>dmg(i,1,'ścisk'))});
   if(ph===1)S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='drone'||!x.drone)return;
    const to=a.m?a.m.slice():x.pos.slice();let best=[],bd=1e9;

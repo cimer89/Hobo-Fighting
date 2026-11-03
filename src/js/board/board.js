@@ -1,9 +1,12 @@
 /* ===================== Plansza: rysowanie pól i żetonów ===================== */
 /* --- z części: js/000-start.js --- */
 function zf(h,q,r){if(h.fill)return h.fill;if(zoneR(st.round)>=3)return '';return dist(q,r)>zoneR(st.round)?'color-mix(in srgb,#e0342b 50%,transparent)':'color-mix(in srgb,#2fbf5f 30%,transparent)'}
+/* ikonka skoku na polach (Byku): ludzik w skoku, przed liczbą obrażeń */
+const JUMPIC=(()=>{const d='M-7,-5 a2.2,2.2 0 1 1 0.1,0 M-6,-1.5 L-4,3 L-1,5 M-4,3 L-7,6 M-9,0 L-5,-1 L-2,-3';return '<path d="'+d+'" fill="none" stroke="#000" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'})();
 function lab(h){if(!h.t)return '';const a=[...String(h.t)],ids=a.filter(c=>INI[c]),rest=a.filter(c=>!INI[c]).join('');let o='';
  if(ids.length){const n=INI[ids[0]];o+='<circle r="19" fill="'+C[n].col+'"/><image href="'+IMG[n]+'" x="-17" y="-17" width="34" height="34" clip-path="url(#cp)" preserveAspectRatio="xMidYMid slice"/>'+(ids.length>1?'<text class="lbl" y="13">+'+(ids.length-1)+'</text>':'')}
- if(rest)o+='<text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text>';return o?'<g transform="scale(2)">'+o+'</g>':o}
+ if(rest&&h.ic==='jump')o+=JUMPIC+'<text class="lbl" x="5" y="0">'+rest+'</text>';
+ else if(rest)o+='<text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text>';return o?'<g transform="scale(2)">'+o+'</g>':o}
 function tok(g){const hl={};Object.entries(net.pl).forEach(([id,p])=>{const q=g(p);if(!q||!p.ch)return;const k=K(...q);hl[k]=hl[k]?{fill:hl[k].fill,t:hl[k].t+p.ch[0],stroke:'var(--hit)'}:{fill:C[p.ch].col,t:p.ch[0],stroke:id===net.uid?'var(--ink)':undefined}});return hl}
 function pips(p,own,idx){return '<span class="hp" style="display:inline-flex">'+Array.from({length:MAXHP(p.ch||st.ch)},(_,i)=>i+1).map(n=>'<i '+(own?'data-hp="'+n+'" data-pi="'+(idx||0)+'" data-eff="'+p.hp+'" ':'')+'style="'+(n<=p.hp?'':'opacity:.2')+'"></i>').join('')+'</span>'}
 function hTok(g){const hl={};H.p.forEach(p=>{const q=g(p);if(!q)return;const k=K(...q);hl[k]=hl[k]?{fill:hl[k].fill,t:hl[k].t+p.ch[0],stroke:'var(--hit)'}:{fill:C[p.ch].col,t:p.ch[0]}});return hl}
@@ -18,7 +21,7 @@ function board(hl,onlyStart){
   const [x,y]=px(q,r),k=K(q,r),h=hl[k]||{};
   const a=h.t?[...String(h.t)]:[],ids=a.filter(c=>INI[c]),rest=a.filter(c=>!INI[c]).join('');
   const lift=!!h.stroke,zfv=zf(h,q,r);
-  g+='<g data-k="'+k+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" style="cursor:pointer">'+(lift?'<polygon class="wall" points="'+GEO[k].p+'"/>':'')+'<polygon class="hexp'+(lift?' lift':'')+'" points="'+GEO[k].p+'" '+(zfv?'style="fill:'+zfv+(String(h.fill).startsWith('#')?';fill-opacity:.4':'')+'" ':'')+(h.stroke?'stroke="'+h.stroke+'" stroke-width="6"':'')+'/>'+(rest?'<g transform="translate(0,'+(lift?-8:0)+') scale(2)"><text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text></g>':'')+'</g>';
+  g+='<g data-k="'+k+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" style="cursor:pointer">'+(lift?'<polygon class="wall" points="'+GEO[k].p+'"/>':'')+'<polygon class="hexp'+(lift?' lift':'')+'" points="'+GEO[k].p+'" '+(zfv?'style="fill:'+zfv+(String(h.fill).startsWith('#')?';fill-opacity:.4':'')+'" ':'')+(h.stroke?'stroke="'+h.stroke+'" stroke-width="6"':'')+'/>'+(rest?'<g transform="translate(0,'+(lift?-8:0)+') scale(2)">'+(h.ic==='jump'?JUMPIC+'<text class="lbl" x="5" y="'+(ids.length?-14:0)+'">'+rest+'</text>':'<text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text>')+'</g>':'')+'</g>';
   if(ids.length){const n=INI[ids[0]];toks.push({y,svg:'<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+') scale('+depthScale(y).toFixed(3)+')" style="pointer-events:none">'+standee(n,(toks.length*.37).toFixed(2))+(ids.length>1?'<g transform="translate(28,-46)"><circle r="14" fill="#000" stroke="#fff" stroke-width="2"/><text class="lbl2" style="font-size:18px;stroke-width:0" y="1" dominant-baseline="middle">+'+(ids.length-1)+'</text></g>':'')+'</g>'})}
  });
  toks.sort((a,b)=>a.y-b.y);const itm=boardItems().map(itemSvg).join('');const ext=boardExtras();

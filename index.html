@@ -606,7 +606,7 @@ const C={
  'Wiatrak':{col:'#3b6fd4',txt:'Wachlarz 3 pól: środek 2 DMG, boki po 1 DMG.'},
  'Długi':{col:'#6b8f3e',txt:'Linia 3 pól: 1 – 1 – 2 DMG. Ma 3 fazy w rundzie (anulowana, gdy ktoś go przesunie).'},
  'Żyleta':{col:'#e0a81c',txt:'Linia do końca planszy, trafia pierwszą postać, 2 DMG.'},
- 'Byku':{col:'#e07a1a',txt:'Skok o 1–2 pola albo w miejscu: lądowanie na przeciwniku = 3 DMG (także skok w miejscu, gdy ktoś wejdzie na pole Byka). Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.'},
+ 'Byku':{col:'#e07a1a',txt:'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.'},
  'Ciotka':{col:'#8a4fc7',txt:'Linia 3 pól. Faza I: 2 DMG. Faza II: 1 DMG + przesunięcie o 1.'}
 };
 /* --- z części: BONUSY POSTACI --- */
@@ -724,11 +724,11 @@ const DEMOS={
    [[300,1,'Faza I'],[1500,2,'Faza II'],[2700,3,'Faza III – tylko Długi!']].forEach(([t,k,l],j)=>dmAt(t,()=>{const p=[DH,N(DH,2),N(N(DH,2),1),N(N(N(DH,2),1),2)];a.clear();a.mark([p[k]],'pick');a.mv('h',p[k]);a.cap('<b>'+l+'</b>')}))}},dmCrush()],
  'Żyleta':()=>[dmMove(),dmLine('Strzał',C['Żyleta'].txt,[N(DH,2,2),N(DH,2,4)],[[0,'−2']],{nolab:true,shot:N(DH,2,2),c1:'Strzał leci prosto aż do krawędzi planszy…',c2:'…i trafia <b>pierwszą</b> postać na drodze: 2 DMG. Ta za nią jest bezpieczna.'}),dmCrush()],
  'Byku':()=>[
-  {t:'Skok',d:'Skok o 1 lub 2 pola albo w miejscu. Lądowanie na przeciwniku zadaje mu 3 DMG.',T:4600,run(a){const to=N(DH,2,2);a.tok('f0','foe',to).tok('h','hero',DH);
+  {t:'Skok',d:'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG. Dalszy skok o 2 pola: 1 DMG.',T:4600,run(a){const to=N(DH,2,2);a.tok('f0','foe',to).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmAll().filter(c=>dmDist(c,DH)<=2),'opt');a.cap('Zasięg skoku: do 2 pól w każdą stronę.')});
    dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Skaczesz na pole przeciwnika…')});
    dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});
-   dmAt(2650,()=>{a.mark([to],'hit',['3']);a.dmg('f0','−3');a.cap('Lądowanie na przeciwniku: <b>3 DMG</b> dla niego, Byku bez obrażeń.')})}},
+   dmAt(2650,()=>{a.mark([to],'hit',['1']);a.dmg('f0','−1');a.cap('Dalszy skok (2 pola): <b>1 DMG</b> dla przeciwnika. Skok o 1 pole: <b>3 DMG</b>.')})}},
   {t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost do pierwszej postaci lub ściany: 2 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmNb(DH),'opt');a.cap('Faza II: wybierz kierunek szarży.')});
    dmAt(1300,()=>{a.clear();a.mark(attack(DH,2,1,'Byku').map(c=>[c[0],c[1]]),'hit');a.cap('Byku pędzi prosto przed siebie…')});
@@ -846,7 +846,7 @@ const TBTXT={
  'Wiatrak':'Wachlarz 3 pól (2/1/1 DMG) plus drugi rząd 3 pól po 1 DMG. 6 HP.',
  'Długi':'Linia 3 pól: 1 – 2 – 2 DMG. Ma 3 fazy w rundzie (anulowana, gdy ktoś go przesunie).',
  'Żyleta':'Strzał przez całą planszę, trafia pierwszą postać: 2 DMG do 3 pól, dalej 1 DMG.',
- 'Byku':'Skok o 1–2 pola albo w miejscu: lądowanie na przeciwniku = 3 DMG (także skok w miejscu, gdy ktoś wejdzie na pole Byka). Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.',
+ 'Byku':'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.',
  'Pasterz':'Zaczyna z owcą obok. Owca (1 HP): ruch, szarża 2 DMG przez całą linię. Osłania przed strzałami. 7 HP.',
  'Truchel':'Teleport na dowolne pole. Zamiast ataku kałuża trucizny (3 rundy, 2 DMG na koniec każdej fazy).',
  'Sierżant Przemo':'Pistolet 1 DMG (jak Żyleta). Dron 2 DMG: faza I aktywacja, faza II wysłanie, atakuje najbliższą postać. 4 HP.'};
@@ -958,7 +958,7 @@ function sim(L,round,pd,PUD){
   Object.values(G).forEach(g=>{if(g.length<2)return;
    if(ph===2&&!g.some(i=>act[i]))return;
    const fj=g.filter(i=>S[i].ch==='Byku'&&(mv[i]>=1||(planOf(i)&&planOf(i).t==='move')));
-   if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i));others.forEach(i=>dmg(i,3,'lądowanie Byka',fj[0]));if(TB()&&TBP.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
+   if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i));others.forEach(i=>dmg(i,mv[fj[0]]===2?1:3,'lądowanie Byka',fj[0]));if(TB()&&TBP.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
    else if(!g.every(i=>S[i].tm&&S[i].tm===S[g[0]].tm))g.forEach(i=>dmg(i,1,'ścisk'))});
   if(ph===1)S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='drone'||!x.drone)return;
    const to=a.m?a.m.slice():x.pos.slice();let best=[],bd=1e9;
@@ -1113,9 +1113,12 @@ function standee(ch,delay){
 /* ===================== Plansza: rysowanie pól i żetonów ===================== */
 /* --- z części: js/000-start.js --- */
 function zf(h,q,r){if(h.fill)return h.fill;if(zoneR(st.round)>=3)return '';return dist(q,r)>zoneR(st.round)?'color-mix(in srgb,#e0342b 50%,transparent)':'color-mix(in srgb,#2fbf5f 30%,transparent)'}
+/* ikonka skoku na polach (Byku): ludzik w skoku, przed liczbą obrażeń */
+const JUMPIC=(()=>{const d='M-7,-5 a2.2,2.2 0 1 1 0.1,0 M-6,-1.5 L-4,3 L-1,5 M-4,3 L-7,6 M-9,0 L-5,-1 L-2,-3';return '<path d="'+d+'" fill="none" stroke="#000" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'})();
 function lab(h){if(!h.t)return '';const a=[...String(h.t)],ids=a.filter(c=>INI[c]),rest=a.filter(c=>!INI[c]).join('');let o='';
  if(ids.length){const n=INI[ids[0]];o+='<circle r="19" fill="'+C[n].col+'"/><image href="'+IMG[n]+'" x="-17" y="-17" width="34" height="34" clip-path="url(#cp)" preserveAspectRatio="xMidYMid slice"/>'+(ids.length>1?'<text class="lbl" y="13">+'+(ids.length-1)+'</text>':'')}
- if(rest)o+='<text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text>';return o?'<g transform="scale(2)">'+o+'</g>':o}
+ if(rest&&h.ic==='jump')o+=JUMPIC+'<text class="lbl" x="5" y="0">'+rest+'</text>';
+ else if(rest)o+='<text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text>';return o?'<g transform="scale(2)">'+o+'</g>':o}
 function tok(g){const hl={};Object.entries(net.pl).forEach(([id,p])=>{const q=g(p);if(!q||!p.ch)return;const k=K(...q);hl[k]=hl[k]?{fill:hl[k].fill,t:hl[k].t+p.ch[0],stroke:'var(--hit)'}:{fill:C[p.ch].col,t:p.ch[0],stroke:id===net.uid?'var(--ink)':undefined}});return hl}
 function pips(p,own,idx){return '<span class="hp" style="display:inline-flex">'+Array.from({length:MAXHP(p.ch||st.ch)},(_,i)=>i+1).map(n=>'<i '+(own?'data-hp="'+n+'" data-pi="'+(idx||0)+'" data-eff="'+p.hp+'" ':'')+'style="'+(n<=p.hp?'':'opacity:.2')+'"></i>').join('')+'</span>'}
 function hTok(g){const hl={};H.p.forEach(p=>{const q=g(p);if(!q)return;const k=K(...q);hl[k]=hl[k]?{fill:hl[k].fill,t:hl[k].t+p.ch[0],stroke:'var(--hit)'}:{fill:C[p.ch].col,t:p.ch[0]}});return hl}
@@ -1130,7 +1133,7 @@ function board(hl,onlyStart){
   const [x,y]=px(q,r),k=K(q,r),h=hl[k]||{};
   const a=h.t?[...String(h.t)]:[],ids=a.filter(c=>INI[c]),rest=a.filter(c=>!INI[c]).join('');
   const lift=!!h.stroke,zfv=zf(h,q,r);
-  g+='<g data-k="'+k+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" style="cursor:pointer">'+(lift?'<polygon class="wall" points="'+GEO[k].p+'"/>':'')+'<polygon class="hexp'+(lift?' lift':'')+'" points="'+GEO[k].p+'" '+(zfv?'style="fill:'+zfv+(String(h.fill).startsWith('#')?';fill-opacity:.4':'')+'" ':'')+(h.stroke?'stroke="'+h.stroke+'" stroke-width="6"':'')+'/>'+(rest?'<g transform="translate(0,'+(lift?-8:0)+') scale(2)"><text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text></g>':'')+'</g>';
+  g+='<g data-k="'+k+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')" style="cursor:pointer">'+(lift?'<polygon class="wall" points="'+GEO[k].p+'"/>':'')+'<polygon class="hexp'+(lift?' lift':'')+'" points="'+GEO[k].p+'" '+(zfv?'style="fill:'+zfv+(String(h.fill).startsWith('#')?';fill-opacity:.4':'')+'" ':'')+(h.stroke?'stroke="'+h.stroke+'" stroke-width="6"':'')+'/>'+(rest?'<g transform="translate(0,'+(lift?-8:0)+') scale(2)">'+(h.ic==='jump'?JUMPIC+'<text class="lbl" x="5" y="'+(ids.length?-14:0)+'">'+rest+'</text>':'<text class="lbl" y="'+(ids.length?-14:0)+'">'+rest+'</text>')+'</g>':'')+'</g>';
   if(ids.length){const n=INI[ids[0]];toks.push({y,svg:'<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+') scale('+depthScale(y).toFixed(3)+')" style="pointer-events:none">'+standee(n,(toks.length*.37).toFixed(2))+(ids.length>1?'<g transform="translate(28,-46)"><circle r="14" fill="#000" stroke="#fff" stroke-width="2"/><text class="lbl2" style="font-size:18px;stroke-width:0" y="1" dominant-baseline="middle">+'+(ids.length-1)+'</text></g>':'')+'</g>'})}
  });
  toks.sort((a,b)=>a.y-b.y);const itm=boardItems().map(itemSvg).join('');const ext=boardExtras();
@@ -1229,7 +1232,7 @@ function render(){
   }else{
    if(ph>=1&&st.plan[ph-1].t==='atk'&&st.plan[ph-1].d!==null)faint(from,st.plan[ph-1],ph-1);
    if(pl.t==='move'&&st.ch!=='Truchel'){
-    D.forEach(([a,b])=>{const q=from[0]+a,r=from[1]+b;if(IN(q,r))hl[K(q,r)]={fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)'}});if(st.ch==='Byku'&&!(TB()&&st.ph>0))cells.forEach(([q,r])=>{if(dist(q-from[0],r-from[1])===2)hl[K(q,r)]={fill:'color-mix(in srgb,#f08a24 35%,transparent)',stroke:'#f08a24',t:'3'}});
+    D.forEach(([a,b])=>{const q=from[0]+a,r=from[1]+b;if(IN(q,r))hl[K(q,r)]=st.ch==='Byku'?{fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)',t:'3',ic:'jump'}:{fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)'}});if(st.ch==='Byku'&&!(TB()&&st.ph>0))cells.forEach(([q,r])=>{if(dist(q-from[0],r-from[1])===2)hl[K(q,r)]={fill:'color-mix(in srgb,#f08a24 35%,transparent)',stroke:'#f08a24',t:'1',ic:'jump'}});
     if(pl.m)hl[K(...pl.m)]={fill:'color-mix(in srgb,var(--ok) 55%,transparent)',stroke:'var(--ink)',t:K(...pl.m)===K(...from)?'•':'→'};
    }else if(pl.t==='atk'&&st.ch!=='Pasterz'){
     if(pl.d!==null)attack(from,pl.d,ph).forEach(([q,r,v])=>{hl[K(q,r)]={fill:'color-mix(in srgb,var(--hit) 40%,transparent)',stroke:'var(--hit)',t:v}});
@@ -1242,7 +1245,7 @@ function render(){
   if(!st.done){
    const pk=st.round+':'+ph+':'+(H?H.cur:'o')+':'+st.scr,cls=st.lastPanel!==pk?' pin':'';st.lastPanel=pk;
    h+='<div id="phpanel" class="pp'+cls+'"><h2 style="font:400 26px Bangers,Impact,sans-serif;margin:8px 0 0">Faza '+ROM[ph]+' z '+ROM[nPh(st.ch)-1]+'</h2>'+actBtns(pl,ph);
-   const hint=!pl.t?'Wybierz, co robisz w tej fazie: ruch albo atak.':pl.t==='move'?(st.ch==='Byku'?(TB()&&st.ph>0?'Faza II: skok o 1 pole albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.':'Skok o 1–2 pola albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.'):'Ruch o 1 pole lub zostań (dotknij własnego pola).'):(pl.d===null?(st.ch==='Byku'?(TB()?'Szarża na wprost przez całą planszę: dotknij sąsiedniego pola, by wybrać kierunek.':'Szarża na wprost do pierwszej postaci lub ściany: dotknij sąsiedniego pola, by wybrać kierunek.'):'Dotknij sąsiedniego pola, by wybrać kierunek ataku.'):(st.ch==='Byku'?'Szarża: '+DN[pl.d]+' (2 DMG i odrzucenie o 1 pole).':'Atak: '+DN[pl.d]+'. Liczby to obrażenia.'));
+   const hint=!pl.t?'Wybierz, co robisz w tej fazie: ruch albo atak.':pl.t==='move'?(st.ch==='Byku'?(TB()&&st.ph>0?'Faza II: skok o 1 pole albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.'):'Ruch o 1 pole lub zostań (dotknij własnego pola).'):(pl.d===null?(st.ch==='Byku'?(TB()?'Szarża na wprost przez całą planszę: dotknij sąsiedniego pola, by wybrać kierunek.':'Szarża na wprost do pierwszej postaci lub ściany: dotknij sąsiedniego pola, by wybrać kierunek.'):'Dotknij sąsiedniego pola, by wybrać kierunek ataku.'):(st.ch==='Byku'?'Szarża: '+DN[pl.d]+' (2 DMG i odrzucenie o 1 pole).':'Atak: '+DN[pl.d]+'. Liczby to obrażenia.'));
    const hint2=planHint(pl,ph);const ok=planOk(pl,ph);
    h+='<p style="text-align:center">'+(hint2||hint)+'</p><button class="go" data-a="ok" '+(ok?'':'disabled')+'>'+'Zatwierdź fazę '+ROM[ph]+'</button>';
    if(ph>=1)h+='<div class="row" style="justify-content:center"><button data-a="prev">← Wróć do fazy '+ROM[ph-1]+'</button></div>';
@@ -2125,7 +2128,7 @@ render=function(){tbTexts();try{tbInit()}catch(e){console.warn(e)}_rTB()};
    dmAt(300,()=>{a.mark(dmAll().filter(c=>dmDist(c,DH)<=2),'opt');a.cap('Faza I: skok do 2 pól. W fazie II tylko o 1 pole.')});
    dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Skaczesz na pole przeciwnika…')});
    dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});
-   dmAt(2650,()=>{a.mark([to],'hit');a.dmg('f0','−3');a.cap('Daleki skok na wroga: <b>3 DMG</b> dla niego, Byku bez obrażeń.')})}};
+   dmAt(2650,()=>{a.mark([to],'hit');a.dmg('f0','−1');a.cap('Daleki skok na wroga: <b>1 DMG</b> dla niego, Byku bez obrażeń.')})}};
   l[1]={t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost przez całą planszę do pierwszej postaci lub ściany: 2 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmNb(DH),'opt');a.cap('Faza II: wybierz kierunek szarży.')});
    dmAt(1300,()=>{a.clear();a.mark(attack(DH,2,1,'Byku').map(c=>[c[0],c[1]]),'hit');a.cap('Byku pędzi przez całą planszę…')});
@@ -2214,11 +2217,11 @@ render();
 /* ===================== BYKU v3 (Testy) + POWRÓT DO MENU ===================== */
 const _hintB=planHint;
 planHint=function(pl,ph){if(TB()&&st.ch==='Byku'){
- if(pl.t==='move')return (ph>0?'Faza II: skok o 1 pole':'Skok o 1–2 pola')+' albo w miejscu. Wyląduj na przeciwniku: 3 DMG dla niego.';
+ if(pl.t==='move')return ph>0?'Faza II: skok o 1 pole albo w miejscu. Wyląduj na przeciwniku: 3 DMG dla niego.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.';
  if(pl.t==='atk'&&pl.d!==null)return 'Szarża: '+DN[pl.d]+' (2 DMG i odrzut).'+(zoneR(st.round)<3?' Uwaga: pudło = uderzenie w ścianę strefy, −1 HP.':'')}
  return _hintB(pl,ph)};
 (function(){const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
- l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:'Skok o 1–2 pola. Wylądowanie dokładnie na polu przeciwnika zadaje mu 3 DMG, Byku nie traci HP.',T:4600,run(a){const to=N(DH,2);a.tok('f0','foe',to).tok('h','hero',DH);
+ l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:'Skok o 1 pole (albo w miejscu): wylądowanie na polu przeciwnika zadaje mu 3 DMG. Dalszy skok o 2 pola: 1 DMG. Byku nie traci HP.',T:4600,run(a){const to=N(DH,2);a.tok('f0','foe',to).tok('h','hero',DH);
   dmAt(300,()=>{a.mark(dmAll().filter(c=>dmDist(c,DH)<=2&&dmDist(c,DH)>0),'opt');a.cap('Zasięg skoku: 1–2 pola (2 pola tylko w fazie I).')});
   dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Musisz trafić <b>dokładnie</b> w pole przeciwnika…')});
   dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});
@@ -3129,8 +3132,8 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
  render();
 })();
 
-/* ===================== BYKU: skok (o 1 i o 2 pola) = 3 DMG, szarża = 2 DMG (wszystkie tryby) ===================== */
-(function(){ const TXT='Skok o 1–2 pola albo w miejscu: lądowanie na przeciwniku = 3 DMG (także skok w miejscu, gdy ktoś wejdzie na pole Byka). Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.';
+/* ===================== BYKU: skok o 1 pole i w miejscu = 3 DMG, dalszy skok = 1 DMG, szarża = 2 DMG (wszystkie tryby) ===================== */
+(function(){ const TXT='Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.';
  try{C['Byku'].txt=TXT;if(typeof TBORIG!=='undefined')TBORIG['Byku']=TXT;if(typeof TBTXT!=='undefined')TBTXT['Byku']=TXT}catch(e){}
 })();
 
