@@ -3,7 +3,7 @@
    - stałe z samymi danymi (nic nie jest obliczane przy tworzeniu) -> pliki danych wg DATA,
    - wszystkie pozostałe instrukcje (owijki, IIFE, wywołania) zostają w PIERWOTNEJ kolejności, w plikach „init” wg SEG.
    node tools/restructure.js [apply] */
-const {load}=require('./srcmap');const fs=require('fs'),path=require('path');
+const {load}=require('../srcmap');const fs=require('fs'),path=require('path');
 const {files,text,ast,walk,fileOf,ROOT}=load('github');
 const LIB={
  'core/util.js':'shade rng wait tween hfEsc idByName dist',

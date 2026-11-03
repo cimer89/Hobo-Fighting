@@ -2,7 +2,7 @@
    Ostateczny tekst każdej łatanej funkcji (odczytany z działającej gry) trafia wprost do jej deklaracji,
    a kod łatający jest usuwany. Po zbudowaniu tekst wszystkich funkcji ma być identyczny jak przedtem.
    node tools/bake.js <zbudowany.html> */
-const {chromium}=require('playwright');const fs=require('fs');const {load}=require('./srcmap');
+const {chromium}=require('playwright');const fs=require('fs');const {load}=require('../srcmap');
 (async()=>{
  const b=await chromium.launch();const ctx=await b.newContext();await ctx.route(/^https?:\/\//,r=>r.abort());const p=await ctx.newPage();
  await p.goto('file://'+process.argv[2]);await p.waitForTimeout(1200);

@@ -1,5 +1,5 @@
 /* Usuwa wcześniejsze (martwe) deklaracje funkcji najwyższego poziomu, które są nadpisane późniejszą deklaracją o tej samej nazwie. */
-const {load}=require('./srcmap');const fs=require('fs');
+const {load}=require('../srcmap');const fs=require('fs');
 const V=process.argv[3]||'github';const {files,text,ast,fileOf,ROOT}=load(V);
 const byName={};ast.body.forEach(s=>{if(s.type==='FunctionDeclaration')(byName[s.id.name]=byName[s.id.name]||[]).push(s)});
 const cuts=[];for(const [n,arr] of Object.entries(byName))if(arr.length>1)arr.slice(0,-1).forEach(s=>cuts.push({n,s}));

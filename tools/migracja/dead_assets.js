@@ -1,6 +1,6 @@
 /* Usuwa zasoby (obrazy) przypisywane w kodzie, które później są nadpisywane innym przypisaniem tego samego klucza
    zanim gra cokolwiek wyświetli (cały skrypt wykonuje się przed pierwszym malowaniem strony). */
-const {load}=require('./srcmap');const fs=require('fs');const V=process.argv[3]||'github';const {files,text,ast,fileOf,ROOT}=load(V);
+const {load}=require('../srcmap');const fs=require('fs');const V=process.argv[3]||'github';const {files,text,ast,fileOf,ROOT}=load(V);
 const isA=n=>n&&n.type==='Literal'&&typeof n.value==='string'&&n.value.startsWith('@@asset:');
 const key=n=>n.type==='Identifier'?n.name:(n.type==='Literal'?String(n.value):null);
 const writes=[];/* {tgt,node(edit),kind,stmt} */

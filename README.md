@@ -94,6 +94,17 @@ Wskazówki:
 
 Po zmianie pliku `index.html` na GitHubie (**Edit** → **Commit changes**) strona aktualizuje się automatycznie po minucie. Konfiguracja Firebase zostaje w pliku, więc nie trzeba jej wpisywać ponownie.
 
+## Kod źródłowy i budowanie
+
+`index.html` jest plikiem zbudowanym. Źródło gry jest w `src/` (kod podzielony na `engine/`, `characters/`, `board/`, `ui/`, `fx/`, `online/`, `modes/`, `core/`), a obrazy i dźwięki w `assets/`.
+
+```
+python3 tools/build.py github index.html
+```
+
+- **Konfigurację Firebase** wpisz w `src/js/online/config.js` (a dla profili w `src/js/online/profiles.js`) i zbuduj ponownie.
+- **Szczegóły struktury, wyniki testów i lista znanych problemów:** [docs/REFAKTOR.md](docs/REFAKTOR.md).
+
 ## Bezpieczeństwo
 
 Wartości z punktu 2.3 nie są hasłami, mogą być widoczne w kodzie strony. Bezpieczeństwo zapewniają reguły z punktu 2.1: tylko zalogowani mogą czytać pokoje, a każdy może zapisywać wyłącznie swoje dane.
@@ -389,11 +400,8 @@ Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez kon
 
 Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz konfigurację Firebase w `FIREBASE_CONFIG`, gra użyje Firebase zamiast ntfy.sh.
 
-## Animacje 3D i dźwięki
+## Dźwięki
 
-- Postacie zostały wymodelowane w Blenderze jako komiksowe figurki 3D (cel shading z konturem).
-- Na ekranie wyboru postaci w rogu obraca się figurka 3D wybranej postaci. Dotknij jej, żeby zobaczyć animację ataku.
-- W trakcie rundy przy ataku, szarży, dronie, teleporcie itp. wysuwa się przerywnik z animacją 3D postaci.
 - Efekty dźwiękowe wygenerowano w ElevenLabs (28 dźwięków: ataki każdej postaci, trafienia, pudła, nokaut, owca, dron, awans w Bitwie baz, wygrana i inne). Brakujące dźwięki zastępuje syntezator.
 
 ## Muzyka (ElevenLabs)
