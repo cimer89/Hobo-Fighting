@@ -353,6 +353,13 @@ Mapy (każda w wersji małej i dużej, symetryczne, bazy zawsze na brzegu plansz
 - Gdy kilka postaci stoi na jednym polu (ścisk), zamiast nich na planszy kłębi się kreskówkowa chmura kurzu z napisem **BÓJKA!**, latającymi gwiazdkami i małymi ikonkami walczących postaci (z obwódką drużyny w trybie 2 vs 2).
 - W fazie planowania Twoja postać wyłania się z kłębu (z odbiciem), a ikonki pozostałych uczestników zostają przy chmurze.
 
+## Online: poczekalnia, drużyny i kolejka wyboru postaci
+
+- Po wejściu do pokoju wszyscy czekają w **poczekalni** (lista graczy z nickami). Założyciel pokoju naciska „Wszyscy są” (Free for all: od 2 graczy, 2 vs 2: dokładnie 4).
+- W 2 vs 2 następuje **wybór drużyn**: każdy dołącza do niebieskiej albo czerwonej (po 2 osoby). Założyciel zatwierdza.
+- Potem gra **losuje kolejkę** i gracze wybierają postacie po kolei. Kto ma swoją kolej, widzi ekran wyboru z napisem „TWOJA KOLEJ!”, reszta widzi kolejkę z już wybranymi postaciami. Zajętych postaci nie da się wybrać.
+- Po wyborze wszystkich jest ekran VS i rozstawienie jak dotąd.
+
 ## Gra online – działa bez konfiguracji
 
 Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez konta). Działa w każdej sieci, w której działa internet: Wi-Fi, sieć komórkowa, różne miasta.
