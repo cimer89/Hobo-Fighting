@@ -88,13 +88,21 @@ t('powtarzalność: ten sam stan, plany i ziarno = identyczny wynik',()=>{const 
  const ser=S=>JSON.stringify({S,ev:S.ev,j:S.journal,sheep:S.sheep});const a=ser(run(mk(),{seed:'q'})),b=ser(run(mk(),{seed:'q'}));eq(a===b,true)});
 t('wejście nie jest modyfikowane przez silnik',()=>{const f=[F('w','Wiatrak',[0,0],[A(0),stay([0,0])]),F('a','Długi',[1,0],[stay([1,0]),stay([1,0])])];const before=JSON.stringify(f);run(f);eq(JSON.stringify(f),before)});
 
-/* --- OBECNE ZACHOWANIE W SYTUACJACH NIEJEDNOZNACZNYCH (zgłoszone do decyzji, zasad nie zmieniano) --- */
-t('[N1] kolejność zwykłych ataków zależy od kolejności graczy (owca zabita wcześniej nie zasłania)',()=>{
+/* --- ZASADY USTALONE PO ZGŁOSZENIU NIEJEDNOZNACZNOŚCI (decyzje z 3.11.2026) --- */
+t('[D1] trafiona owca zostaje do końca ataków: zasłania strzał Żylety niezależnie od kolejności graczy',()=>{
  const w=F('w','Wiatrak',[0,1],[A(2),stay([0,1])]),z=F('z','Żyleta',[-3,0],[A(0),stay([-3,0])]),rest=()=>[F('p','Pasterz',[0,3],[stay([0,3]),stay([0,3])],{sheep:[0,0]}),F('a','Ciotka',[2,0],[stay([2,0]),stay([2,0])])];
- eq(dmgOf(run([w,z,...rest()]),'a'),2,'Wiatrak przed Żyletą');eq(dmgOf(run([z,w,...rest()]),'a'),0,'Żyleta przed Wiatrakiem')});
-t('[N2] dwóch Byków ląduje na jednym polu: obaj bez obrażeń, cel dostaje obrażenia tylko raz',()=>{const S=run([F('b1','Byku',[-1,0],[M([0,0]),stay([0,0])]),F('b2','Byku',[1,0],[M([0,0]),stay([0,0])]),F('a','Wiatrak',[0,0],[stay([0,0]),stay([0,0])])]);eq(dmgOf(S,'b1')+dmgOf(S,'b2'),0);eq(dmgOf(S,'a'),6)});
-t('[N3] 2v2: ścisk z wrogiem rani także sojuszników na tym polu',()=>{const S=run([F('a','Wiatrak',[-1,0],[M([0,0]),stay([0,0])],{tm:'A'}),F('c','Ciotka',[1,0],[M([0,0]),stay([0,0])],{tm:'A'}),F('d','Długi',[0,1],[M([0,0]),stay([0,0])],{tm:'B'})]);eq(dmgOf(S,'a'),2);eq(dmgOf(S,'c'),2)});
-t('[N4] bonus +1 DMG nie działa na lądowanie Byka i nie jest zużywany',()=>{const S=run([F('b','Byku',[0,0],[M([1,0]),stay([1,0])],{dmgb:true}),F('a','Wiatrak',[1,0],[stay([1,0]),M([2,0])])]);eq(by(S,'a').log[0],'F1: −3 lądowanie Byka');eq(by(S,'b').dmgbUsed,false)});
-t('[N5] kolizja po odrzuceniu/przesunięciu rani też sojuszników i nie daje punktów sprawcy',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)],{tm:'A'}),F('a','Wiatrak',[0,0],[stay([0,0]),stay([0,0])],{tm:'B'}),F('c','Ciotka',[1,0],[stay([1,0]),stay([1,0])],{tm:'A'})]);eq(why(S,'c'),['kolizja po odrzuceniu'])});
+ const S1=run([w,z,...rest()]),S2=run([z,w,...rest()]);eq(dmgOf(S1,'a'),0,'Wiatrak przed Żyletą');eq(dmgOf(S2,'a'),0,'Żyleta przed Wiatrakiem');eq(S1.sheep.p,undefined,'owca ginie na koniec fazy')});
+t('[D1] trafiona owca wykonuje swoją szarżę w tej samej fazie, potem ginie',()=>{
+ const S=run([F('z','Żyleta',[-3,0],[A(0),stay([-3,0])]),F('p','Pasterz',[0,3],[A(5),stay([0,3])],{sheep:[0,0]}),F('a','Ciotka',[0,2],[stay([0,2]),stay([0,2])])]);
+ eq(dmgOf(S,'a'),1,'szarża owcy trafia');eq(S.sheep.p,undefined);const ks=S.journal.map(e=>e.k);eq(ks.indexOf('szarża owcy')<ks.indexOf('śmierć owcy'),true,'śmierć po szarży')});
+t('[D1] postać i owca giną dopiero po wszystkich atakach fazy',()=>{const S=run([F('w','Wiatrak',[0,0],[A(0),stay([0,0])],{hp:1}),F('a','Długi',[1,0],[A(3),stay([1,0])],{hp:1})]);eq(by(S,'w').out,true);eq(by(S,'a').out,true)});
+t('[D3] 2v2: ścisk z wrogiem rani także sojuszników na tym polu',()=>{const S=run([F('a','Wiatrak',[-1,0],[M([0,0]),stay([0,0])],{tm:'A'}),F('c','Ciotka',[1,0],[M([0,0]),stay([0,0])],{tm:'A'}),F('d','Długi',[0,1],[M([0,0]),stay([0,0])],{tm:'B'})]);eq(dmgOf(S,'a'),2);eq(dmgOf(S,'c'),2)});
+t('[D4] bonus +1 DMG działa także na lądowanie Byka i wtedy się zużywa',()=>{const S=run([F('b','Byku',[0,0],[M([1,0]),stay([1,0])],{dmgb:true}),F('a','Wiatrak',[1,0],[stay([1,0]),M([2,0])])]);eq(by(S,'a').log[0],'F1: −4 lądowanie Byka');eq(by(S,'b').dmgbUsed,true)});
+t('[D4] bonus +1 DMG na dalszy skok: 1+1',()=>{const S=run([F('b','Byku',[0,0],[M([2,0]),stay([2,0])],{dmgb:true}),F('a','Wiatrak',[2,0],[stay([2,0]),M([3,0])])]);eq(by(S,'a').log[0],'F1: −2 lądowanie Byka')});
+t('[D5] kolizja po odrzuceniu/przesunięciu rani też sojuszników i nie daje punktów sprawcy',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)],{tm:'A'}),F('a','Wiatrak',[0,0],[stay([0,0]),stay([0,0])],{tm:'B'}),F('c','Ciotka',[1,0],[stay([1,0]),stay([1,0])],{tm:'A'})]);eq(why(S,'c'),['kolizja po odrzuceniu'])});
+t('[D6] Byku w owcę szarżującą naprzeciw: Byku dostaje obrażenia szarży owcy, owca ginie po atakach',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,2],[stay([0,2]),A(3)],{sheep:[0,0]})]);eq(why(S,'b'),['zderzenie z owcą<p']);eq(S.sheep.p,undefined)});
+t('[D6] Byku w owcę szarżującą w inną stronę: owca i tak wykonuje szarżę, potem ginie',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,3],[stay([0,3]),A(5)],{sheep:[0,0]}),F('a','Ciotka',[0,2],[stay([0,2]),stay([0,2])])]);eq(dmgOf(S,'b'),0);eq(dmgOf(S,'a'),1);eq(S.sheep.p,undefined)});
+t('[D6] zderzenie z owcą liczy bonus +1 Pasterza',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,2],[stay([0,2]),A(3)],{sheep:[0,0],dmgb:true})]);eq(dmgOf(S,'b'),2)});
+t('[D7] dron ignoruje owce',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('p','Pasterz',[3,0],[stay([3,0]),stay([3,0])],{sheep:[0,0]}),F('a','Wiatrak',[2,0],[stay([2,0]),stay([2,0])])]);eq(dmgOf(S,'a'),1);eq(S.sheep.p,[0,0])});
 
 console.log('testy silnika walki:',pass,'zaliczone,',fail,'niezaliczone');fails.forEach(f=>console.log('  ✗',f));process.exit(fail?1:0);

@@ -17,17 +17,17 @@
     1 ruch            – wszystkie ruchy jednocześnie (skok Byka, teleport Truchla)
     2 przygotowanie   – ruch owcy, przywołanie owcy, aktywacja drona
     3 unik            – (faza II) unik z bonusu Refleks
-    4 kolizje         – lądowanie Byka / ścisk na wspólnym polu
+    4 kolizje         – lądowanie Byka (z bonusem +1) / ścisk na wspólnym polu
     5 dron            – (faza II) atak drona Sierżanta
     6 strzał snajperski – (faza II) Żyleta po celowaniu
     7 kij pasterski
     8 ataki           – zwykłe ataki, po kolei wg kolejności graczy
     9 kałuże          – Truchel stawia kałużę
    10 szarża Byka     – z odrzuceniem i kolizją po odrzuceniu
-   11 szarża owcy
+   11 szarża owcy     – także owca trafiona w tej fazie (ginie dopiero w kroku 14)
    12 manipulacja     – przesunięcie przez Ciotkę (faza II)
    13 trucizna        – kałuże zadają obrażenia
-   14 eliminacje      – postacie z HP ≤ 0 odpadają
+   14 eliminacje      – trafione owce giną, postacie z HP ≤ 0 odpadają
    15 anulowanie      – (faza II) przesunięty Długi traci fazę III
    Na koniec rundy: strefa (−1 poza strefą, tarcza blokuje) i eliminacje. */
 const Combat=(function(){
@@ -66,13 +66,14 @@ const Combat=(function(){
   const sheepOf=i=>SHP.find(s=>s.o===i&&s.alive);
   let ph=0,step='';
   const J=e=>journal.push(Object.assign({ph,step},e));
-  const killSheep=(s,by)=>{s.alive=false;ev.push({k:'sheephit',id:S[s.o].id,pos:s.pos.slice()});J({k:'sheep',id:S[s.o].id,pos:s.pos.slice(),by:by!==undefined?S[by].id:null,rule:'owca ginie po trafieniu'})};
+  /* trafiona owca zostaje na planszy do końca ataków (wykonuje swoją szarżę, zasłania strzały) i ginie w kroku eliminacji */
+  const killSheep=(s,by)=>{const first=!s.doomed;s.doomed=true;J({k:'sheep',id:S[s.o].id,pos:s.pos.slice(),by:by!==undefined?S[by].id:null,rule:first?'owca trafiona – zginie po rozpatrzeniu ataków':'owca trafiona ponownie'})};
   const at=(i,q,r)=>S.map((y,j)=>j!==i&&!ally(i,j)&&!y.out&&y.pos[0]===q&&y.pos[1]===r?j:-1).filter(j=>j>=0);
   const useBonus=x=>{if(x.dmgb){x.dmgb=false;x.dmgbUsed=true}};
   const move=(j,to,kind,by,rule)=>{const f=S[j].pos.slice();S[j].pos=to.slice();J({k:kind,id:S[j].id,from:f,to:to.slice(),by:by!==undefined&&by!==null?S[by].id:null,rule})};
 
   for(ph=0;ph<3;ph++){
-   const planOf=i=>L[i].plan[ph]||null;const CLASH=new Set();
+   const planOf=i=>L[i].plan[ph]||null;
    const act=S.map((x,i)=>!x.out&&!(ph===2&&x.cancel3)&&!!planOf(i));
    if(ph===2&&!S.some((x,i)=>act[i]&&x.ch==='Długi'))break;
    ev.push({k:'phase',ph});
@@ -105,7 +106,7 @@ const Combat=(function(){
    Object.values(G).forEach(g=>{if(g.length<2)return;
     if(ph===2&&!g.some(i=>act[i]))return;
     const fj=g.filter(i=>S[i].ch==='Byku'&&(mv[i]>=1||(planOf(i)&&planOf(i).t==='move')));
-    if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i));others.forEach(i=>dmg(i,mv[fj[0]]===2?1:3,'lądowanie Byka',fj[0]));if(R.tb&&R.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
+    if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i)),la=planOf(fj[0]),lx=((la&&la.bd)||S[fj[0]].dmgb)?1:0;others.forEach(i=>dmg(i,(mv[fj[0]]===2?1:3)+lx,'lądowanie Byka',fj[0]));if(others.length)useBonus(S[fj[0]]);if(R.tb&&R.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
     else if(!g.every(i=>S[i].tm&&S[i].tm===S[g[0]].tm))g.forEach(i=>dmg(i,1,'ścisk'))});
    /* 5 dron (faza II): najbliższa postać; remis -> najwięcej HP; dalej losowo z ziarna */
    step=STEPS[4];
@@ -169,7 +170,9 @@ const Combat=(function(){
     ev.push({k:'charge',id:x.id,from,to:cur.slice(),steps,hit:victims.length>0||!!shCl,dir:a.d,bd:extra>0,crash});
     x.pos=cur.slice();J({k:'szarża',id:x.id,from,to:cur.slice(),by:x.id,rule:crash?'zatrzymanie na ścianie strefy':shCl?'zderzenie z owcą':hitCell?'do pierwszej postaci':'do krawędzi planszy'});
     if(crash){ev.push({k:'hit',id:x.id,ph});dmg(i,1,'ściana strefy')}
-    if(shCl){killSheep(shCl,i);CLASH.add(shCl.o);const sa=planOf(shCl.o);if(sa&&sa.t==='atk'&&S[shCl.o].ch==='Pasterz'&&sa.d===(a.d+3)%6){ev.push({k:'hit',id:x.id,ph});dmg(i,R.pnb?2:1,'zderzenie z owcą',shCl.o)}}
+    if(shCl){killSheep(shCl,i);const sa=planOf(shCl.o),po=S[shCl.o];
+     /* owca szarżująca naprzeciw Byka: zderzenie – Byku dostaje obrażenia jej szarży, owca dalej nie biegnie */
+     if(sa&&sa.t==='atk'&&po.ch==='Pasterz'&&sa.d===(a.d+3)%6){shCl.clash=true;const sx=(sa.bd||po.dmgb)?1:0;ev.push({k:'hit',id:x.id,ph});dmg(i,(R.pnb?2:1)+sx,'zderzenie z owcą',shCl.o);useBonus(po)}}
     if(victims.length){trig(x.id,'Byku');useBonus(x);
      victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,2+extra,'szarża Byka',i)});
      if(victims.length>=2)x.pts.m+=victims.length-1;
@@ -180,7 +183,7 @@ const Combat=(function(){
    /* 11 szarża owcy */
    step=STEPS[10];
    S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='atk'||x.ch!=='Pasterz')return;
-    const s=sheepOf(i);if(!s){if(!CLASH.has(i))ev.push({k:'scharge',id:x.id,none:true});return}
+    const s=sheepOf(i);if(!s){ev.push({k:'scharge',id:x.id,none:true});return}if(s.clash)return;
     const dd=D[a.d],extra=(a.bd||x.dmgb)?1:0,from=s.pos.slice();let cur=s.pos.slice(),victims=[],steps=0;
     for(;;){const nq=cur[0]+dd[0],nr=cur[1]+dd[1];if(!IN(nq,nr))break;
      const vs=at(i,nq,nr);
@@ -202,6 +205,7 @@ const Combat=(function(){
    poisoners.forEach(o=>trig(o,'Truchel'));
    /* 14 eliminacje */
    step=STEPS[13];
+   SHP.forEach(s=>{if(s.alive&&s.doomed){s.alive=false;ev.push({k:'sheephit',id:S[s.o].id,pos:s.pos.slice()});J({k:'śmierć owcy',id:S[s.o].id,pos:s.pos.slice(),rule:'owca trafiona w tej fazie'})}});
    S.forEach(x=>{if(!x.out&&x.hp<=0){x.out=true;ev.push({k:'out',id:x.id});J({k:'eliminacja',id:x.id,hp:x.hp,rule:'HP ≤ 0 na koniec fazy'})}});
    /* 15 anulowanie fazy III Długiego po przesunięciu */
    step=STEPS[14];
@@ -222,6 +226,8 @@ const Combat=(function(){
  function explain(e,name){const n=id=>name?name(id):id,f=['I','II','III','koniec'][e.ph]||e.ph;
   if(e.k==='dmg')return 'Faza '+f+' ['+e.step+']: '+n(e.id)+' −'+e.n+' HP ('+e.cause+(e.by&&e.by!==e.id?', sprawca: '+n(e.by):'')+') → '+e.hp+' HP';
   if(e.k==='shield')return 'Faza '+f+' ['+e.step+']: tarcza '+n(e.id)+' blokuje 1 punkt ('+e.cause+')';
+  if(e.k==='sheep')return 'Faza '+f+' ['+e.step+']: owca gracza '+n(e.id)+' trafiona'+(e.by?' przez '+n(e.by):'')+' – zginie po rozpatrzeniu ataków';
+  if(e.k==='śmierć owcy')return 'Faza '+f+': owca gracza '+n(e.id)+' ginie';
   if(e.k==='eliminacja')return 'Faza '+f+': '+n(e.id)+' odpada ('+e.rule+')';
   if(e.from&&e.to)return 'Faza '+f+' ['+e.step+']: '+e.k+' '+n(e.id)+' '+e.from.join(',')+' → '+e.to.join(',')+(e.by&&e.by!==e.id?' (sprawca: '+n(e.by)+')':'')+(e.rule?' – '+e.rule:'');
   return 'Faza '+f+' ['+e.step+']: '+e.k+' '+n(e.id)+(e.rule?' – '+e.rule:'')}

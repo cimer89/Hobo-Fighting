@@ -53,14 +53,19 @@ Każdy wpis ma:
 - `node tests/combat_test.js`: 54 testy interakcji postaci, m.in. ataki każdej postaci, odmiany skoku i szarży Byka, ścisk, drużyny, tarcza, bonus +1, Refleks, kałuże, dron, owca, kij, strzał snajperski, manipulacja Ciotki, faza III Długiego, strefa, eliminacje, dziennik, powtarzalność.
 - `node tests/golden.js` + `tests/gcmp.py`: 1080 losowych rund. Nowy silnik daje wyniki identyczne ze starym `sim()` we wszystkich trybach.
 
-## Niejednoznaczności do decyzji (zasad nie zmieniałem)
+## Zasady ustalone po zgłoszeniu niejednoznaczności (3.11.2026)
 
-Testy oznaczone `[N…]` utrwalają obecne zachowanie. Zmiana decyzji = zmiana tych testów.
+Testy `[D…]` w `tests/combat_test.js` pilnują tych zasad.
 
-1. **[N1] Kolejność zwykłych ataków.** W kroku 8 ataki są liczone po kolei wg kolejności graczy (kolejność dołączenia albo numer gracza). Ma to znaczenie przy owcy. Jeśli Wiatrak (wcześniej na liście) zabije owcę, strzał Żylety przelatuje dalej i trafia postać za nią. Jeśli Żyleta jest pierwsza, trafia owcę.
-2. **[N2] Dwóch Byków ląduje na tym samym polu.** Żaden nie dostaje obrażeń, a trzecia postać dostaje obrażenia tylko od pierwszego z nich.
-3. **[N3] Ścisk w 2v2.** Gdy na polu jest choć jeden wróg, −1 dostają wszyscy na tym polu, także sojusznicy.
-4. **[N4] Bonus +1 DMG a lądowanie Byka.** Bonus nie działa na lądowanie i nie zużywa się (działa przy szarży).
-5. **[N5] Kolizja po odrzucie lub przesunięciu.** −1 dostają wszyscy na polu, także sojusznicy, a sprawca nie dostaje za to punktów.
-6. **Kolejność kroków 10–13.** Szarża Byka jest liczona przed szarżą owcy i przed przesunięciem Ciotki. Odrzucona postać może więc wpaść pod owcę albo na kałużę już w tej samej fazie.
-7. **Dron ignoruje owce.** Celem jest najbliższa postać, nawet jeśli owca stoi bliżej.
+1. **[D1] Najpierw wszystkie ruchy naraz, potem ataki; śmierć dopiero po rozpatrzeniu wszystkich ataków fazy.**
+   - Trafiona owca zostaje na planszy do kroku eliminacji. Przyjmuje kolejne ataki, zasłania strzały (np. strzał Żylety trafia owcę bez względu na kolejność graczy) i wykonuje swoją szarżę, jeśli Pasterz ją zaplanował.
+   - Ginie w kroku 14.
+2. **[D2] Dwóch takich samych postaci nie da się wybrać,** więc przypadek dwóch Byków na jednym polu nie występuje.
+3. **[D3] Ścisk w 2v2:** gdy na polu jest wróg, −1 dostają wszyscy na polu, także sojusznicy.
+4. **[D4] Bonus +1 DMG działa na wszystkie obrażenia zadawane przez gracza,** także na lądowanie Byka (3+1, dalszy skok 1+1) i na zderzenie owcy z Bykiem. Zużywa się przy pierwszej akcji, która zadała obrażenia.
+5. **[D5] Kolizja po odrzucie lub przesunięciu:** −1 dla wszystkich na polu, także sojuszników, bez punktów dla sprawcy.
+6. **[D6] Szarża Byka jest rozpatrywana przed szarżą owcy.**
+   - Gdy Byku wbiegnie w owcę, która szarżuje naprzeciw niego, Byku dostaje obrażenia jej szarży.
+   - Gdy owca szarżuje w inną stronę, wykonuje swoją szarżę normalnie.
+   - W obu przypadkach owca ginie dopiero po rozpatrzeniu ataków.
+7. **[D7] Dron ignoruje owce.**

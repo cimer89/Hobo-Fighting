@@ -42,7 +42,7 @@
    const v=r.lost>0?'<span class="dmg"><b>−'+r.lost+' HP</b></span>':r.lost<0?'<span class="heal"><b>+'+(-r.lost)+' HP</b></span>':'<span class="ok"><b>bez strat</b></span>';
    h+='<div class="rsr'+(r.ko?' ko':'')+'" style="--c:'+r.col+';animation-delay:'+d+'"><img src="'+r.img+'" alt=""><div><div class="rsn">'+r.n+'</div><div class="rsb"><i class="lost" style="width:'+(100*r.h0/r.max)+'%"></i><i class="now" style="width:'+(100*r.h0/r.max)+'%"></i></div></div><div class="rsv">'+(r.ko?'':v)+(r.dealt?'<span>⚔ zadał '+r.dealt+'</span>':'')+'</div></div>'});
   /* dziennik rundy: dlaczego ktoś stracił HP, został przesunięty albo odpadł */
-  const nm=id=>{try{return nmOf(id)}catch(e){return id}};const J=(jr||[]).filter(e=>['dmg','shield','eliminacja','odrzut','przesunięcie','losowanie','sheep','anulowana faza III','szarża','unik'].includes(e.k));
+  const nm=id=>{try{return nmOf(id)}catch(e){return id}};const J=(jr||[]).filter(e=>['dmg','shield','eliminacja','odrzut','przesunięcie','losowanie','sheep','śmierć owcy','szarża owcy','anulowana faza III','szarża','unik'].includes(e.k));
   if(J.length)h+='<button class="rsj" data-rsj="1">📜 Dziennik rundy ('+J.length+')</button><div class="rsjl">'+J.map(e=>'<div>'+hfEsc(Combat.explain(e,nm))+'</div>').join('')+'</div>';
   h+='<div class="rsf">Dotknij, aby kontynuować</div><div class="rsp"><i style="animation-duration:'+AUTO+'ms"></i></div></div>';
   el.innerHTML=h;document.body.appendChild(el);
