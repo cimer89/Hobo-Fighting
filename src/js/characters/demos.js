@@ -55,16 +55,16 @@ const DEMOS={
    [[300,1,'Faza I'],[1500,2,'Faza II'],[2700,3,'Faza III – tylko Długi!']].forEach(([t,k,l],j)=>dmAt(t,()=>{const p=[DH,N(DH,2),N(N(DH,2),1),N(N(N(DH,2),1),2)];a.clear();a.mark([p[k]],'pick');a.mv('h',p[k]);a.cap('<b>'+l+'</b>')}))}},dmCrush()],
  'Żyleta':()=>[dmMove(),dmLine('Strzał',C['Żyleta'].txt,[N(DH,2,2),N(DH,2,4)],[[0,'−2']],{nolab:true,shot:N(DH,2,2),c1:'Strzał leci prosto aż do krawędzi planszy…',c2:'…i trafia <b>pierwszą</b> postać na drodze: 2 DMG. Ta za nią jest bezpieczna.'}),dmCrush()],
  'Byku':()=>[
-  {t:'Skok',d:'Skok o 1 lub 2 pola. Dalszy skok zadaje 1 DMG temu, na kogo wylądujesz.',T:4600,run(a){const to=N(DH,2,2);a.tok('f0','foe',to).tok('h','hero',DH);
+  {t:'Skok',d:'Skok o 1 lub 2 pola albo w miejscu. Lądowanie na przeciwniku zadaje mu 3 DMG.',T:4600,run(a){const to=N(DH,2,2);a.tok('f0','foe',to).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmAll().filter(c=>dmDist(c,DH)<=2),'opt');a.cap('Zasięg skoku: do 2 pól w każdą stronę.')});
    dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Skaczesz na pole przeciwnika…')});
    dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});
-   dmAt(2650,()=>{a.mark([to],'hit',['1']);a.dmg('f0','−1');a.cap('Lądowanie z daleka: <b>1 DMG</b> dla przeciwnika, Byku bez obrażeń.')})}},
-  {t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost do pierwszej postaci lub ściany: 3 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
+   dmAt(2650,()=>{a.mark([to],'hit',['3']);a.dmg('f0','−3');a.cap('Lądowanie na przeciwniku: <b>3 DMG</b> dla niego, Byku bez obrażeń.')})}},
+  {t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost do pierwszej postaci lub ściany: 2 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmNb(DH),'opt');a.cap('Faza II: wybierz kierunek szarży.')});
    dmAt(1300,()=>{a.clear();a.mark(attack(DH,2,1,'Byku').map(c=>[c[0],c[1]]),'hit');a.cap('Byku pędzi prosto przed siebie…')});
    dmAt(2100,()=>{a.clear();a.mv('h',N(DH,2,2),'fast')});
-   dmAt(2500,()=>{a.dmg('f0','−3');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>3 DMG</b> i odrzut o 1 pole. Ściana za plecami = brak odrzutu.')})}},dmCrush()],
+   dmAt(2500,()=>{a.dmg('f0','−2');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>2 DMG</b> i odrzut o 1 pole. Ściana za plecami = brak odrzutu.')})}},dmCrush()],
  'Ciotka':()=>[dmMove(),dmLine('Atak – faza I',C['Ciotka'].txt,[N(DH,2,2)],[[0,'−2']],{c1:'Linia 3 pól przed tobą.',c2:'W fazie I zaklęcie zadaje <b>2 DMG</b> każdemu w linii.'}),
   dmLine('Atak – faza II',(TB()?'Faza II: 2 DMG':'Faza II: 1 DMG')+' i przesunięcie trafionej postaci o 1 pole. Wepchnięcie na kogoś: obaj −1.',[N(DH,2,2)],[[0,TB()?'−2':'−1']],{ph:1,T:5600,tag:'faza II',c1:'Faza II: linia 3 pól, '+(TB()?2:1)+' DMG…',c2:'…a potem przesuwasz trafionego.',after(a){const f=N(DH,2,2),to=N(f,1);
    dmAt(3500,()=>{a.clear();a.mark(dmNb(f),'opt');a.cap('Wybierasz, gdzie go przepchniesz.')});

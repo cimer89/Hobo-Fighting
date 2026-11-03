@@ -24,7 +24,7 @@ function render(){
   }else{
    if(ph>=1&&st.plan[ph-1].t==='atk'&&st.plan[ph-1].d!==null)faint(from,st.plan[ph-1],ph-1);
    if(pl.t==='move'&&st.ch!=='Truchel'){
-    D.forEach(([a,b])=>{const q=from[0]+a,r=from[1]+b;if(IN(q,r))hl[K(q,r)]={fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)'}});if(st.ch==='Byku'&&!(TB()&&st.ph>0))cells.forEach(([q,r])=>{if(dist(q-from[0],r-from[1])===2)hl[K(q,r)]={fill:'color-mix(in srgb,#f08a24 35%,transparent)',stroke:'#f08a24',t:'1'}});
+    D.forEach(([a,b])=>{const q=from[0]+a,r=from[1]+b;if(IN(q,r))hl[K(q,r)]={fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)'}});if(st.ch==='Byku'&&!(TB()&&st.ph>0))cells.forEach(([q,r])=>{if(dist(q-from[0],r-from[1])===2)hl[K(q,r)]={fill:'color-mix(in srgb,#f08a24 35%,transparent)',stroke:'#f08a24',t:'3'}});
     if(pl.m)hl[K(...pl.m)]={fill:'color-mix(in srgb,var(--ok) 55%,transparent)',stroke:'var(--ink)',t:K(...pl.m)===K(...from)?'•':'→'};
    }else if(pl.t==='atk'&&st.ch!=='Pasterz'){
     if(pl.d!==null)attack(from,pl.d,ph).forEach(([q,r,v])=>{hl[K(q,r)]={fill:'color-mix(in srgb,var(--hit) 40%,transparent)',stroke:'var(--hit)',t:v}});
@@ -37,7 +37,7 @@ function render(){
   if(!st.done){
    const pk=st.round+':'+ph+':'+(H?H.cur:'o')+':'+st.scr,cls=st.lastPanel!==pk?' pin':'';st.lastPanel=pk;
    h+='<div id="phpanel" class="pp'+cls+'"><h2 style="font:400 26px Bangers,Impact,sans-serif;margin:8px 0 0">Faza '+ROM[ph]+' z '+ROM[nPh(st.ch)-1]+'</h2>'+actBtns(pl,ph);
-   const hint=!pl.t?'Wybierz, co robisz w tej fazie: ruch albo atak.':pl.t==='move'?(st.ch==='Byku'?(TB()&&st.ph>0?'Faza II: skok tylko o 1 pole lub zostań.':'Skok o 1–2 pola (dalszy skok: 1 DMG w miejscu lądowania) lub zostań.'):'Ruch o 1 pole lub zostań (dotknij własnego pola).'):(pl.d===null?(st.ch==='Byku'?(TB()?'Szarża na wprost przez całą planszę: dotknij sąsiedniego pola, by wybrać kierunek.':'Szarża na wprost do pierwszej postaci lub ściany: dotknij sąsiedniego pola, by wybrać kierunek.'):'Dotknij sąsiedniego pola, by wybrać kierunek ataku.'):(st.ch==='Byku'?'Szarża: '+DN[pl.d]+(TB()?' (1 DMG i odrzucenie o 1 pole).':' (3 DMG i odrzucenie o 1 pole).'):'Atak: '+DN[pl.d]+'. Liczby to obrażenia.'));
+   const hint=!pl.t?'Wybierz, co robisz w tej fazie: ruch albo atak.':pl.t==='move'?(st.ch==='Byku'?(TB()&&st.ph>0?'Faza II: skok o 1 pole albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.':'Skok o 1–2 pola albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.'):'Ruch o 1 pole lub zostań (dotknij własnego pola).'):(pl.d===null?(st.ch==='Byku'?(TB()?'Szarża na wprost przez całą planszę: dotknij sąsiedniego pola, by wybrać kierunek.':'Szarża na wprost do pierwszej postaci lub ściany: dotknij sąsiedniego pola, by wybrać kierunek.'):'Dotknij sąsiedniego pola, by wybrać kierunek ataku.'):(st.ch==='Byku'?'Szarża: '+DN[pl.d]+' (2 DMG i odrzucenie o 1 pole).':'Atak: '+DN[pl.d]+'. Liczby to obrażenia.'));
    const hint2=planHint(pl,ph);const ok=planOk(pl,ph);
    h+='<p style="text-align:center">'+(hint2||hint)+'</p><button class="go" data-a="ok" '+(ok?'':'disabled')+'>'+'Zatwierdź fazę '+ROM[ph]+'</button>';
    if(ph>=1)h+='<div class="row" style="justify-content:center"><button data-a="prev">← Wróć do fazy '+ROM[ph-1]+'</button></div>';

@@ -32,10 +32,10 @@ Listopad 2026. Ten dokument opisuje, co znalazłem w kodzie, co zmieniłem, jak 
 
 ### Konflikty i możliwe błędy (nie naprawiałem, bo zmieniłyby to, co widać w grze; czekają na Twoją decyzję)
 
-1. **Nieaktualna podpowiedź przy skoku Byka.** W panelu planowania jest: „Skok o 1–2 pola (dalszy skok: 1 DMG w miejscu lądowania) lub zostań”. Według obecnych zasad skok zadaje 3 DMG, także skok w miejscu. Tekst jest w `ui/screens.js`.
+1. ~~Nieaktualna podpowiedź przy skoku Byka~~ – **naprawione**. Podpowiedzi w panelu, liczby na polach skoku i przykłady akcji (demo) pokazują teraz obowiązujące wartości: skok, także w miejscu, = 3 DMG; szarża = 2 DMG.
 2. **Przyciski „Profil” i „Ranking” są widoczne, ale nie działają,** dopóki nie zostanie wpisana konfiguracja Firebase (`PROF_FB` w `online/profiles.js`).
 3. **Wersja na GitHub zawsze pobiera biblioteki Firebase** (3 pliki), choć konfiguracja jest pusta i gra działa bez nich, przez P2P. To spowalnia start.
-4. **Podpowiedź przy szarży Byka** jest poprawiana przez przeszukanie całego tekstu strony po każdym renderze (`characters/byku_balance.js`). Działa, ale jest kosztowne. Lepiej poprawić sam tekst u źródła.
+4. ~~Podpowiedź przy szarży poprawiana przeszukiwaniem strony~~ – **naprawione**. Tekst jest poprawiony u źródła, a przeszukiwanie strony po każdym renderze usunięte.
 5. **Gałęzie „tylko w Testach” w zasadach Byka (`sim`)** są martwe, bo nowsza łata ustawia te same wartości dla wszystkich trybów. Nie wpływają na grę, ale mylą przy czytaniu.
 
 ## 2. Nowa struktura
