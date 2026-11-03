@@ -270,6 +270,10 @@ We wszystkich trybach owca zostaje na polu, na którym skończyła szarżę. Sza
 
 Po końcu gry przycisk **Menu główne** wraca do wyboru trybu bez przeładowania strony.
 
+## Byku: skok w miejscu
+
+Byku może wybrać skok na swoje własne pole: podskakuje i ląduje w tym samym miejscu. Jeśli w tej fazie przeciwnik wejdzie na jego pole (albo już na nim stoi), dostaje **3 DMG** – tak samo jak przy skoku o 1 lub 2 pola. Byku nie dostaje wtedy obrażeń ze ścisku. Gdy Byku w tej fazie nie skacze (np. szarżuje), na wspólnym polu działa zwykły ścisk (−1 dla obu).
+
 ## Kody pokojów Bitwy baz
 
 Kody pokojów Bitwy baz zaczynają się zawsze od litery **B** (np. `BQVH`), a kody zwykłej gry nigdy. Kod Bitwy baz wpisany w menu głównym w „Dołącz kodem” od razu prowadzi do lobby Bitwy baz z właściwą liczbą miejsc (2, 4 albo 6). Wcześniej trafiał do zwykłej poczekalni, która czekała na graczy jak przy grze do 6 osób. Kod zwykłej gry wpisany w Bitwie baz pokazuje podpowiedź, gdzie go wpisać.
