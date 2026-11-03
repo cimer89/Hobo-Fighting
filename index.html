@@ -3184,8 +3184,9 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
    if(e.k==='dmg'&&cur&&cur!==e.id&&e.w!=='strefa'&&e.w!=='ścisk')dealt[cur]=(dealt[cur]||0)+(e.n||0);
    if(e.k==='out')ko[e.id]=1});
   try{await _ra.apply(this,arguments)}finally{
-   try{const rows=its.filter(o=>o&&o.q&&o.q.ch&&(hp0[o.id]===undefined||hp0[o.id]>0||ko[o.id])).map(o=>{const ch=o.q.ch,max=(typeof MAXHP==='function'?MAXHP(ch):5)||5;
-     const h0=Math.max(0,Math.min(max,hp0[o.id]!==undefined?hp0[o.id]:max)),h1=ko[o.id]?0:Math.max(0,Math.min(max,(st.animHp||{})[o.id]!==undefined?st.animHp[o.id]:h0));
+   try{/* HP po rundzie z wyniku silnika (działa też po „Pomiń animację”) */let RF=null;try{RF=resolveFin(its)}catch(_){}
+    const rows=its.filter(o=>o&&o.q&&o.q.ch&&(hp0[o.id]===undefined||hp0[o.id]>0||ko[o.id])).map(o=>{const ch=o.q.ch,max=(typeof MAXHP==='function'?MAXHP(ch):5)||5;
+     const h0=Math.max(0,Math.min(max,hp0[o.id]!==undefined?hp0[o.id]:max)),h1=ko[o.id]?0:Math.max(0,Math.min(max,RF&&RF[o.id]&&RF[o.id].eff!==undefined?RF[o.id].eff:((st.animHp||{})[o.id]!==undefined?st.animHp[o.id]:h0)));
      const tc=(typeof isTeam==='function'&&isTeam()&&o.q.tm&&typeof TCOL!=='undefined')?TCOL[o.q.tm]:null;
      return {n:(o.q.nick?hfEsc(o.q.nick)+' · '+ch:(typeof nmOf==='function'?nmOf(o.id):ch)),img:IMG[ch],col:tc||(C[ch]&&C[ch].col)||'#888',max,h0,h1,lost:h0-h1,dealt:dealt[o.id]||0,ko:!!ko[o.id]}});
     if(rows.length)setTimeout(()=>show(rnd,rows,jr),250)}catch(e){console.warn('rsum',e)}}};
