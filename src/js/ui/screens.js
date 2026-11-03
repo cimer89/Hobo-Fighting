@@ -64,7 +64,7 @@ function revCore(items,tap){
  const Rs=resolve(items),hl={};
  const alerts=Rs._alert||[],pend=Rs._pend||[];
  if(st.animating)return {Rs,over:false,pend:true,html:animView(items)};
- if(!pend.length&&!alerts.length&&st.animKey!==key){st.animating=true;st.animKey=key;st.animItems=items;st.animEv=Rs._ev||[];st.animPick=Rs._pick||[];st.skipReq=false;st.capText='';initAnimPos(items);setTimeout(runAnim,30);return {Rs,over:false,pend:true,html:animView(items)}}
+ if(!pend.length&&!alerts.length&&st.animKey!==key){st.animating=true;st.animKey=key;st.animItems=items;st.animEv=Rs._ev||[];st.animJournal=Rs._journal||[];st.animPick=Rs._pick||[];st.skipReq=false;st.capText='';initAnimPos(items);setTimeout(runAnim,30);return {Rs,over:false,pend:true,html:animView(items)}}
  items.forEach(o=>{const x=Rs[o.id];if(!x||x.eff<=0)return;const k=K(...x.pos),c=C[o.q.ch];hl[k]=hl[k]?{fill:hl[k].fill,t:hl[k].t+o.q.ch[0],stroke:'var(--hit)'}:{fill:c.col,t:o.q.ch[0]}});
  const HL={fill:'color-mix(in srgb,#3ddc84 35%,transparent)',stroke:'#3ddc84'};
  const around=c=>D.forEach(([a,b])=>{const q=c[0]+a,rr=c[1]+b;if(IN(q,rr))hl[K(q,rr)]=Object.assign({},hl[K(q,rr)],HL)});

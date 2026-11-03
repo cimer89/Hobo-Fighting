@@ -43,7 +43,7 @@ const INIT=()=>{let s=12345;window.__seed=v=>{s=v>>>0||1};Math.random=function()
       if(a.t==='move'){a.m=near(pos,q.ch==='Byku'?2:1);pos=a.m}else if(a.t==='atk'||a.t==='staff')a.d=ri(6);else if(a.t==='drone'&&ph===0){}else a.m=near(pos,2);
       if(a.t==='atk'&&rnd()<.2)a.bd=1;pl.push(a)}
      q.plans[st.round]=pl;if(rnd()<.1){q.dg={};q.dg[st.round]=near(pos,1)}});
-    const IN=TR.length+':'+chars.join(',')+':'+ch.join(',')+'#'+JSON.stringify(P)+'|'+st.round+'|'+st.seed;window.__seed(c+1);try{ICACHE={}}catch(e){}st._fin=null;let r;try{r=JSON.stringify(resolve(P.map((q,i)=>({id:'p'+i,q,idx:i}))))}catch(e){r='ERR '+e.message}
+    const IN=TR.length+':'+chars.join(',')+':'+ch.join(',')+'#'+JSON.stringify(P)+'|'+st.round+'|'+st.seed;window.__seed(c+1);try{ICACHE={}}catch(e){}st._fin=null;let r;try{r=JSON.stringify(resolve(P.map((q,i)=>({id:'p'+i,q,idx:i}))),(k,v)=>k==='_journal'?undefined:v)}catch(e){r='ERR '+e.message}
     arr.push(IN+'=>'+r)}
    res[key]=arr}
   H=null;window.__BR=3;try{cells.length=0;for(let q=-3;q<=3;q++)for(let r=Math.max(-3,-q-3);r<=Math.min(3,-q+3);r++)cells.push([q,r])}catch(e){}

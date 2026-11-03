@@ -1,10 +1,4 @@
-(function(){const _a=attack;attack=function(p,d,ph,ch){ch=ch||st.ch;if(!TB())return _a(p,d,ph,ch);
- const out=[],[dq,dr]=D[d];const line=(n,dm)=>{for(let k=1;k<=n;k++){const q=p[0]+dq*k,r=p[1]+dr*k;if(!IN(q,r))break;out.push([q,r,dm(k)])}};
- if(ch==='Wiatrak'){[[d,2],[(d+1)%6,1],[(d+5)%6,1]].forEach(([i,v])=>{const q=p[0]+D[i][0],r=p[1]+D[i][1];if(IN(q,r))out.push([q,r,v])});
-  [[2*dq,2*dr],[dq+D[(d+1)%6][0],dr+D[(d+1)%6][1]],[dq+D[(d+5)%6][0],dr+D[(d+5)%6][1]]].forEach(([a,b])=>{const q=p[0]+a,r=p[1]+b;if(IN(q,r))out.push([q,r,1])});return out}
- if(ch==='Żyleta'){line(TBP.zylR,k=>k<=TBP.zyl2?2:1);return out}
- if(ch==='Długi'){line(3,k=>k===1?1:2);return out}
- return _a(p,d,ph,ch)}})();
+/* kształty ataków trybu Testy: engine/combat.js (Combat.shape) */
 Object.keys(C).forEach(k=>TBORIG[k]=C[k].txt);
 const _rTB=render;
 render=function(){tbTexts();try{tbInit()}catch(e){console.warn(e)}_rTB()};

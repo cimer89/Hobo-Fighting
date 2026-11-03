@@ -104,6 +104,7 @@ python3 tools/build.py github index.html
 
 - **Konfigurację Firebase** wpisz w `src/js/online/config.js` (a dla profili w `src/js/online/profiles.js`) i zbuduj ponownie.
 - **Szczegóły struktury, wyniki testów i lista znanych problemów:** [docs/REFAKTOR.md](docs/REFAKTOR.md).
+- **Silnik walki** (kolejność rozpatrywania, dziennik zdarzeń, testy, niejednoznaczności): [docs/SILNIK.md](docs/SILNIK.md). Testy: `node tests/combat_test.js`.
 
 ## Bezpieczeństwo
 

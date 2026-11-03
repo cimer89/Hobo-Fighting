@@ -25,26 +25,33 @@
 #rsum .rsp{height:4px;border-radius:2px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:6px}
 #rsum .rsp i{display:block;height:100%;background:#ffd84a;width:100%;animation:rsP linear forwards}
 @keyframes rsP{to{width:0}}
+#rsum .rsj{margin-top:8px;width:100%;min-height:30px;padding:4px 10px;font:700 12px system-ui;border-radius:10px}
+#rsum .rsjl{display:none;margin-top:6px;max-height:34vh;overflow:auto;background:rgba(0,0,0,.35);border-radius:10px;padding:6px 8px;text-align:left;font:500 11.5px/1.35 system-ui}
+#rsum .rsjl div{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+#rsum.jopen .rsjl{display:block}#rsum.jopen .rsp{visibility:hidden}
 #rsum.out{animation:rsOut .3s forwards}@keyframes rsOut{to{opacity:0}}
 .rbn{position:fixed;left:50%;top:30%;z-index:8999;transform:translate(-50%,-50%);pointer-events:none;text-align:center;font:400 54px Bangers,Impact,sans-serif;letter-spacing:3px;color:#ffd84a;-webkit-text-stroke:2.5px #1a0f06;text-shadow:0 5px 0 #1a0f06;animation:rbn 1.7s ease-out forwards;white-space:nowrap}
 .rbn small{display:block;font-size:22px;color:#fff;letter-spacing:1px;-webkit-text-stroke:1.2px #1a0f06}
 @keyframes rbn{0%{transform:translate(-50%,-50%) scale(2.4);opacity:0}18%{transform:translate(-50%,-50%) scale(.95);opacity:1}28%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-70%);opacity:0}}`;
  const st0=document.createElement('style');st0.textContent=css;document.head.appendChild(st0);
  function close(el){if(!el||el._c)return;el._c=1;el.classList.add('out');setTimeout(()=>el.remove(),300)}
- function show(rnd,rows){const old=document.getElementById('rsum');if(old)old.remove();
+ function show(rnd,rows,jr){const old=document.getElementById('rsum');if(old)old.remove();
   const el=document.createElement('div');el.id='rsum';const AUTO=5200;
   let h='<div class="rsc"><h2>KONIEC RUNDY '+rnd+'</h2><div class="rss">Podsumowanie</div>';
   rows.forEach((r,i)=>{const d=(0.45+i*0.12).toFixed(2)+'s';
    const v=r.lost>0?'<span class="dmg"><b>−'+r.lost+' HP</b></span>':r.lost<0?'<span class="heal"><b>+'+(-r.lost)+' HP</b></span>':'<span class="ok"><b>bez strat</b></span>';
    h+='<div class="rsr'+(r.ko?' ko':'')+'" style="--c:'+r.col+';animation-delay:'+d+'"><img src="'+r.img+'" alt=""><div><div class="rsn">'+r.n+'</div><div class="rsb"><i class="lost" style="width:'+(100*r.h0/r.max)+'%"></i><i class="now" style="width:'+(100*r.h0/r.max)+'%"></i></div></div><div class="rsv">'+(r.ko?'':v)+(r.dealt?'<span>⚔ zadał '+r.dealt+'</span>':'')+'</div></div>'});
+  /* dziennik rundy: dlaczego ktoś stracił HP, został przesunięty albo odpadł */
+  const nm=id=>{try{return nmOf(id)}catch(e){return id}};const J=(jr||[]).filter(e=>['dmg','shield','eliminacja','odrzut','przesunięcie','losowanie','sheep','anulowana faza III','szarża','unik'].includes(e.k));
+  if(J.length)h+='<button class="rsj" data-rsj="1">📜 Dziennik rundy ('+J.length+')</button><div class="rsjl">'+J.map(e=>'<div>'+hfEsc(Combat.explain(e,nm))+'</div>').join('')+'</div>';
   h+='<div class="rsf">Dotknij, aby kontynuować</div><div class="rsp"><i style="animation-duration:'+AUTO+'ms"></i></div></div>';
   el.innerHTML=h;document.body.appendChild(el);
   rows.forEach((r,i)=>setTimeout(()=>{const row=el.querySelectorAll('.rsr')[i];if(!row)return;const w=(100*Math.max(0,r.h1)/r.max)+'%';row.querySelector('.now').style.width=w;row.querySelector('.lost').style.width=w},650+i*120+350));
   try{SND.play('click')}catch(e){}
-  el.addEventListener('click',()=>close(el));setTimeout(()=>close(el),AUTO)}
+  el.addEventListener('click',e=>{if(e.target.closest('[data-rsj]')){e.stopPropagation();el.classList.toggle('jopen');el._keep=1;return}if(e.target.closest('.rsjl'))return;close(el)});setTimeout(()=>{if(!el._keep)close(el)},AUTO)}
  /* zbiera dane z animacji rundy */
  const _ra=runAnim;
- runAnim=async function(){const its=(st.animItems||[]).slice(),hp0=Object.assign({},st.animHp||{}),ev=(st.animEv||[]).slice(),rnd=st.round;
+ runAnim=async function(){const jr=(st.animJournal||[]).slice(),its=(st.animItems||[]).slice(),hp0=Object.assign({},st.animHp||{}),ev=(st.animEv||[]).slice(),rnd=st.round;
   const dealt={},ko={};let cur=null;
   ev.forEach(e=>{if(['atk','charge','drone','scharge','puddle'].includes(e.k))cur=e.id;
    if(e.k==='dmg'&&cur&&cur!==e.id&&e.w!=='strefa'&&e.w!=='ścisk')dealt[cur]=(dealt[cur]||0)+(e.n||0);
@@ -54,7 +61,7 @@
      const h0=Math.max(0,Math.min(max,hp0[o.id]!==undefined?hp0[o.id]:max)),h1=ko[o.id]?0:Math.max(0,Math.min(max,(st.animHp||{})[o.id]!==undefined?st.animHp[o.id]:h0));
      const tc=(typeof isTeam==='function'&&isTeam()&&o.q.tm&&typeof TCOL!=='undefined')?TCOL[o.q.tm]:null;
      return {n:(o.q.nick?hfEsc(o.q.nick)+' · '+ch:(typeof nmOf==='function'?nmOf(o.id):ch)),img:IMG[ch],col:tc||(C[ch]&&C[ch].col)||'#888',max,h0,h1,lost:h0-h1,dealt:dealt[o.id]||0,ko:!!ko[o.id]}});
-    if(rows.length)setTimeout(()=>show(rnd,rows),250)}catch(e){console.warn('rsum',e)}}};
+    if(rows.length)setTimeout(()=>show(rnd,rows,jr),250)}catch(e){console.warn('rsum',e)}}};
  /* baner "RUNDA N" na początku planowania kolejnej rundy */
  let lastB=null;
  const _rr=render;render=function(){_rr.apply(this,arguments);try{

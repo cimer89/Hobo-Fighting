@@ -30,6 +30,7 @@
   "js/modes/testy.js",
   "js/core/util.js",
   "js/engine/rules.js",
+  "js/engine/combat.js",
   "js/engine/resolve.js",
   "js/engine/bonuses.js",
   "js/characters/actions.js",
