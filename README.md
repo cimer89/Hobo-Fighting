@@ -270,6 +270,10 @@ We wszystkich trybach owca zostaje na polu, na którym skończyła szarżę. Sza
 
 Po końcu gry przycisk **Menu główne** wraca do wyboru trybu bez przeładowania strony.
 
+## Mniejsza plansza dla 2 graczy
+
+W trybie klasycznym i specjalnym, gdy grają **dwie osoby** (na jednym telefonie albo online), plansza ma promień 2 zamiast 3: **19 pól zamiast 37**, 5 pól w poprzek zamiast 7. Obraz jest przybliżony, więc pola są większe. Strefa zaczyna się kurczyć od rundy 7 (do promienia 1), a od rundy 10 zostaje tylko środek. Przy 3 i więcej graczach, w trybie drużynowym i w treningu plansza ma pełny rozmiar.
+
 ## Bitwa baz (BETA)
 
 Wejście: Testy → Bitwa baz → rozmiar → mapa. Gra na jednym telefonie, drużyny 1v1 (małe mapy, baza 12 HP), 2v2 lub 3v3 (duże mapy, baza 20 HP).
