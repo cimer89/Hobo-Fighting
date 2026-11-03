@@ -1,0 +1,12 @@
+/* ===== leczenie / podniesienie ===== */
+.healfx{animation:healUp 1.1s ease-out forwards}
+@keyframes healUp{0%{opacity:0;transform:translateY(10px) scale(.6)}20%{opacity:1;transform:translateY(0) scale(1.15)}100%{opacity:0;transform:translateY(-70px) scale(1)}}
+.healring{animation:healRing .9s ease-out forwards}
+@keyframes healRing{from{transform:scale(.6);opacity:1}to{transform:scale(2.6);opacity:0}}
+.fl.heal{fill:#5cff8a!important;stroke:#0b3a17!important}
+.fl.gain{stroke:#1d1300!important}
+.tokglow{animation:tokGlow .9s ease-in-out 2}
+@keyframes tokGlow{0%,100%{filter:none}50%{filter:drop-shadow(0 0 10px #5cff8a) brightness(1.25)}}
+.tokgain{animation:tokGain .7s ease-out}
+@keyframes tokGain{0%,100%{transform:scale(1)}40%{transform:scale(1.18)}}
+#hpf-heal{fill:#5cff8a}

@@ -1,0 +1,24 @@
+/* ===== NOWE POSTACIE ===== */
+.chrow{display:grid!important;grid-template-columns:repeat(4,1fr);gap:5px}
+main button.chcard{aspect-ratio:1/.92;max-height:none}
+main button.chcard img{object-position:50% 25%}
+.chinfo .art{max-height:11vh}
+main:not(.full) .pp{overflow-y:auto;min-height:0}
+.pud{animation:pudpulse 2.2s ease-in-out infinite}
+@keyframes pudpulse{0%,100%{opacity:.85}50%{opacity:1}}
+.sc{width:100%;border-collapse:collapse;font-size:12px}
+.sc th{color:var(--mute);font-weight:600;padding:3px 2px;text-align:center}
+.sc td{padding:4px 2px;text-align:center}
+.sc td:first-child,.sc th:first-child{text-align:left}
+.sc tr.top td{background:rgba(242,194,48,.12)}
+.sc .tot{font-weight:800;color:#f2c230;font-size:14px}
+
+/* niskie ekrany: kompaktowy wybór postaci, przycisk zawsze osiągalny */
+@media (max-height:780px){
+ main button.chcard{aspect-ratio:1/.72}
+ .chinfo .art{max-height:8vh}
+ main:not(.full) .chinfo{padding:4px 8px}
+ main:not(.full) .chinfo p{font-size:11px;line-height:1.2}
+}
+.pp>button.go{position:sticky;bottom:0;z-index:2}
+

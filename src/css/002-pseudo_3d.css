@@ -1,0 +1,7 @@
+/* ===== PSEUDO-3D ===== */
+.wall{fill:rgba(0,0,0,.6);stroke:none;transform:translateY(3px);pointer-events:none}
+.hexp.lift{transform:translateY(-8px)}
+#stage polygon.lift[stroke]{animation:liftIn .3s cubic-bezier(.2,.9,.3,1.4) both,breathe 1.7s ease-in-out .3s infinite}
+@keyframes liftIn{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.md{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}

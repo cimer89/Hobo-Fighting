@@ -1,0 +1,22 @@
+/* ===== oczekiwanie na wybór postaci (online) ===== */
+#selOv .cwlist{flex:1 1 0;min-height:0;display:flex;flex-direction:column;gap:8px;justify-content:center}
+#selOv .cwrow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.15)}
+#selOv .cwrow img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid var(--c,#555)}
+#selOv .cwrow .ph{width:52px;height:52px;border-radius:50%;border:2px dashed rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font:400 22px Bangers,Impact,sans-serif;color:#aaa}
+#selOv .cwrow b{font:400 22px Bangers,Impact,sans-serif;letter-spacing:1px;flex:1}
+#selOv .cwrow span{font:700 13px system-ui,sans-serif;color:#cfc8bb}
+#selOv .cwrow.ok span{color:#5cff8a}
+#selOv .cwinfo{text-align:center;font:600 14px system-ui,sans-serif;color:#d9d6cc}
+#selOv .selsec{flex:none;min-height:42px;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font:400 18px Bangers,Impact,sans-serif;letter-spacing:1px}
+#selOv.newp .selp{animation:pIn .6s cubic-bezier(.2,.9,.3,1.4) both}
+#selOv.newp .selhero,#selOv.newp .selbg{animation:pFade .45s ease-out both}
+@keyframes pIn{0%{transform:skewX(-10deg) scale(2.2);opacity:0}100%{transform:skewX(-10deg) scale(1);opacity:1}}
+@keyframes pFade{from{opacity:.2}to{opacity:1}}
+#sndBtn{position:fixed;left:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:40;width:40px;height:40px;border-radius:50%;border:2px solid #2a180b;background:rgba(25,15,7,.85);color:#fff;font-size:18px;line-height:1;padding:0;box-shadow:0 3px 0 #1d1007;cursor:pointer}
+main:not(.full)~#sndBtn,body:has(main:not(.full)) #sndBtn{bottom:auto;top:calc(8px + env(safe-area-inset-top,0px))}
+#sndPanel{position:fixed;left:8px;top:calc(54px + env(safe-area-inset-top,0px));z-index:41;width:min(260px,calc(100% - 16px));display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:14px;background:linear-gradient(180deg,#7a4f2c,#4a2d17);border:3px solid #2a180b;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.6);font:600 13px system-ui,sans-serif}
+#sndPanel b{font:400 20px Bangers,Impact,sans-serif;letter-spacing:1px}
+#sndPanel label{display:flex;flex-direction:column;gap:4px}
+#sndPanel input{width:100%;accent-color:#f2c230}
+#sndPanel button{min-height:38px;border-radius:10px;border:2px solid #2a180b;background:linear-gradient(180deg,#ffd84a,#e8a600);color:#1d1300;font:400 17px Bangers,Impact,sans-serif;letter-spacing:1px}
+#sndPanel small{color:#e9dcc6;font-weight:500}

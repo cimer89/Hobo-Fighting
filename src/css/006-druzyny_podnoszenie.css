@@ -1,0 +1,6 @@
+/* ===== DRUŻYNY + PODNOSZENIE ===== */
+.tmtag{display:inline-block;margin-left:6px;padding:0 6px;border-radius:6px;color:#fff;font:800 11px system-ui,sans-serif;vertical-align:2px}
+.pkring{animation:pkr .6s ease-out forwards}
+@keyframes pkr{from{transform:scale(1);opacity:1}to{transform:scale(4.5);opacity:0}}
+main button.chcard img{object-position:50% 18%}
+

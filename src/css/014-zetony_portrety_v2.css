@@ -1,0 +1,10 @@
+/* ===== żetony-portrety v2 ===== */
+.tkA{transform-box:fill-box;transform-origin:50% 100%}
+.tkA.land{animation:tkLand .36s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes tkLand{0%{transform:scale(1.12,.86)}60%{transform:scale(.97,1.04)}100%{transform:none}}
+.tkA.atk{animation:tkAtk .46s ease-out}
+@keyframes tkAtk{0%{transform:none}30%{transform:scale(1.1) rotate(-7deg)}60%{transform:scale(1.04) rotate(5deg)}100%{transform:none}}
+.tkA.hurt{animation:tkHurt .48s ease-out}
+@keyframes tkHurt{0%{transform:none;filter:none}15%{transform:translateX(-5px) rotate(-8deg);filter:brightness(1.5) sepia(1) saturate(6) hue-rotate(-40deg)}45%{transform:translateX(4px) rotate(5deg);filter:brightness(1.15) sepia(.5) saturate(4) hue-rotate(-40deg)}100%{transform:none;filter:none}}
+.tkA.ko{animation:tkKo .8s ease-in forwards}
+@keyframes tkKo{0%{transform:none}30%{transform:translateY(-10px) rotate(-10deg)}100%{transform:translate(16px,6px) rotate(84deg);filter:grayscale(1) brightness(.7)}}

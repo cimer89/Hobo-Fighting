@@ -1,0 +1,73 @@
+/* ===================== NOWY INTERFEJS (drewno) ===================== */
+:root{--wood1:#7a4f2c;--wood2:#4a2d17;--woodline:rgba(0,0,0,.22)}
+main:not(.full){background:repeating-linear-gradient(180deg,transparent 0 44px,var(--woodline) 44px 47px),repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 3px,transparent 3px 11px),linear-gradient(180deg,var(--wood1),var(--wood2));border-top:4px solid #2a180b;box-shadow:0 -10px 30px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,220,170,.25)}
+main:not(.full)::before{background:rgba(0,0,0,.35)}
+main:not(.full) .card{background:rgba(25,15,7,.62);border:2px solid #2a180b;box-shadow:inset 0 1px 0 rgba(255,220,170,.15)}
+/* górny pasek */
+#bonBar.topbar{position:fixed;top:calc(6px + env(safe-area-inset-top,0px));right:6px;z-index:5;display:flex;gap:5px;align-items:stretch;pointer-events:auto;max-width:calc(100% - 12px);flex-wrap:wrap;justify-content:flex-end}
+#bonBar .sign{background:linear-gradient(180deg,#8a5a31,#5a3519);border:3px solid #2a180b;border-radius:6px;padding:2px 12px;text-align:center;box-shadow:0 3px 0 #1d1007,inset 0 1px 0 rgba(255,220,170,.35);transform:rotate(-1.5deg)}
+#bonBar .sign b{display:block;font:400 22px/1 Bangers,Impact,sans-serif;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #000}
+#bonBar .sign small{display:block;font:400 12px/1.1 Bangers,Impact,sans-serif;letter-spacing:1px;color:#f2c230}
+#bonBar .tb{background:rgba(18,16,14,.86);border:2px solid #3a3530;border-radius:8px;padding:3px 8px;text-align:center;min-width:52px}
+#bonBar .tb small{display:block;font:700 9px system-ui,sans-serif;letter-spacing:.1em;color:#cfc8bb}
+#bonBar .tb b{display:block;font:400 15px/1.1 Bangers,Impact,sans-serif;letter-spacing:.5px;color:#fff}
+#bonBar .tb.zn b{color:#ff8a7e}
+#bonBar button{min-height:0;padding:3px 9px;border-radius:8px;border:2px solid #3a3530;background:rgba(18,16,14,.86);color:#fff;font:400 14px Bangers,Impact,sans-serif;letter-spacing:.5px}
+#bonBar button.on{background:#f2c230;color:#111}
+#legBar{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));right:6px;z-index:5;max-width:calc(100% - 12px)}
+/* karta postaci + faza + karteczka */
+.hud{display:grid;grid-template-columns:minmax(0,1.35fr) auto minmax(0,1fr);gap:6px;align-items:stretch;flex:none}
+.hud>.card{display:flex;align-items:center;gap:8px;padding:5px 8px!important;margin:0}
+.hud>.card>div{display:flex;flex-direction:column;align-items:flex-start!important;gap:3px;width:100%}
+.hud>.card>div>span{gap:8px!important}
+.hud>.card .av{width:46px!important;height:46px!important;border-width:3px!important;box-shadow:0 0 0 2px #1d1007}
+.hud>.card b{font:400 21px/1 Bangers,Impact,sans-serif!important;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 #000}
+.hud .hp{gap:3px}
+.hud .hp i{width:15px;height:15px;border-radius:3px;background:linear-gradient(180deg,#ff5348,#c3221b);border:2px solid #3a0c08;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.hud .stepper{flex-direction:column;justify-content:center;gap:3px;padding:4px 8px;background:rgba(25,15,7,.62);border:2px solid #2a180b;border-radius:12px;font:400 12px Bangers,Impact,sans-serif;letter-spacing:1px;color:#e9dcc6}
+.hud .stepper>span{display:flex;gap:4px}
+.hud .stepper i{min-width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;font:400 16px Bangers,Impact,sans-serif;background:#2b2520;border:2px solid #4a4038;color:#9a9086}
+.hud .stepper i.on{background:radial-gradient(circle at 40% 35%,#ffe066,#e0a800);border-color:#5a3d00;color:#2a1c00;box-shadow:0 0 12px rgba(255,200,40,.6)}
+.hud .stepper i.done{opacity:1;background:#3d6b2f;border-color:#1f3a17;color:#d9f2c9}
+.hud>p.note{margin:0!important;padding:6px 8px!important;background:linear-gradient(180deg,#f3e6c8,#e2cfa6);color:#2a2116!important;font:400 12.5px/1.2 'Permanent Marker','Comic Sans MS',cursive!important;border-radius:3px;transform:rotate(1.2deg);box-shadow:0 3px 6px rgba(0,0,0,.45);display:flex!important;align-items:center;-webkit-line-clamp:unset!important;overflow:hidden}
+/* przyciski akcji */
+.row.acts{gap:7px!important}
+.row.acts button{position:relative;min-height:54px!important;border-radius:12px!important;border:3px solid #120c06!important;color:#fff!important;font:400 24px/1 Bangers,Impact,sans-serif!important;letter-spacing:1px;text-shadow:0 2px 0 rgba(0,0,0,.6);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 4px 0 #120c06!important;display:flex;align-items:center;justify-content:center;gap:6px;transform:skewX(-4deg)}
+.row.acts button::before{content:'';width:26px;height:26px;flex:none;background:center/contain no-repeat}
+.row.acts[style*="--n:4"] button,.row.acts[style*="--n:3"] button{font-size:17px!important;min-height:50px!important}
+.row.acts[style*="--n:4"] button::before,.row.acts[style*="--n:3"] button::before{display:none}
+.row.acts button[data-t="move"]{background:linear-gradient(180deg,#3d86f0,#1d55b8)!important}
+.row.acts button[data-t="atk"]{background:linear-gradient(180deg,#ef4136,#a8161a)!important}
+.row.acts button[data-t="smove"]{background:linear-gradient(180deg,#2fb3a3,#13786c)!important}
+.row.acts button[data-t="summon"]{background:linear-gradient(180deg,#7fb33a,#4b7a18)!important}
+.row.acts button[data-t="drone"]{background:linear-gradient(180deg,#8a8f5a,#535a2c)!important}
+.row.acts button[data-t="move"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='14' cy='4' r='2.6' fill='white'/%3E%3Cpath d='M9 9l4-2 3 4 3 1M12 8l-2 6 4 3-1 5M10 14l-4 1-2 4' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.row.acts button[data-t="atk"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1l2.2 5.6 5.4-2.8-2.4 5.6 5.8 1.6-5.6 2.4 3 5.2-5.6-1.8-1.2 6-2.8-5.4-4.6 3.8.6-6L1 14l5-3.6L2.4 5.6l5.8 1.4z' fill='white'/%3E%3C/svg%3E")}
+.row.acts button.on{outline:3px solid #ffe066;outline-offset:2px;filter:brightness(1.12)}
+.row.acts button:disabled{filter:grayscale(.85) brightness(.6)}
+/* zatwierdzanie */
+.okrow{display:flex;gap:6px;flex:none}
+.okrow>button.go{flex:1;min-height:50px!important;border-radius:12px;border:3px solid #3a2600!important;background:linear-gradient(180deg,#ffd84a,#e8a600)!important;color:#1d1300!important;font:400 24px Bangers,Impact,sans-serif!important;letter-spacing:1.5px;box-shadow:inset 0 2px 0 rgba(255,255,255,.55),0 4px 0 #3a2600!important;text-shadow:none!important}
+.okrow>button.go:disabled{filter:grayscale(.6) brightness(.75)}
+.okrow>button[data-a="prev"]{flex:none;min-height:50px!important;padding:0 10px!important;font-size:14px!important;border-radius:12px}
+/* gracze */
+.plrow{display:flex;gap:6px;align-items:center;flex:none;padding:5px 6px;background:rgba(18,12,6,.6);border:2px solid #2a180b;border-radius:12px}
+.plrow img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:3px solid #3a332c;background:#222}
+.plrow img.cur{border-color:#4fa3ff;box-shadow:0 0 0 2px #fff,0 0 12px #4fa3ff;transform:scale(1.08)}
+.plrow img.dead{filter:grayscale(1) brightness(.45)}
+.plrow .ph{width:40px;height:40px;border-radius:50%;border:2px dashed #4a4038;opacity:.5}
+@media (max-height:700px){.plrow{display:none}.hud>.card .av{width:38px!important;height:38px!important}.row.acts button{min-height:46px!important;font-size:21px!important}.okrow>button.go{min-height:44px!important}}
+
+.hud>.card>p{display:none!important}
+@media (min-height:780px){
+ main:not(.full) #phpanel{justify-content:space-evenly}
+ .hud>.card .av{width:54px!important;height:54px!important}
+ .row.acts button{min-height:66px!important;font-size:28px!important}
+ .row.acts button::before{width:30px;height:30px}
+ .row.acts[style*="--n:4"] button,.row.acts[style*="--n:3"] button{min-height:60px!important;font-size:19px!important}
+ .okrow>button.go,.okrow>button[data-a="prev"]{min-height:58px!important}
+ .okrow>button.go{font-size:27px!important}
+ .plrow img,.plrow .ph{width:50px;height:50px}
+ .hud .stepper i{min-width:34px;height:34px}
+ .hud>p.note{font-size:13.5px!important}
+}

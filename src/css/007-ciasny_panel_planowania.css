@@ -1,0 +1,8 @@
+/* ===== ciasny panel planowania ===== */
+main[data-s="plan"]>.card>p{display:none}
+main[data-s="plan"]>.card{padding:5px 10px}
+main[data-s="plan"]>.card .av{width:30px;height:30px}
+.row.acts{display:grid!important;grid-template-columns:repeat(var(--n),1fr);gap:5px}
+.row.acts button{min-height:42px!important;padding:3px 4px!important;font-size:15px;line-height:1.05;white-space:normal;letter-spacing:.3px}
+#phpanel>p{font-size:12px!important;line-height:1.25!important;margin:0!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#phpanel .stepper{margin:0}
