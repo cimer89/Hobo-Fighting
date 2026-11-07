@@ -28,7 +28,7 @@ Plik: `src/js/engine/combat.js` (obiekt `Combat`). To jedyne miejsce, gdzie rozp
 | 11 szarża owcy | 2 DMG we wszystkich trybach; w klasycznym owca zatrzymuje się na pierwszej postaci, w specjalnym i w Testach przebiega przez linię i rani każdego |
 | 12 manipulacja | (faza II) Ciotka przesuwa trafionego; kolizja −1 |
 | 13 trucizna | kałuże: 1 DMG (z bonusem 2; w Testach +1) |
-| 14 eliminacje | HP ≤ 0 → postać odpada (dopiero na koniec fazy, więc ataki w jednej fazie są jednoczesne) |
+| 14 eliminacje | HP ≤ 0 → postać odpada (dopiero na koniec fazy, więc ataki w jednej fazie są jednoczesne); owca znika razem z Pasterzem |
 | 15 anulowanie | (faza II) przesunięty Długi traci fazę III |
 
 **Koniec rundy:** strefa (−1 poza strefą, tarcza blokuje), eliminacje, przedmioty (tryb specjalny).
@@ -69,3 +69,8 @@ Testy `[D…]` w `tests/combat_test.js` pilnują tych zasad.
    - Gdy owca szarżuje w inną stronę, wykonuje swoją szarżę normalnie.
    - W obu przypadkach owca ginie dopiero po rozpatrzeniu ataków.
 7. **[D7] Dron ignoruje owce.**
+8. **[D8] Lądowanie Byka na polu z sojusznikiem i wrogiem (2v2): obrażenia dostaje tylko wróg.** Sojusznik i Byku nie dostają −1 za ścisk.
+   - Uzasadnienie: lądowanie zastępuje ścisk na tym polu, a nie się z nim sumuje. Wróg dostaje 3 (lub 1 za dalszy skok) zamiast ścisku −1, więc nikt nie jest karany podwójnie za jedno zdarzenie.
+   - Sojusznicy w 2v2 nie ranią się atakami, a skok Byka jest jego atakiem. Ścisk z D3 dotyczy sytuacji, gdy postacie wchodzą na to samo pole bez skoku Byka.
+   - Gdyby sojusznik obrywał za każdy skok Byka, Byku w 2v2 nie mógłby wspierać partnera w zwarciu, a gracz drużyny płaciłby za ruch, którego nie wybrał.
+9. **[D9] Owca znika razem z Pasterzem.** Gdy Pasterz odpada w kroku 14, jego owca znika w tym samym kroku: od następnej fazy nie zasłania strzałów, nie przyjmuje ataków i nie szarżuje. W fazie, w której Pasterz ginie, owca działa normalnie (ataki w jednej fazie są jednoczesne).

@@ -947,7 +947,7 @@ function winTeam(items,Rs){const al=items.filter(o=>Rs[o.id]&&Rs[o.id].eff>0),ts
    11 szarża owcy     – 2 DMG (z bonusem 3); także owca trafiona w tej fazie (ginie dopiero w kroku 14)
    12 manipulacja     – przesunięcie przez Ciotkę (faza II)
    13 trucizna        – kałuże zadają obrażenia
-   14 eliminacje      – trafione owce giną, postacie z HP ≤ 0 odpadają
+   14 eliminacje      – trafione owce giną, postacie z HP ≤ 0 odpadają, owca znika z Pasterzem
    15 anulowanie      – (faza II) przesunięty Długi traci fazę III
    Na koniec rundy: strefa (−1 poza strefą, tarcza blokuje) i eliminacje. */
 const Combat=(function(){
@@ -1130,6 +1130,8 @@ const Combat=(function(){
    step=STEPS[13];
    SHP.forEach(s=>{if(s.alive&&s.doomed){s.alive=false;ev.push({k:'sheephit',id:S[s.o].id,pos:s.pos.slice()});J({k:'śmierć owcy',id:S[s.o].id,pos:s.pos.slice(),rule:'owca trafiona w tej fazie'})}});
    S.forEach(x=>{if(!x.out&&x.hp<=0){x.out=true;ev.push({k:'out',id:x.id});J({k:'eliminacja',id:x.id,hp:x.hp,rule:'HP ≤ 0 na koniec fazy'})}});
+   /* [D9] owca znika razem z wyeliminowanym Pasterzem (od następnej fazy nie zasłania i nie szarżuje) */
+   SHP.forEach(s=>{if(s.alive&&S[s.o].out){s.alive=false;ev.push({k:'sheephit',id:S[s.o].id,pos:s.pos.slice()});J({k:'śmierć owcy',id:S[s.o].id,pos:s.pos.slice(),rule:'Pasterz wyeliminowany'})}});
    /* 15 anulowanie fazy III Długiego po przesunięciu */
    step=STEPS[14];
    if(ph===1)S.forEach((x,i)=>{if(x.ch==='Długi'&&x.moved&&!x.out&&L[i].plan[2]){x.cancel3=true;ev.push({k:'cancel',id:x.id});J({k:'anulowana faza III',id:x.id,rule:'Długi przesunięty w fazie II'})}});
