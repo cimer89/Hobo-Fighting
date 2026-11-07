@@ -55,7 +55,7 @@ const BalanceLog=(function(){
   'Długi':{nerf:'trzecie pole linii 2 → 1 DMG',buff:'pierwsze pole linii 1 → 2 DMG'},
   'Żyleta':{nerf:'zasięg strzału 9 → 5 pól albo 2 → 1 DMG od 3. pola',buff:'+1 HP albo strzał snajperski 3 → 4 DMG'},
   'Ciotka':{nerf:'faza I 2 → 1 DMG',buff:'faza II 1 → 2 DMG'},
-  'Pasterz':{nerf:'szarża owcy zatrzymuje się na pierwszej postaci także w Testach',buff:'szarża owcy 1 → 2 DMG w trybie klasycznym'},
+  'Pasterz':{nerf:'szarża owcy 2 → 1 DMG albo zatrzymanie na pierwszej postaci także w Testach',buff:'owca z 2 HP albo kij pasterski także w trybie klasycznym'},
   'Truchel':{nerf:'kałuża działa 1 rundę zamiast 2',buff:'trucizna 1 → 2 DMG'},
   'Sierżant Przemo':{nerf:'dron 1 → 0 DMG przy remisie celów (losowanie usunięte)',buff:'+1 HP albo pistolet 1 → 2 DMG na 1–2 pola'}};
  function proposals(rows,src){const out=[];

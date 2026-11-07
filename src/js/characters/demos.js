@@ -76,11 +76,11 @@ const DEMOS={
   {t:'Ruch owcy',d:'Zamiast siebie możesz poruszyć owcę o 1 pole.',T:3800,run(a){const s=N(DH,2);a.tok('h','hero',DH).tok('s','sheep',s);
    dmAt(300,()=>{a.mark(dmNb(s),'opt');a.cap('Pola, na które może pójść owca.')});
    dmAt(1500,()=>{a.clear();a.mark([N(s,1)],'pick');a.mv('s',N(s,1));a.cap('Owca idzie tam, gdzie każesz.')})}},
-  {t:'Szarża owcy',d:'Owca biegnie na wprost i uderza pierwszą napotkaną postać za 1 DMG.',T:4400,run(a){const s=N(DH,2),f=N(s,2,2);a.tok('h','hero',DH).tok('s','sheep',s).tok('f0','foe',f);
+  {t:'Szarża owcy',d:'Owca biegnie na wprost i uderza pierwszą napotkaną postać za 2 DMG.',T:4400,run(a){const s=N(DH,2),f=N(s,2,2);a.tok('h','hero',DH).tok('s','sheep',s).tok('f0','foe',f);
    dmAt(300,()=>{a.mark(dmNb(s),'opt');a.cap('Wybierz kierunek: pole obok owcy.')});
    dmAt(1400,()=>{a.clear();a.mark([N(s,2),f],'hit');a.cap('Owca szarżuje…')});
    dmAt(2000,()=>{a.mv('s',N(s,2),'fast')});
-   dmAt(2400,()=>{a.dmg('f0','−1');a.cap('…i taranuje pierwszego wroga: <b>1 DMG</b>.')})}},
+   dmAt(2400,()=>{a.dmg('f0','−2');a.cap('…i taranuje pierwszego wroga: <b>2 DMG</b>.')})}},
   {t:'Osłona',d:'Owca stoi na linii strzału i przyjmuje go na siebie. Ma tylko 1 HP.',T:4000,run(a){const s=N(DH,2),f=N(DH,2,4);a.tok('h','hero',DH).tok('s','sheep',s).tok('f0','foe',f);
    dmAt(400,()=>{a.mark([N(DH,2,3),N(DH,2,2),s],'hit');a.cap('Wróg strzela w stronę Pasterza…')});
    dmAt(1300,()=>{a.shot(f,s,'#ffe27a')});

@@ -24,7 +24,7 @@
     8 ataki           – zwykłe ataki, po kolei wg kolejności graczy
     9 kałuże          – Truchel stawia kałużę
    10 szarża Byka     – z odrzuceniem i kolizją po odrzuceniu
-   11 szarża owcy     – także owca trafiona w tej fazie (ginie dopiero w kroku 14)
+   11 szarża owcy     – 2 DMG (z bonusem 3); także owca trafiona w tej fazie (ginie dopiero w kroku 14)
    12 manipulacja     – przesunięcie przez Ciotkę (faza II)
    13 trucizna        – kałuże zadają obrażenia
    14 eliminacje      – trafione owce giną, postacie z HP ≤ 0 odpadają
@@ -172,7 +172,7 @@ const Combat=(function(){
     if(crash){ev.push({k:'hit',id:x.id,ph});dmg(i,1,'ściana strefy')}
     if(shCl){killSheep(shCl,i);const sa=planOf(shCl.o),po=S[shCl.o];
      /* owca szarżująca naprzeciw Byka: zderzenie – Byku dostaje obrażenia jej szarży, owca dalej nie biegnie */
-     if(sa&&sa.t==='atk'&&po.ch==='Pasterz'&&sa.d===(a.d+3)%6){shCl.clash=true;const sx=(sa.bd||po.dmgb)?1:0;ev.push({k:'hit',id:x.id,ph});dmg(i,(R.pnb?2:1)+sx,'zderzenie z owcą',shCl.o);useBonus(po)}}
+     if(sa&&sa.t==='atk'&&po.ch==='Pasterz'&&sa.d===(a.d+3)%6){shCl.clash=true;const sx=(sa.bd||po.dmgb)?1:0;ev.push({k:'hit',id:x.id,ph});dmg(i,2+sx,'zderzenie z owcą',shCl.o);useBonus(po)}}
     if(victims.length){trig(x.id,'Byku');useBonus(x);
      victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,2+extra,'szarża Byka',i)});
      if(victims.length>=2)x.pts.m+=victims.length-1;
@@ -189,7 +189,7 @@ const Combat=(function(){
      const vs=at(i,nq,nr);
      if(vs.length){if(R.pnb){victims=victims.concat(vs)}else{victims=vs;break}}cur=[nq,nr];steps++}
     s.pos=cur.slice();ev.push({k:'scharge',id:x.id,from,to:cur.slice(),steps,hit:victims.length>0,dir:a.d});J({k:'szarża owcy',id:x.id,from,to:cur.slice(),by:x.id,rule:R.pnb?'owca przebiega przez postacie':'owca zatrzymuje się na pierwszej postaci'});
-    if(victims.length){trig(x.id,'Pasterz');useBonus(x);victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,(R.pnb?2:1)+extra,'szarża owcy',i)});if(victims.length>=2)x.pts.m+=victims.length-1}});
+    if(victims.length){trig(x.id,'Pasterz');useBonus(x);victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,2+extra,'szarża owcy',i)});if(victims.length>=2)x.pts.m+=victims.length-1}});
    /* 12 manipulacja: Ciotka przesuwa trafioną postać (pole wybiera gracz po rozpatrzeniu) */
    step=STEPS[11];
    pnd.forEach(p=>{const t=S[p.t],dest=pd&&pd[p.by];t.moved=true;const by=S.findIndex(y=>y.id===p.by);

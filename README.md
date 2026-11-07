@@ -283,6 +283,10 @@ We wszystkich trybach owca zostaje na polu, na którym skończyła szarżę. Sza
 
 Po końcu gry przycisk **Menu główne** wraca do wyboru trybu bez przeładowania strony.
 
+## Pasterz: szarża owcy
+
+Szarża owcy zadaje **2 DMG we wszystkich trybach** (wcześniej 1 DMG w trybie klasycznym), z bonusem +1 DMG – 3. W trybie klasycznym owca nadal zatrzymuje się na pierwszej postaci, a w specjalnym i w Testach przebiega przez linię. Zderzenie owcy z szarżującym naprzeciw Bykiem też zadaje Bykowi 2 DMG.
+
 ## Byku: obrażenia ze skoku
 
 - **Skok o 1 pole albo w miejscu:** lądowanie na przeciwniku = **3 DMG**. Przy skoku w miejscu liczy się też przeciwnik, który wejdzie na pole Byka albo już na nim stoi.

@@ -33,7 +33,7 @@ function planHint(pl,ph){const ch=st.ch;
   if(pl.t==='move')return 'Ruch Pasterza o 1 pole lub zostań.';
   if(pl.t==='smove')return 'Ruch owcy o 1 pole (dotknij pola obok owcy).';
   if(pl.t==='summon')return 'Dotknij sąsiedniego pola, by przywołać owcę.';
-  if(pl.t==='atk')return pl.d===null?'Dotknij pola obok owcy, by wybrać kierunek szarży.':'Szarża owcy: '+DN[pl.d]+(TB()?' (2 DMG każdej postaci w linii).':' (1 DMG pierwszej napotkanej postaci).')}
+  if(pl.t==='atk')return pl.d===null?'Dotknij pola obok owcy, by wybrać kierunek szarży.':'Szarża owcy: '+DN[pl.d]+(TB()?' (2 DMG każdej postaci w linii).':' (2 DMG pierwszej napotkanej postaci).')}
  if(ch==='Truchel'){if(pl.t==='move')return 'Teleport: dotknij dowolnego pola (także zajętego).';
   if(pl.t==='atk')return pl.d===null?'Dotknij sąsiedniego pola, na którym powstanie kałuża.':'Kałuża: '+DN[pl.d]+' (trucizna przez 3 rundy).'}
  if(ch==='Sierżant Przemo'){if(pl.t==='atk')return pl.d===null?'Pistolet: dotknij sąsiedniego pola, by wybrać kierunek (1 DMG).':'Pistolet: '+DN[pl.d]+' (1 DMG, trafia pierwszą postać).';

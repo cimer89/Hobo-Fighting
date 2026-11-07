@@ -1,6 +1,6 @@
 /* ===================== NOWE POSTACIE (Pasterz, Truchel, Sierżant Przemo) + PUNKTACJA ===================== */
 Object.assign(C,{
- 'Pasterz':{col:'#c8a26b',txt:'Owca (1 HP): przywołaj, poruszaj, szarżuj nią (1 DMG). Osłania przed strzałami. Jedna owca na planszy.'},
+ 'Pasterz':{col:'#c8a26b',txt:'Owca (1 HP): przywołaj, poruszaj, szarżuj nią (2 DMG). Osłania przed strzałami. Jedna owca na planszy.'},
  'Truchel':{col:'#19b5a5',txt:'Teleport na dowolne pole. Zamiast ataku tworzy kałużę trucizny (3 rundy, obrażenia na koniec każdej fazy).'},
  'Sierżant Przemo':{col:'#d9544f',txt:'Pistolet 1 DMG (jak Żyleta). Dron: faza I aktywacja, faza II wysłanie, atakuje najbliższą postać.'}});
 Object.assign(INI,{P:'Pasterz',T:'Truchel',S:'Sierżant Przemo'});
