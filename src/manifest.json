@@ -38,6 +38,7 @@
   "js/board/board.js",
   "js/ui/planning.js",
   "js/ui/screens.js",
+  "js/online/commit.js",
   "js/online/net.js",
   "js/online/screens.js",
   "js/fx/anim.js",
@@ -87,6 +88,7 @@
   "js/ui/menu_fix.js",
   "js/online/draft.js",
   "js/board/board2d.js",
-  "js/board/small_board.js"
+  "js/board/small_board.js",
+  "js/online/fair_bar.js"
  ]
 }

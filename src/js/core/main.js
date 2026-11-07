@@ -25,7 +25,7 @@ addClick('core/main',document,e=>{
  else if(ds.a==='goplan'){st.scr='plan';st.start=ME.start;st.plan=newPlan();st.ph=0;st.done=false}
  else if(ds.a==='next'){{const x=resolveFin(netItems())[net.uid];if(x){ME.posr[st.round+1]=x.pos;ME.hpr[st.round+1]=x.eff}}st.round++;st.start=ME.posr[st.round];st.plan=newPlan();st.ph=0;st.done=false;st.scr='plan';save()}
  else if(ds.hp!==undefined){const q=H?H.p[+ds.pi]:ME;q.hpo=q.hpo||{};q.hpo[st.round]=+ds.eff===+ds.hp?+ds.hp-1:+ds.hp;if(!H)save()}
- else if(ds.a==='edit'){st.done=false;st.ph=0;if(net.db){delete ME.plans[st.round];save()}}
+ else if(ds.a==='edit'){if(net.db&&!H&&typeof allCommitted==='function'&&allCommitted(st.round))return;st.done=false;st.ph=0;if(net.db){delete ME.plans[st.round];save()}}
  else if(ds.k){
   const [q,r]=ds.k.split(',').map(Number);
   if(st.scr==='pick')st.start=[q,r];

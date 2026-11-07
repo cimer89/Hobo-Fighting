@@ -20,6 +20,8 @@ def pick_variant(t):
 man=json.loads(rd('src/manifest.json'))
 css=''.join(rd('src/'+f) for f in man['css'])
 js=''.join(pick_variant(rd('src/'+f)) for f in man['js'])
+import hashlib
+js=js.replace('@@BUILD@@',hashlib.sha1(js.encode('utf-8')).hexdigest()[:10])
 html=pick_variant(rd('src/index.html')).replace('@@CSS@@',css,1).replace('@@JS@@',js,1)
 mime=json.loads(rd('assets/mime.json'))
 cache={}

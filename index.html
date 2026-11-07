@@ -1679,6 +1679,28 @@ function goMenu(){
  Object.assign(st,{scr:'lobby',lastPanel:null,leaving:false,round:1,ch:'Wiatrak',start:null,slot:0,ph:0,mode:'move',plan:[{m:null,d:null},{m:null,d:null}],done:false},keep);
  app.style.display='';st._selHid=false;BOARD_SVG=null;
  window.scrollTo(0,0);render()}
+/* ===================== Online: tajne plany (zobowiązanie i ujawnienie) ===================== */
+/* Gracz najpierw zapisuje w pokoju tylko skrót SHA-256 swojego planu (z losową solą).
+   Plan i sól wysyła dopiero, gdy wszyscy żywi gracze zapisali swoje skróty.
+   Skróty innych graczy są „zamrażane” w chwili, gdy wszyscy się zobowiązali; ujawniony plan musi do nich pasować,
+   inaczej gracz jest oznaczany jako podejrzany (zmiana planu po zobaczeniu cudzych). */
+const GAME_VERSION='74ab9ecddb';
+const Commit=(function(){
+ const ok=!!(window.crypto&&crypto.subtle&&window.TextEncoder);
+ const hex=a=>[...new Uint8Array(a)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ async function sha(s){return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))}
+ function salt(){const a=new Uint8Array(16);crypto.getRandomValues(a);return hex(a)}
+ const mine={},opened={},locked={},checked={},bad={};
+ /* mój plan pod kluczem key -> {h: skrót, salt}; nowy skrót tylko gdy plan się zmienił */
+ async function seal(key,obj){const pj=JSON.stringify(obj);let c=mine[key];if(!c||c.pj!==pj){const s=salt();c={pj,salt:s,h:await sha(s+'|'+key+'|'+pj)};mine[key]=c}return c}
+ const open=key=>{opened[key]=true};
+ const isOpen=key=>!!opened[key];
+ /* zamrożenie cudzego skrótu (pierwszy zapamiętany wygrywa) */
+ function lock(key,h){if(h&&!(key in locked))locked[key]=h}
+ /* sprawdzenie ujawnionego planu; wynik zapamiętany; cb wołane przy wykryciu niezgodności */
+ function verify(key,obj,s,h,cb){if(!ok||checked[key])return;checked[key]=1;const want=locked[key]||h;if(!want||!s){return}
+  sha(s+'|'+key+'|'+JSON.stringify(obj)).then(x=>{if(x!==want){bad[key]=1;cb&&cb(key)}})}
+ return {ok,seal,open,isOpen,lock,verify,bad,reset(){[mine,opened,locked,checked].forEach(o=>Object.keys(o).forEach(k=>delete o[k]))}}})();
 /* ===================== Online: pokoje i synchronizacja ===================== */
 /* --- z części: js/000-start.js --- */
 async function initNet(){
@@ -1691,13 +1713,31 @@ async function initNet(){
   net.uid=cred.user.uid;
   /* Firestore nie przyjmuje tablic w tablicach (np. pola [q,r] w listach), więc dokument pokoju zapisujemy jako tekst JSON w polu j */
   const fs=firebase.firestore(),dec=d=>{const x=d.data();return x&&typeof x.j==='string'?JSON.parse(x.j):x};
-  net.db={doc:p=>({set:o=>fs.doc(p).set({j:JSON.stringify(o),t:Date.now()})}),
+  /* exp: data wygaśnięcia dokumentu pokoju (zasada TTL w Firestore usuwa stare pokoje po 2 dniach) */
+  net.db={doc:p=>({set:o=>fs.doc(p).set({j:JSON.stringify(o),t:Date.now(),exp:firebase.firestore.Timestamp.fromMillis(Date.now()+2*864e5)})}),
    collection:p=>({onSnapshot:(cb,er)=>fs.collection(p).onSnapshot(sn=>cb({docs:sn.docs.map(d=>({id:d.id,data:()=>dec(d)}))}),er||(e=>{console.warn('Firebase:',e);net.err=true;render()}))})};
- }catch(e){console.warn('Firebase:',e);net.db=null}
+ }catch(e){console.warn('Firebase:',e);net.db=null;
+  /* Firebase niedostępny (brak sieci do Google, zablokowany skrypt): zapasowo przekaźnik bez konfiguracji */
+  setTimeout(()=>{try{if(!net.db)P2P.init()}catch(x){}},0)}
  render()
 }
-function save(){if(!net.db)return;net.db.doc('rooms/'+net.code+'/players/'+net.uid).set(JSON.parse(JSON.stringify(ME))).catch(()=>{net.err=true;render()})}
-function join(code){net.code=code.toUpperCase();net.unsub&&net.unsub();net.unsub=net.db.collection('rooms/'+net.code+'/players').onSnapshot(sn=>{net.pl={};sn.docs.forEach(d=>net.pl[d.id]=d.data());chk();render()},()=>{});save();st.scr='pick';render()}
+/* klucz zobowiązania dla planu gracza id w rundzie r */
+const cmKey=(id,r)=>'c:'+net.code+':'+r+':'+id;
+/* czy wszyscy inni żywi gracze w pokoju zapisali już skrót lub plan na rundę r */
+function allCommitted(r){const os=Object.entries(net.pl||{}).filter(([id,p])=>id!==net.uid&&p&&alive(p,r));return os.length>0&&os.every(([,p])=>(p.cm&&p.cm[r])||(p.plans&&p.plans[r]))}
+/* dokument gracza do zapisu: plany jeszcze nieujawnione zastępuje skrót (cm), ujawnione mają sól (sl) */
+async function buildDoc(){const d=JSON.parse(JSON.stringify(ME));d._v=GAME_VERSION;if(!Commit.ok||!d.plans)return d;d.cm={};d.sl={};
+ for(const k of Object.keys(d.plans)){const key=cmKey(net.uid,k),c=await Commit.seal(key,d.plans[k]);d.cm[k]=c.h;
+  if(Commit.isOpen(key)||allCommitted(+k)){Commit.open(key);d.sl[k]=c.salt}else delete d.plans[k]}
+ return d}
+function save(){if(!net.db)return;const seq=net._sv=(net._sv||0)+1;
+ buildDoc().then(d=>{if(seq!==net._sv)return;const pr=net.db.doc('rooms/'+net.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(()=>{net.err=true;render()})})}
+/* po każdej zmianie w pokoju: zamroź cudze skróty, ujawnij swój plan, sprawdź cudze ujawnienia */
+function commitSync(){const r=st.round;if(!net.pl)return;
+ if(allCommitted(r)&&ME.plans&&ME.plans[r])Object.entries(net.pl).forEach(([id,p])=>{if(id!==net.uid&&p&&p.cm&&p.cm[r])Commit.lock(cmKey(id,r),p.cm[r])});
+ if(ME.plans&&ME.plans[r]&&!Commit.isOpen(cmKey(net.uid,r))&&allCommitted(r))save();
+ Object.entries(net.pl).forEach(([id,p])=>{if(id===net.uid||!p||!p.plans)return;Object.keys(p.plans).forEach(k=>{if(p.sl&&p.sl[k])Commit.verify(cmKey(id,k),p.plans[k],p.sl[k],p.cm&&p.cm[k],()=>{net.cheat=net.cheat||{};net.cheat[id]=1;render()})})})}
+function join(code){net.code=code.toUpperCase();net.unsub&&net.unsub();net.unsub=net.db.collection('rooms/'+net.code+'/players').onSnapshot(sn=>{net.pl={};sn.docs.forEach(d=>net.pl[d.id]=d.data());try{commitSync()}catch(e){console.warn('commit',e)}chk();render()},()=>{});save();st.scr='pick';render()}
 function chk(){const ps=Object.values(net.pl);if(st.scr==='plan'&&st.done&&ps.length>1&&ps.filter(p=>alive(p,st.round)).every(p=>p.plans&&p.plans[st.round]))st.scr='rev'}
 function netItems(){return Object.entries(net.pl).sort().map(([id,p])=>({id,q:id===net.uid?ME:p,idx:0}))}
 /* --- z części: online: najpierw wszyscy wybierają, potem VS, potem rozstawienie --- */
@@ -1712,7 +1752,7 @@ function hfNickOfCh(ch){try{if(typeof H!=='undefined'&&H)return null;if(!net||!n
  if(ME&&ME.ch===ch&&ME.nick)return ME.nick;const p=Object.values(net.pl).find(q=>q&&q.ch===ch);return p&&p.nick||null}catch(e){return null}}
 /* ===================== Online: ekrany oczekiwania ===================== */
 /* --- z części: js/000-start.js --- */
-function waitTxt(){if(H)return 'Plan zapisany.';if(!net.db)return 'Tryb solo.';const ps=Object.values(net.pl).filter(p=>alive(p,st.round)),n=ps.filter(p=>p.plans&&p.plans[st.round]).length;return 'Gotowych: '+n+' z '+ps.length+'. Kod pokoju: '+net.code}
+function waitTxt(){if(H)return 'Plan zapisany.';if(!net.db)return 'Tryb solo.';const ps=Object.values(net.pl).filter(p=>alive(p,st.round)),n=ps.filter(p=>(p.plans&&p.plans[st.round])||(p.cm&&p.cm[st.round])).length;return 'Gotowych: '+n+' z '+ps.length+'. Kod pokoju: '+net.code}
 /* --- z części: TRYBY WALKI: FREE FOR ALL / 2 VS 2 --- */
 function waitH(){const ps=Object.entries(net.pl),nA=ps.filter(([,p])=>p.tm==='A').length,nB=ps.filter(([,p])=>p.tm==='B').length;
  const all=(isTeam()?ps.length===4&&nA===2&&nB===2:ps.length>1)&&ps.every(([,p])=>p.sready);
@@ -1900,7 +1940,7 @@ addClick('core/main',document,e=>{
  else if(ds.a==='goplan'){st.scr='plan';st.start=ME.start;st.plan=newPlan();st.ph=0;st.done=false}
  else if(ds.a==='next'){{const x=resolveFin(netItems())[net.uid];if(x){ME.posr[st.round+1]=x.pos;ME.hpr[st.round+1]=x.eff}}st.round++;st.start=ME.posr[st.round];st.plan=newPlan();st.ph=0;st.done=false;st.scr='plan';save()}
  else if(ds.hp!==undefined){const q=H?H.p[+ds.pi]:ME;q.hpo=q.hpo||{};q.hpo[st.round]=+ds.eff===+ds.hp?+ds.hp-1:+ds.hp;if(!H)save()}
- else if(ds.a==='edit'){st.done=false;st.ph=0;if(net.db){delete ME.plans[st.round];save()}}
+ else if(ds.a==='edit'){if(net.db&&!H&&typeof allCommitted==='function'&&allCommitted(st.round))return;st.done=false;st.ph=0;if(net.db){delete ME.plans[st.round];save()}}
  else if(ds.k){
   const [q,r]=ds.k.split(',').map(Number);
   if(st.scr==='pick')st.start=[q,r];
@@ -2695,9 +2735,16 @@ const MB=(function(){
  function withSeed(seed,f){const o=Math.random;Math.random=seedRng(seed);try{return f()}finally{Math.random=o}}
  const onNick=()=>{try{return (typeof PROF!=='undefined'&&PROF.nick)||null}catch(e){return null}};
  function onDb(){if(net.db&&!net.p2p&&window.firebase&&firebase.apps&&firebase.apps.length)return net.db;if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
- function onPub(){if(!ON||!ON.code)return;const r={};Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3).forEach(k=>r[k]=ON.myR[k]);
-  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r};if(ON.host)d.host=ON.hostInfo;
-  try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}}
+ /* tajne plany: najpierw sam skrót (c), plan (p, u) z solą (s) dopiero gdy wszyscy zapisali swoje skróty – patrz online/commit.js */
+ const mbKey=(id,k)=>'m:'+ON.code+':'+k+':'+id;
+ function mbAll(k){const hi=onHostInfo();if(!hi||!hi.assign)return false;return hi.assign.every(a=>a[0]===net.uid||!!(ON.docs[a[0]]&&ON.docs[a[0]].r&&ON.docs[a[0]].r[k]))}
+ async function onDoc(){const r={};const ks=Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3);
+  for(const k of ks){const e=ON.myR[k],key=mbKey(net.uid,k);if(!Commit.ok){r[k]=Object.assign({k:1},e);continue}const c=await Commit.seal(key,e);
+   if(Commit.isOpen(key)||mbAll(k)){Commit.open(key);r[k]=Object.assign({k:1,s:c.salt,c:c.h},e)}else r[k]={c:c.h}}
+  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r,_v:GAME_VERSION};if(ON.host)d.host=ON.hostInfo;return d}
+ function mbCheat(id){const d=ON&&ON.docs[id];const b=document.createElement('div');b.textContent='⚠ Plan gracza '+((d&&d.nick)||(d&&d.ch)||'?')+' nie zgadza się z wcześniej zapisanym skrótem.';b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:9999;background:#7a1f1f;color:#fff;padding:8px 10px;border-radius:8px;font:13px system-ui';document.body.appendChild(b);setTimeout(()=>b.remove(),12000)}
+ function onPub(){if(!ON||!ON.code)return;const seq=ON._sv=(ON._sv||0)+1;onDoc().then(d=>{if(!ON||seq!==ON._sv)return;
+  try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}})}
  function onSub(){onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
  function onHostInfo(){if(!ON)return null;if(ON.host)return ON.hostInfo;const h=Object.values(ON.docs||{}).find(d=>d&&d.host);return h?h.host:null}
  function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];
@@ -2712,12 +2759,13 @@ const MB=(function(){
   asg.forEach((a,i)=>{G.heroes[i].ch=a[1];G.heroes[i].nick=a[2]||''});
   startPositions();updateSeen();ON.slot=asg.findIndex(a=>a[0]===net.uid);G.cur=ON.slot;G.scr='opass';G.pickI=G.heroes.length;draw()}
  function onSync(){if(!ON)return;const hi=onHostInfo();
+  if(G&&G._on){const r=G.round;if(ON.myR[r]&&mbAll(r)){Object.entries(ON.docs).forEach(([id,d])=>{if(id!==net.uid&&d&&d.r&&d.r[r]&&d.r[r].c)Commit.lock(mbKey(id,r),d.r[r].c)});if(!Commit.isOpen(mbKey(net.uid,r)))onPub()}}
   if(hi&&hi.start&&hi.assign&&!G){if(hi.assign.some(a=>a[0]===net.uid))onStartGame(hi);else{ON.full=true;draw()}return}
   if(G&&G._on&&G.scr==='owait')onTry();
   else if(!G||!G._on)draw()}
  function onSubmit(){const h=G.heroes[ON.slot],r=G.round;ON.myR[r]={p:h.plans?JSON.parse(JSON.stringify(h.plans)):null,u:ON.ups[r]||[]};onPub();G.scr='owait';onTry()}
  function onTry(){if(!G||G.scr!=='owait')return draw();const hi=onHostInfo(),r=G.round,ents=[];
-  for(let i=0;i<hi.assign.length;i++){const d=ON.docs[hi.assign[i][0]],e=d&&d.r&&d.r[r];if(!e)return draw();ents.push(e)}
+  for(let i=0;i<hi.assign.length;i++){const id=hi.assign[i][0],d=ON.docs[id],e=d&&d.r&&d.r[r];if(!e||!e.k)return draw();if(id!==net.uid)Commit.verify(mbKey(id,r),{p:e.p,u:e.u},e.s,e.c,()=>mbCheat(id));ents.push(e)}
   ents.forEach((e,i)=>{if(i===ON.slot)return;const h=G.heroes[i];(e.u||[]).forEach(ix=>{const o=upOpts(h)[ix];if(o&&!o.dis){applyUp(h,o);h.pend=Math.max(0,(h.pend||0)-1)}});h.plans=e.p?JSON.parse(JSON.stringify(e.p)):null});
   withSeed(hi.seed+r*7919,()=>resolveRound());G.cur=ON.slot;G.scr=G.winner?'over':'opass';draw()}
  function onDraw(){let h='';
@@ -4021,6 +4069,16 @@ try{SND.files.music_menu='data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
 /* odblokowanie dźwięku tylko raz: kolejne dotknięcia nie restartują utworu od początku */
 (function(){const _u=SND.unlock;let done=false;SND.unlock=function(){if(done)return;done=true;_u()}})();
 
+/* ===================== Online: ostrzeżenia o wersji gry i niezgodnych planach ===================== */
+addRender('online/fair_bar',_r=>function(){_r.apply(this,arguments);try{
+ const old=document.getElementById('fairBar');if(old)old.remove();if(H||!net.db||!net.code||!net.pl)return;
+ const msgs=[];
+ const others=Object.entries(net.pl).filter(([id,p])=>id!==net.uid&&p);
+ if(others.some(([,p])=>p._v&&p._v!==GAME_VERSION))msgs.push('⚠ Ktoś w pokoju ma inną wersję gry. Wszyscy odświeżcie stronę, inaczej wyniki rund mogą się różnić.');
+ const ch=Object.keys(net.cheat||{});if(ch.length)msgs.push('⚠ Plan gracza '+ch.map(id=>{const p=net.pl[id];return (p&&p.nick)||(p&&p.ch)||'?'}).join(', ')+' nie zgadza się z wcześniej zapisanym skrótem (zmiana planu po zatwierdzeniu wszystkich).');
+ if(!msgs.length)return;const d=document.createElement('div');d.id='fairBar';d.className='err';d.textContent=msgs.join(' ');
+ d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:9999;background:#7a1f1f;color:#fff;padding:8px 10px;border-radius:8px;font:13px/1.35 system-ui,sans-serif;box-shadow:0 2px 8px #0008';
+ document.body.appendChild(d)}catch(e){}});
 </script>
 </body>
 </html>

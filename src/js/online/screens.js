@@ -1,6 +1,6 @@
 /* ===================== Online: ekrany oczekiwania ===================== */
 /* --- z części: js/000-start.js --- */
-function waitTxt(){if(H)return 'Plan zapisany.';if(!net.db)return 'Tryb solo.';const ps=Object.values(net.pl).filter(p=>alive(p,st.round)),n=ps.filter(p=>p.plans&&p.plans[st.round]).length;return 'Gotowych: '+n+' z '+ps.length+'. Kod pokoju: '+net.code}
+function waitTxt(){if(H)return 'Plan zapisany.';if(!net.db)return 'Tryb solo.';const ps=Object.values(net.pl).filter(p=>alive(p,st.round)),n=ps.filter(p=>(p.plans&&p.plans[st.round])||(p.cm&&p.cm[st.round])).length;return 'Gotowych: '+n+' z '+ps.length+'. Kod pokoju: '+net.code}
 /* --- z części: TRYBY WALKI: FREE FOR ALL / 2 VS 2 --- */
 function waitH(){const ps=Object.entries(net.pl),nA=ps.filter(([,p])=>p.tm==='A').length,nB=ps.filter(([,p])=>p.tm==='B').length;
  const all=(isTeam()?ps.length===4&&nA===2&&nB===2:ps.length>1)&&ps.every(([,p])=>p.sready);

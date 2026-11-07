@@ -5,9 +5,16 @@
  function withSeed(seed,f){const o=Math.random;Math.random=seedRng(seed);try{return f()}finally{Math.random=o}}
  const onNick=()=>{try{return (typeof PROF!=='undefined'&&PROF.nick)||null}catch(e){return null}};
  function onDb(){if(net.db&&!net.p2p&&window.firebase&&firebase.apps&&firebase.apps.length)return net.db;if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
- function onPub(){if(!ON||!ON.code)return;const r={};Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3).forEach(k=>r[k]=ON.myR[k]);
-  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r};if(ON.host)d.host=ON.hostInfo;
-  try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}}
+ /* tajne plany: najpierw sam skrót (c), plan (p, u) z solą (s) dopiero gdy wszyscy zapisali swoje skróty – patrz online/commit.js */
+ const mbKey=(id,k)=>'m:'+ON.code+':'+k+':'+id;
+ function mbAll(k){const hi=onHostInfo();if(!hi||!hi.assign)return false;return hi.assign.every(a=>a[0]===net.uid||!!(ON.docs[a[0]]&&ON.docs[a[0]].r&&ON.docs[a[0]].r[k]))}
+ async function onDoc(){const r={};const ks=Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3);
+  for(const k of ks){const e=ON.myR[k],key=mbKey(net.uid,k);if(!Commit.ok){r[k]=Object.assign({k:1},e);continue}const c=await Commit.seal(key,e);
+   if(Commit.isOpen(key)||mbAll(k)){Commit.open(key);r[k]=Object.assign({k:1,s:c.salt,c:c.h},e)}else r[k]={c:c.h}}
+  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r,_v:GAME_VERSION};if(ON.host)d.host=ON.hostInfo;return d}
+ function mbCheat(id){const d=ON&&ON.docs[id];const b=document.createElement('div');b.textContent='⚠ Plan gracza '+((d&&d.nick)||(d&&d.ch)||'?')+' nie zgadza się z wcześniej zapisanym skrótem.';b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:9999;background:#7a1f1f;color:#fff;padding:8px 10px;border-radius:8px;font:13px system-ui';document.body.appendChild(b);setTimeout(()=>b.remove(),12000)}
+ function onPub(){if(!ON||!ON.code)return;const seq=ON._sv=(ON._sv||0)+1;onDoc().then(d=>{if(!ON||seq!==ON._sv)return;
+  try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}})}
  function onSub(){onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
  function onHostInfo(){if(!ON)return null;if(ON.host)return ON.hostInfo;const h=Object.values(ON.docs||{}).find(d=>d&&d.host);return h?h.host:null}
  function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];
@@ -22,12 +29,13 @@
   asg.forEach((a,i)=>{G.heroes[i].ch=a[1];G.heroes[i].nick=a[2]||''});
   startPositions();updateSeen();ON.slot=asg.findIndex(a=>a[0]===net.uid);G.cur=ON.slot;G.scr='opass';G.pickI=G.heroes.length;draw()}
  function onSync(){if(!ON)return;const hi=onHostInfo();
+  if(G&&G._on){const r=G.round;if(ON.myR[r]&&mbAll(r)){Object.entries(ON.docs).forEach(([id,d])=>{if(id!==net.uid&&d&&d.r&&d.r[r]&&d.r[r].c)Commit.lock(mbKey(id,r),d.r[r].c)});if(!Commit.isOpen(mbKey(net.uid,r)))onPub()}}
   if(hi&&hi.start&&hi.assign&&!G){if(hi.assign.some(a=>a[0]===net.uid))onStartGame(hi);else{ON.full=true;draw()}return}
   if(G&&G._on&&G.scr==='owait')onTry();
   else if(!G||!G._on)draw()}
  function onSubmit(){const h=G.heroes[ON.slot],r=G.round;ON.myR[r]={p:h.plans?JSON.parse(JSON.stringify(h.plans)):null,u:ON.ups[r]||[]};onPub();G.scr='owait';onTry()}
  function onTry(){if(!G||G.scr!=='owait')return draw();const hi=onHostInfo(),r=G.round,ents=[];
-  for(let i=0;i<hi.assign.length;i++){const d=ON.docs[hi.assign[i][0]],e=d&&d.r&&d.r[r];if(!e)return draw();ents.push(e)}
+  for(let i=0;i<hi.assign.length;i++){const id=hi.assign[i][0],d=ON.docs[id],e=d&&d.r&&d.r[r];if(!e||!e.k)return draw();if(id!==net.uid)Commit.verify(mbKey(id,r),{p:e.p,u:e.u},e.s,e.c,()=>mbCheat(id));ents.push(e)}
   ents.forEach((e,i)=>{if(i===ON.slot)return;const h=G.heroes[i];(e.u||[]).forEach(ix=>{const o=upOpts(h)[ix];if(o&&!o.dis){applyUp(h,o);h.pend=Math.max(0,(h.pend||0)-1)}});h.plans=e.p?JSON.parse(JSON.stringify(e.p)):null});
   withSeed(hi.seed+r*7919,()=>resolveRound());G.cur=ON.slot;G.scr=G.winner?'over':'opass';draw()}
  function onDraw(){let h='';
