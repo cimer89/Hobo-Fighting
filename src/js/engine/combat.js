@@ -23,7 +23,7 @@
     7 kij pasterski
     8 ataki           – zwykłe ataki, po kolei wg kolejności graczy
     9 kałuże          – Truchel stawia kałużę
-   10 szarża Byka     – z odrzuceniem i kolizją po odrzuceniu
+   10 szarża Byka     – 1 DMG (z bonusem 2), odrzucenie i kolizja po odrzuceniu
    11 szarża owcy     – 2 DMG (z bonusem 3); także owca trafiona w tej fazie (ginie dopiero w kroku 14)
    12 manipulacja     – przesunięcie przez Ciotkę (faza II)
    13 trucizna        – kałuże zadają obrażenia
@@ -177,7 +177,7 @@ const Combat=(function(){
      /* owca szarżująca naprzeciw Byka: zderzenie – Byku dostaje obrażenia jej szarży, owca dalej nie biegnie */
      if(sa&&sa.t==='atk'&&po.ch==='Pasterz'&&sa.d===(a.d+3)%6){shCl.clash=true;const sx=(sa.bd||po.dmgb)?1:0;ev.push({k:'hit',id:x.id,ph});dmg(i,2+sx,'zderzenie z owcą',shCl.o);useBonus(po)}}
     if(victims.length){trig(x.id,'Byku');useBonus(x);
-     victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,2+extra,'szarża Byka',i)});
+     victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,1+extra,'szarża Byka',i)});
      if(victims.length>=2)x.pts.m+=victims.length-1;
      const nq=hitCell[0]+dd[0],nr=hitCell[1]+dd[1],moved=[];
      if(IN(nq,nr))victims.forEach(j=>{const f=S[j].pos.slice();move(j,[nq,nr],'odrzut',i,'szarża Byka');S[j].moved=true;ev.push({k:'knock',id:S[j].id,from:f,to:[nq,nr],ph});moved.push(j)});

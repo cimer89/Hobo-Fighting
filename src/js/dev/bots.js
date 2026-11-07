@@ -35,7 +35,7 @@ const Bots=(function(){
   function moves(me,from,ph){if(me.ch==='Truchel')return cells.map(c=>c.slice());const r=me.ch==='Byku'?(tb&&ph>0?1:2):1;return cells.filter(c=>dist(c,from)<=r).map(c=>c.slice())}
   /* oczekiwane obrażenia ataku w kierunku d */
   function atkValue(me,from,d,ph,strat){const R=rules(round);let v=0;
-   if(me.ch==='Byku'){if(ph<1)return -1;let c=from.slice();for(;;){c=[c[0]+D[d][0],c[1]+D[d][1]];if(!IN(c))break;let hit=0;enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{if(K(p)===K(c))hit+=w}));if(hit>0){v+=2*hit;break}}return v}
+   if(me.ch==='Byku'){if(ph<1)return -1;let c=from.slice();for(;;){c=[c[0]+D[d][0],c[1]+D[d][1]];if(!IN(c))break;let hit=0;enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{if(K(p)===K(c))hit+=w}));if(hit>0){v+=1*hit;break}}return v}
    if(me.ch==='Truchel'){const c=[from[0]+D[d][0],from[1]+D[d][1]];if(!IN(c))return -1;enemies(me).forEach(o=>{if(dist(o.pos,c)<=1)v+=0.6});return v}
    const sh=CB.shape(me.ch,from,d,ph,R);const first=['Żyleta','Ciotka','Sierżant Przemo'].includes(me.ch);
    enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{const k=sh.findIndex(c=>c[0]===p[0]&&c[1]===p[1]);if(k>=0){const dm=typeof sh[k][2]==='number'?sh[k][2]:1;v+=w*dm*(first?Math.pow(0.85,k):1)}}));return v}

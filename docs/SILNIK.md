@@ -24,7 +24,7 @@ Plik: `src/js/engine/combat.js` (obiekt `Combat`). To jedyne miejsce, gdzie rozp
 | 7 kij pasterski | 2 pola, 2 DMG |
 | 8 ataki | zwykłe ataki, po kolei wg kolejności graczy |
 | 9 kałuże | Truchel stawia kałużę |
-| 10 szarża Byka | do pierwszej postaci, 2 DMG, odrzut o 1, kolizja po odrzucie −1 |
+| 10 szarża Byka | do pierwszej postaci, 1 DMG (od 7.11.2026), odrzut o 1, kolizja po odrzucie −1 |
 | 11 szarża owcy | 2 DMG we wszystkich trybach; w klasycznym owca zatrzymuje się na pierwszej postaci, w specjalnym i w Testach przebiega przez linię i rani każdego |
 | 12 manipulacja | (faza II) Ciotka przesuwa trafionego; kolizja −1 |
 | 13 trucizna | kałuże: 1 DMG (z bonusem 2; w Testach +1) |

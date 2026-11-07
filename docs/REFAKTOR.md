@@ -118,11 +118,14 @@ Po przeglądzie stanu gry przez drugi model (ChatGPT) wprowadzone poprawki techn
 1. **Tajne plany (zobowiązanie i ujawnienie):** `online/commit.js`. Gracz zapisuje najpierw skrót SHA-256 planu z losową solą; plan i sól wysyła dopiero, gdy wszyscy żywi gracze zapisali skróty. Skróty są zamrażane w tej chwili; ujawniony plan niezgodny ze skrótem daje ostrzeżenie. Po zobowiązaniu wszystkich nie da się już edytować planu. Działa w trybach klasycznym, specjalnym, Testy i w Bitwie baz. Sprawdzone na żywo (Firebase): przed ujawnieniem drugi gracz widzi tylko skrót. Test: `node tests/commit_test.js`.
 2. **Wersja gry w pokoju:** `GAME_VERSION` (skrót kodu wstawiany przy budowaniu); gdy ktoś w pokoju ma inną wersję, pojawia się ostrzeżenie.
 3. **Reguły Firestore:** dokument pokoju może mieć tylko pola `j` (JSON, < 300 kB), `t`, `exp`; zapis tylko własnego dokumentu.
-4. **Sprzątanie pokoi:** dokumenty mają pole `exp` (2 dni). Zasadę TTL trzeba włączyć raz w konsoli Google Cloud (Firestore → Czas życia danych → grupa kolekcji `players`, pole `exp`).
+4. **Pole `exp`** (2 dni) w dokumentach pokoi – gotowe pod zasadę TTL, gdyby projekt przeszedł na plan Blaze.
 5. **Zapas:** gdy Firebase jest niedostępny, gra przechodzi na przekaźnik ntfy.sh.
 6. **Macierz pojedynków** (`tests/matchups.js`) w `docs/BALANS.md`.
 
-Pozostaje (wymaga serwera lub decyzji): ranking i wyniki liczy klient, więc zmodyfikowany klient może je zawyżyć – pełna ochrona wymaga arbitra na serwerze (Cloud Functions, plan Blaze). Brak reguły czasu na ujawnienie planu (co, gdy ktoś się rozłączy).
+7. **Rozłączenie gracza:** gdy wszyscy poza kimś zatwierdzili plan, po 60 s postać tego gracza w tej rundzie stoi (pusty plan). Decyzję zapisuje rozjemca (najmniejszy identyfikator wśród gotowych; w Bitwie baz gospodarz) w polu `afk`. Gracz po powrocie gra dalej i widzi komunikat. Testy: `tafk`, `tmbafk` (limit skrócony do 4 s).
+8. **Sprzątanie bez TTL:** zasady TTL wymagają włączonych płatności w projekcie (plan Blaze), więc zamiast tego wyjście z pokoju usuwa własny dokument gracza. Pokoje porzucone przez zamknięcie karty zostają w bazie (są małe).
+
+Pozostaje (wymaga serwera lub decyzji): ranking i wyniki liczy klient, więc zmodyfikowany klient może je zawyżyć – pełna ochrona wymaga arbitra na serwerze (Cloud Functions, plan Blaze). 
 
 ## 7. Co zostało do zrobienia
 

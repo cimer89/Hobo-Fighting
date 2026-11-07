@@ -50,7 +50,7 @@ const BalanceLog=(function(){
    g.players.forEach(o=>{if(o.elim&&o.elim.by===p.ch&&o!==p)c.kills++})}));
   return Object.values(C).map(c=>Object.assign(c,{wr:c.fin?c.wins/c.fin:0,expWr:c.fin?c.exp/c.fin:0,ci:wilson(c.wins,c.fin),acc:c.attacks?c.hits/c.attacks:0}))}
  /* ---------- propozycje zmian (tylko tekst; nic nie jest zmieniane automatycznie) ---------- */
- const LEVERS={'Byku':{nerf:'skok o 1 pole / w miejscu 3 → 2 DMG albo szarża 2 → 1 DMG',buff:'dalszy skok 1 → 2 DMG albo szarża 2 → 3 DMG'},
+ const LEVERS={'Byku':{nerf:'skok o 1 pole / w miejscu 3 → 2 DMG',buff:'dalszy skok 1 → 2 DMG albo szarża 1 → 2 DMG'},
   'Wiatrak':{nerf:'boki wachlarza 1 → 0 DMG (tylko środek 2)',buff:'+1 HP albo środek wachlarza 2 → 3 DMG'},
   'Długi':{nerf:'trzecie pole linii 2 → 1 DMG',buff:'pierwsze pole linii 1 → 2 DMG'},
   'Żyleta':{nerf:'zasięg strzału 9 → 5 pól albo 2 → 1 DMG od 3. pola',buff:'+1 HP albo strzał snajperski 3 → 4 DMG'},

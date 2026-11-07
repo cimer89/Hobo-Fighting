@@ -606,7 +606,7 @@ const C={
  'Wiatrak':{col:'#3b6fd4',txt:'Wachlarz 3 pól: środek 2 DMG, boki po 1 DMG.'},
  'Długi':{col:'#6b8f3e',txt:'Linia 3 pól: 1 – 1 – 2 DMG. Ma 3 fazy w rundzie (anulowana, gdy ktoś go przesunie).'},
  'Żyleta':{col:'#e0a81c',txt:'Linia do końca planszy, trafia pierwszą postać, 2 DMG.'},
- 'Byku':{col:'#e07a1a',txt:'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.'},
+ 'Byku':{col:'#e07a1a',txt:'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 1 DMG i odrzucenie o 1 pole.'},
  'Ciotka':{col:'#8a4fc7',txt:'Linia 3 pól. Faza I: 2 DMG. Faza II: 1 DMG + przesunięcie o 1.'}
 };
 /* --- z części: BONUSY POSTACI --- */
@@ -729,11 +729,11 @@ const DEMOS={
    dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Skaczesz na pole przeciwnika…')});
    dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});
    dmAt(2650,()=>{a.mark([to],'hit',['1']);a.dmg('f0','−1');a.cap('Dalszy skok (2 pola): <b>1 DMG</b> dla przeciwnika. Skok o 1 pole: <b>3 DMG</b>.')})}},
-  {t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost do pierwszej postaci lub ściany: 2 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
+  {t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost do pierwszej postaci lub ściany: 1 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmNb(DH),'opt');a.cap('Faza II: wybierz kierunek szarży.')});
    dmAt(1300,()=>{a.clear();a.mark(attack(DH,2,1,'Byku').map(c=>[c[0],c[1]]),'hit');a.cap('Byku pędzi prosto przed siebie…')});
    dmAt(2100,()=>{a.clear();a.mv('h',N(DH,2,2),'fast')});
-   dmAt(2500,()=>{a.dmg('f0','−2');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>2 DMG</b> i odrzut o 1 pole. Ściana za plecami = brak odrzutu.')})}},dmCrush()],
+   dmAt(2500,()=>{a.dmg('f0','−1');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>1 DMG</b> i odrzut o 1 pole. Ściana za plecami = brak odrzutu.')})}},dmCrush()],
  'Ciotka':()=>[dmMove(),dmLine('Atak – faza I',C['Ciotka'].txt,[N(DH,2,2)],[[0,'−2']],{c1:'Linia 3 pól przed tobą.',c2:'W fazie I zaklęcie zadaje <b>2 DMG</b> każdemu w linii.'}),
   dmLine('Atak – faza II',(TB()?'Faza II: 2 DMG':'Faza II: 1 DMG')+' i przesunięcie trafionej postaci o 1 pole. Wepchnięcie na kogoś: obaj −1.',[N(DH,2,2)],[[0,TB()?'−2':'−1']],{ph:1,T:5600,tag:'faza II',c1:'Faza II: linia 3 pól, '+(TB()?2:1)+' DMG…',c2:'…a potem przesuwasz trafionego.',after(a){const f=N(DH,2,2),to=N(f,1);
    dmAt(3500,()=>{a.clear();a.mark(dmNb(f),'opt');a.cap('Wybierasz, gdzie go przepchniesz.')});
@@ -846,7 +846,7 @@ const TBTXT={
  'Wiatrak':'Wachlarz 3 pól (2/1/1 DMG) plus drugi rząd 3 pól po 1 DMG. 6 HP.',
  'Długi':'Linia 3 pól: 1 – 2 – 2 DMG. Ma 3 fazy w rundzie (anulowana, gdy ktoś go przesunie).',
  'Żyleta':'Strzał przez całą planszę, trafia pierwszą postać: 2 DMG do 3 pól, dalej 1 DMG.',
- 'Byku':'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.',
+ 'Byku':'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 1 DMG i odrzucenie o 1 pole.',
  'Pasterz':'Zaczyna z owcą obok. Owca (1 HP): ruch, szarża 2 DMG przez całą linię. Osłania przed strzałami. 7 HP.',
  'Truchel':'Teleport na dowolne pole. Zamiast ataku kałuża trucizny (3 rundy, 2 DMG na koniec każdej fazy).',
  'Sierżant Przemo':'Pistolet 1 DMG (jak Żyleta). Dron: 3 akcje – dwie aktywacje (można na raty), trzecia wysyła drona: 2 DMG najbliższej postaci. 4 HP.'};
@@ -943,7 +943,7 @@ function winTeam(items,Rs){const al=items.filter(o=>Rs[o.id]&&Rs[o.id].eff>0),ts
     7 kij pasterski
     8 ataki           – zwykłe ataki, po kolei wg kolejności graczy
     9 kałuże          – Truchel stawia kałużę
-   10 szarża Byka     – z odrzuceniem i kolizją po odrzuceniu
+   10 szarża Byka     – 1 DMG (z bonusem 2), odrzucenie i kolizja po odrzuceniu
    11 szarża owcy     – 2 DMG (z bonusem 3); także owca trafiona w tej fazie (ginie dopiero w kroku 14)
    12 manipulacja     – przesunięcie przez Ciotkę (faza II)
    13 trucizna        – kałuże zadają obrażenia
@@ -1097,7 +1097,7 @@ const Combat=(function(){
      /* owca szarżująca naprzeciw Byka: zderzenie – Byku dostaje obrażenia jej szarży, owca dalej nie biegnie */
      if(sa&&sa.t==='atk'&&po.ch==='Pasterz'&&sa.d===(a.d+3)%6){shCl.clash=true;const sx=(sa.bd||po.dmgb)?1:0;ev.push({k:'hit',id:x.id,ph});dmg(i,2+sx,'zderzenie z owcą',shCl.o);useBonus(po)}}
     if(victims.length){trig(x.id,'Byku');useBonus(x);
-     victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,2+extra,'szarża Byka',i)});
+     victims.forEach(j=>{if(ph===1)ev.push({k:'hit',id:S[j].id,ph});dmg(j,1+extra,'szarża Byka',i)});
      if(victims.length>=2)x.pts.m+=victims.length-1;
      const nq=hitCell[0]+dd[0],nr=hitCell[1]+dd[1],moved=[];
      if(IN(nq,nr))victims.forEach(j=>{const f=S[j].pos.slice();move(j,[nq,nr],'odrzut',i,'szarża Byka');S[j].moved=true;ev.push({k:'knock',id:S[j].id,from:f,to:[nq,nr],ph});moved.push(j)});
@@ -1390,7 +1390,7 @@ function render(){
   if(!st.done){
    const pk=st.round+':'+ph+':'+(H?H.cur:'o')+':'+st.scr,cls=st.lastPanel!==pk?' pin':'';st.lastPanel=pk;
    h+='<div id="phpanel" class="pp'+cls+'"><h2 style="font:400 26px Bangers,Impact,sans-serif;margin:8px 0 0">Faza '+ROM[ph]+' z '+ROM[nPh(st.ch)-1]+'</h2>'+actBtns(pl,ph);
-   const hint=!pl.t?'Wybierz, co robisz w tej fazie: ruch albo atak.':pl.t==='move'?(st.ch==='Byku'?(TB()&&st.ph>0?'Faza II: skok o 1 pole albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.'):'Ruch o 1 pole lub zostań (dotknij własnego pola).'):(pl.d===null?(st.ch==='Byku'?(TB()?'Szarża na wprost przez całą planszę: dotknij sąsiedniego pola, by wybrać kierunek.':'Szarża na wprost do pierwszej postaci lub ściany: dotknij sąsiedniego pola, by wybrać kierunek.'):'Dotknij sąsiedniego pola, by wybrać kierunek ataku.'):(st.ch==='Byku'?'Szarża: '+DN[pl.d]+' (2 DMG i odrzucenie o 1 pole).':'Atak: '+DN[pl.d]+'. Liczby to obrażenia.'));
+   const hint=!pl.t?'Wybierz, co robisz w tej fazie: ruch albo atak.':pl.t==='move'?(st.ch==='Byku'?(TB()&&st.ph>0?'Faza II: skok o 1 pole albo w miejscu (dotknij własnego pola). Lądowanie na przeciwniku: 3 DMG.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.'):'Ruch o 1 pole lub zostań (dotknij własnego pola).'):(pl.d===null?(st.ch==='Byku'?(TB()?'Szarża na wprost przez całą planszę: dotknij sąsiedniego pola, by wybrać kierunek.':'Szarża na wprost do pierwszej postaci lub ściany: dotknij sąsiedniego pola, by wybrać kierunek.'):'Dotknij sąsiedniego pola, by wybrać kierunek ataku.'):(st.ch==='Byku'?'Szarża: '+DN[pl.d]+' (1 DMG i odrzucenie o 1 pole).':'Atak: '+DN[pl.d]+'. Liczby to obrażenia.'));
    const hint2=planHint(pl,ph);const ok=planOk(pl,ph);
    h+='<p style="text-align:center">'+(hint2||hint)+'</p><button class="go" data-a="ok" '+(ok?'':'disabled')+'>'+'Zatwierdź fazę '+ROM[ph]+'</button>';
    if(ph>=1)h+='<div class="row" style="justify-content:center"><button data-a="prev">← Wróć do fazy '+ROM[ph-1]+'</button></div>';
@@ -1684,7 +1684,7 @@ function goMenu(){
    Plan i sól wysyła dopiero, gdy wszyscy żywi gracze zapisali swoje skróty.
    Skróty innych graczy są „zamrażane” w chwili, gdy wszyscy się zobowiązali; ujawniony plan musi do nich pasować,
    inaczej gracz jest oznaczany jako podejrzany (zmiana planu po zobaczeniu cudzych). */
-const GAME_VERSION='74ab9ecddb';
+const GAME_VERSION='1958e2426b';
 const Commit=(function(){
  const ok=!!(window.crypto&&crypto.subtle&&window.TextEncoder);
  const hex=a=>[...new Uint8Array(a)].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -1714,7 +1714,7 @@ async function initNet(){
   /* Firestore nie przyjmuje tablic w tablicach (np. pola [q,r] w listach), więc dokument pokoju zapisujemy jako tekst JSON w polu j */
   const fs=firebase.firestore(),dec=d=>{const x=d.data();return x&&typeof x.j==='string'?JSON.parse(x.j):x};
   /* exp: data wygaśnięcia dokumentu pokoju (zasada TTL w Firestore usuwa stare pokoje po 2 dniach) */
-  net.db={doc:p=>({set:o=>fs.doc(p).set({j:JSON.stringify(o),t:Date.now(),exp:firebase.firestore.Timestamp.fromMillis(Date.now()+2*864e5)})}),
+  net.db={doc:p=>({del:()=>fs.doc(p).delete(),set:o=>fs.doc(p).set({j:JSON.stringify(o),t:Date.now(),exp:firebase.firestore.Timestamp.fromMillis(Date.now()+2*864e5)})}),
    collection:p=>({onSnapshot:(cb,er)=>fs.collection(p).onSnapshot(sn=>cb({docs:sn.docs.map(d=>({id:d.id,data:()=>dec(d)}))}),er||(e=>{console.warn('Firebase:',e);net.err=true;render()}))})};
  }catch(e){console.warn('Firebase:',e);net.db=null;
   /* Firebase niedostępny (brak sieci do Google, zablokowany skrypt): zapasowo przekaźnik bez konfiguracji */
@@ -1724,7 +1724,7 @@ async function initNet(){
 /* klucz zobowiązania dla planu gracza id w rundzie r */
 const cmKey=(id,r)=>'c:'+net.code+':'+r+':'+id;
 /* czy wszyscy inni żywi gracze w pokoju zapisali już skrót lub plan na rundę r */
-function allCommitted(r){const os=Object.entries(net.pl||{}).filter(([id,p])=>id!==net.uid&&p&&alive(p,r));return os.length>0&&os.every(([,p])=>(p.cm&&p.cm[r])||(p.plans&&p.plans[r]))}
+function allCommitted(r){const A=afkSet(r),os=Object.entries(net.pl||{}).filter(([id,p])=>id!==net.uid&&p&&alive(p,r));return os.length>0&&os.every(([id,p])=>A.has(id)||(p.cm&&p.cm[r])||(p.plans&&p.plans[r]))}
 /* dokument gracza do zapisu: plany jeszcze nieujawnione zastępuje skrót (cm), ujawnione mają sól (sl) */
 async function buildDoc(){const d=JSON.parse(JSON.stringify(ME));d._v=GAME_VERSION;if(!Commit.ok||!d.plans)return d;d.cm={};d.sl={};
  for(const k of Object.keys(d.plans)){const key=cmKey(net.uid,k),c=await Commit.seal(key,d.plans[k]);d.cm[k]=c.h;
@@ -1732,12 +1732,28 @@ async function buildDoc(){const d=JSON.parse(JSON.stringify(ME));d._v=GAME_VERSI
  return d}
 function save(){if(!net.db)return;const seq=net._sv=(net._sv||0)+1;
  buildDoc().then(d=>{if(seq!==net._sv)return;const pr=net.db.doc('rooms/'+net.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(()=>{net.err=true;render()})})}
+/* Rozłączenie: gdy wszyscy poza kimś zatwierdzili plan, a on milczy AFK_MS, rozjemca (najmniejszy identyfikator
+   wśród zatwierdzonych) wpisuje go do listy afk; jego postać w tej rundzie stoi (pusty plan). Po powrocie gra dalej normalnie. */
+const AFK_MS=window.__AFK_MS||60000;
+function afkSet(r){const s=new Set();Object.values(net.pl||{}).forEach(p=>{((p&&p.afk&&p.afk[r])||[]).forEach(id=>s.add(id))});((ME.afk&&ME.afk[r])||[]).forEach(id=>s.add(id));return s}
+function afkMissing(r){const A=afkSet(r);return Object.entries(net.pl||{}).filter(([id,p])=>id!==net.uid&&p&&alive(p,r)&&!(p.cm&&p.cm[r])&&!(p.plans&&p.plans[r])&&!A.has(id)).map(([id])=>id).sort()}
+function afkLeft(){return net._afk0&&net._afkKey&&net._afkKey.startsWith(st.round+':')?Math.max(0,Math.ceil((AFK_MS-(Date.now()-net._afk0))/1000)):null}
+function afkTick(){if(!net.db||!net.code||H||!net.pl)return;const r=st.round;if(!(ME.plans&&ME.plans[r])||!alive(ME,r)){net._afkKey=null;return}
+ const miss=afkMissing(r);if(!miss.length){net._afkKey=null;return}
+ const key=r+':'+miss.join(',');if(net._afkKey!==key){net._afkKey=key;net._afk0=Date.now();render();return}
+ if(Date.now()-net._afk0<AFK_MS){if(st.scr==='plan'&&st.done)render();return}
+ const ready=[net.uid].concat(Object.entries(net.pl).filter(([id,p])=>id!==net.uid&&p&&((p.cm&&p.cm[r])||(p.plans&&p.plans[r]))).map(([id])=>id)).sort();
+ if(ready[0]!==net.uid)return;
+ ME.afk=Object.assign({},ME.afk,{[r]:[...new Set((((ME.afk||{})[r])||[]).concat(miss))]});save();commitSync();chk();render()}
 /* po każdej zmianie w pokoju: zamroź cudze skróty, ujawnij swój plan, sprawdź cudze ujawnienia */
 function commitSync(){const r=st.round;if(!net.pl)return;
+ /* gracze uznani za rozłączonych w tej rundzie stoją (pusty plan); dotyczy też mnie, jeśli nie zdążyłem */
+ const A=afkSet(r);A.forEach(id=>{if(id===net.uid){if(!(ME.plans&&ME.plans[r]&&!ME.plans[r].length)){ME.plans=ME.plans||{};ME.plans[r]=[];st.done=true;st.afkMe=r;save()}}
+  else if(net.pl[id])net.pl[id].plans=Object.assign({},net.pl[id].plans,{[r]:[]})});
  if(allCommitted(r)&&ME.plans&&ME.plans[r])Object.entries(net.pl).forEach(([id,p])=>{if(id!==net.uid&&p&&p.cm&&p.cm[r])Commit.lock(cmKey(id,r),p.cm[r])});
  if(ME.plans&&ME.plans[r]&&!Commit.isOpen(cmKey(net.uid,r))&&allCommitted(r))save();
- Object.entries(net.pl).forEach(([id,p])=>{if(id===net.uid||!p||!p.plans)return;Object.keys(p.plans).forEach(k=>{if(p.sl&&p.sl[k])Commit.verify(cmKey(id,k),p.plans[k],p.sl[k],p.cm&&p.cm[k],()=>{net.cheat=net.cheat||{};net.cheat[id]=1;render()})})})}
-function join(code){net.code=code.toUpperCase();net.unsub&&net.unsub();net.unsub=net.db.collection('rooms/'+net.code+'/players').onSnapshot(sn=>{net.pl={};sn.docs.forEach(d=>net.pl[d.id]=d.data());try{commitSync()}catch(e){console.warn('commit',e)}chk();render()},()=>{});save();st.scr='pick';render()}
+ Object.entries(net.pl).forEach(([id,p])=>{if(id===net.uid||!p||!p.plans)return;Object.keys(p.plans).forEach(k=>{if(afkSet(+k).has(id))return;if(p.sl&&p.sl[k])Commit.verify(cmKey(id,k),p.plans[k],p.sl[k],p.cm&&p.cm[k],()=>{net.cheat=net.cheat||{};net.cheat[id]=1;render()})})})}
+function join(code){net.code=code.toUpperCase();net.unsub&&net.unsub();net.unsub=net.db.collection('rooms/'+net.code+'/players').onSnapshot(sn=>{net.pl={};sn.docs.forEach(d=>net.pl[d.id]=d.data());try{commitSync()}catch(e){console.warn('commit',e)}chk();render()},()=>{});save();st.scr='pick';if(!net._afkT)net._afkT=setInterval(()=>{try{afkTick()}catch(e){}},3000);render()}
 function chk(){const ps=Object.values(net.pl);if(st.scr==='plan'&&st.done&&ps.length>1&&ps.filter(p=>alive(p,st.round)).every(p=>p.plans&&p.plans[st.round]))st.scr='rev'}
 function netItems(){return Object.entries(net.pl).sort().map(([id,p])=>({id,q:id===net.uid?ME:p,idx:0}))}
 /* --- z części: online: najpierw wszyscy wybierają, potem VS, potem rozstawienie --- */
@@ -1752,7 +1768,7 @@ function hfNickOfCh(ch){try{if(typeof H!=='undefined'&&H)return null;if(!net||!n
  if(ME&&ME.ch===ch&&ME.nick)return ME.nick;const p=Object.values(net.pl).find(q=>q&&q.ch===ch);return p&&p.nick||null}catch(e){return null}}
 /* ===================== Online: ekrany oczekiwania ===================== */
 /* --- z części: js/000-start.js --- */
-function waitTxt(){if(H)return 'Plan zapisany.';if(!net.db)return 'Tryb solo.';const ps=Object.values(net.pl).filter(p=>alive(p,st.round)),n=ps.filter(p=>(p.plans&&p.plans[st.round])||(p.cm&&p.cm[st.round])).length;return 'Gotowych: '+n+' z '+ps.length+'. Kod pokoju: '+net.code}
+function waitTxt(){if(H)return 'Plan zapisany.';if(!net.db)return 'Tryb solo.';const ps=Object.values(net.pl).filter(p=>alive(p,st.round)),n=ps.filter(p=>(p.plans&&p.plans[st.round])||(p.cm&&p.cm[st.round])).length;const left=typeof afkLeft==='function'?afkLeft():null;return 'Gotowych: '+n+' z '+ps.length+'. Kod pokoju: '+net.code+(left!==null?'. Czekamy na pozostałych jeszcze '+left+' s – potem ich postacie w tej rundzie stoją.':'')}
 /* --- z części: TRYBY WALKI: FREE FOR ALL / 2 VS 2 --- */
 function waitH(){const ps=Object.entries(net.pl),nA=ps.filter(([,p])=>p.tm==='A').length,nB=ps.filter(([,p])=>p.tm==='B').length;
  const all=(isTeam()?ps.length===4&&nA===2&&nB===2:ps.length>1)&&ps.every(([,p])=>p.sready);
@@ -2302,11 +2318,11 @@ addRender('modes/testy_init',_rTB=>function(){tbTexts();try{tbInit()}catch(e){co
    dmAt(1500,()=>{a.clear();a.mark([to],'pick');a.cap('Skaczesz na pole przeciwnika…')});
    dmAt(2100,()=>{a.clear();a.mv('h',to,'jump',[-7,3]);a.mv('f0',to,0,[8,-3])});
    dmAt(2650,()=>{a.mark([to],'hit');a.dmg('f0','−1');a.cap('Daleki skok na wroga: <b>1 DMG</b> dla niego, Byku bez obrażeń.')})}};
-  l[1]={t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost przez całą planszę do pierwszej postaci lub ściany: 2 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
+  l[1]={t:'Szarża',tag:'tylko faza II',d:'Szarża na wprost przez całą planszę do pierwszej postaci lub ściany: 1 DMG i odrzucenie o 1 pole.',T:5000,run(a){const f=N(DH,2,3);a.tok('f0','foe',f).tok('h','hero',DH);
    dmAt(300,()=>{a.mark(dmNb(DH),'opt');a.cap('Faza II: wybierz kierunek szarży.')});
    dmAt(1300,()=>{a.clear();a.mark(attack(DH,2,1,'Byku').map(c=>[c[0],c[1]]),'hit');a.cap('Byku pędzi przez całą planszę…')});
    dmAt(2100,()=>{a.clear();a.mv('h',N(DH,2,2),'fast')});
-   dmAt(2500,()=>{a.dmg('f0','−2');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>2 DMG</b> i odrzut o 1 pole. Wepchnięcie na kogoś: obaj −1.')})}};
+   dmAt(2500,()=>{a.dmg('f0','−1');a.mv('f0',N(DH,2,4));a.mark([N(DH,2,4)],'hit');a.cap('<b>1 DMG</b> i odrzut o 1 pole. Wepchnięcie na kogoś: obaj −1.')})}};
   return l};
  const oP=DEMOS['Pasterz'];DEMOS['Pasterz']=()=>{const l=oP();if(!TB())return l;
   l[1].d='W trybie testów Pasterz zaczyna grę z owcą obok. Gdy owca zginie, przywołujesz nową na pole obok.';
@@ -2391,7 +2407,7 @@ render();
 const _hintB=planHint;
 planHint=function(pl,ph){if(TB()&&st.ch==='Byku'){
  if(pl.t==='move')return ph>0?'Faza II: skok o 1 pole albo w miejscu. Wyląduj na przeciwniku: 3 DMG dla niego.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.';
- if(pl.t==='atk'&&pl.d!==null)return 'Szarża: '+DN[pl.d]+' (2 DMG i odrzut).'+(zoneR(st.round)<3?' Uwaga: pudło = uderzenie w ścianę strefy, −1 HP.':'')}
+ if(pl.t==='atk'&&pl.d!==null)return 'Szarża: '+DN[pl.d]+' (1 DMG i odrzut).'+(zoneR(st.round)<3?' Uwaga: pudło = uderzenie w ścianę strefy, −1 HP.':'')}
  return _hintB(pl,ph)};
 (function(){const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
  l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:'Skok o 1 pole (albo w miejscu): wylądowanie na polu przeciwnika zadaje mu 3 DMG. Dalszy skok o 2 pola: 1 DMG. Byku nie traci HP.',T:4600,run(a){const to=N(DH,2);a.tok('f0','foe',to).tok('h','hero',DH);
@@ -2737,15 +2753,22 @@ const MB=(function(){
  function onDb(){if(net.db&&!net.p2p&&window.firebase&&firebase.apps&&firebase.apps.length)return net.db;if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
  /* tajne plany: najpierw sam skrót (c), plan (p, u) z solą (s) dopiero gdy wszyscy zapisali swoje skróty – patrz online/commit.js */
  const mbKey=(id,k)=>'m:'+ON.code+':'+k+':'+id;
- function mbAll(k){const hi=onHostInfo();if(!hi||!hi.assign)return false;return hi.assign.every(a=>a[0]===net.uid||!!(ON.docs[a[0]]&&ON.docs[a[0]].r&&ON.docs[a[0]].r[k]))}
+ function mbAll(k){const hi=onHostInfo();if(!hi||!hi.assign)return false;const A=mbAfk(k);return hi.assign.every(a=>a[0]===net.uid||A.has(a[0])||!!(ON.docs[a[0]]&&ON.docs[a[0]].r&&ON.docs[a[0]].r[k]))}
  async function onDoc(){const r={};const ks=Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3);
   for(const k of ks){const e=ON.myR[k],key=mbKey(net.uid,k);if(!Commit.ok){r[k]=Object.assign({k:1},e);continue}const c=await Commit.seal(key,e);
    if(Commit.isOpen(key)||mbAll(k)){Commit.open(key);r[k]=Object.assign({k:1,s:c.salt,c:c.h},e)}else r[k]={c:c.h}}
-  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r,_v:GAME_VERSION};if(ON.host)d.host=ON.hostInfo;return d}
+  const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r,_v:GAME_VERSION};if(ON.host)d.host=ON.hostInfo;if(ON.afk)d.afk=ON.afk;return d}
+ /* rozłączenie: gospodarz po 60 s czekania wpisuje brakujących do afk – ich postacie w tej rundzie stoją */
+ const MB_AFK=window.__AFK_MS||60000;
+ function mbAfk(r){const s=new Set(((ON.afk||{})[r])||[]);Object.values(ON.docs||{}).forEach(d=>{((d&&d.afk&&d.afk[r])||[]).forEach(id=>s.add(id))});return s}
+ function mbAfkTick(){if(!ON||!G||!G._on||!ON.host)return;const hi=onHostInfo(),r=G.round;if(!hi||!hi.assign||!ON.myR[r])return;const A=mbAfk(r);
+  const miss=hi.assign.map(a=>a[0]).filter(id=>id!==net.uid&&!A.has(id)&&!(ON.docs[id]&&ON.docs[id].r&&ON.docs[id].r[r])).sort();
+  if(!miss.length){ON._ak=null;return}const key=r+':'+miss.join(',');if(ON._ak!==key){ON._ak=key;ON._a0=Date.now();return}
+  if(Date.now()-ON._a0<MB_AFK)return;ON.afk=Object.assign({},ON.afk,{[r]:[...A].concat(miss)});onPub();onSync()}
  function mbCheat(id){const d=ON&&ON.docs[id];const b=document.createElement('div');b.textContent='⚠ Plan gracza '+((d&&d.nick)||(d&&d.ch)||'?')+' nie zgadza się z wcześniej zapisanym skrótem.';b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:9999;background:#7a1f1f;color:#fff;padding:8px 10px;border-radius:8px;font:13px system-ui';document.body.appendChild(b);setTimeout(()=>b.remove(),12000)}
  function onPub(){if(!ON||!ON.code)return;const seq=ON._sv=(ON._sv||0)+1;onDoc().then(d=>{if(!ON||seq!==ON._sv)return;
   try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}})}
- function onSub(){onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
+ function onSub(){if(!ON._t)ON._t=setInterval(()=>{try{mbAfkTick()}catch(e){}},3000);onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
  function onHostInfo(){if(!ON)return null;if(ON.host)return ON.hostInfo;const h=Object.values(ON.docs||{}).find(d=>d&&d.host);return h?h.host:null}
  function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];
   for(let i=0;i<n;i++){const cl=Object.entries(ON.docs).filter(([,d])=>d&&d.slot===i).sort((a,b)=>(a[1].ts-b[1].ts)||(a[0]<b[0]?-1:1));own.push(cl.length?{id:cl[0][0],d:cl[0][1]}:null)}
@@ -2753,19 +2776,20 @@ const MB=(function(){
  function onCreate(mode,mi){const R='ACDEFGHJKLMNPQRTUVWXYZ23456789',code='B'+[0,1,2].map(()=>R[Math.floor(Math.random()*R.length)]).join('');
   ON={code,host:true,hostInfo:{mode,mi,seed:Math.floor(Math.random()*2e9)+1,start:false},docs:{},myR:{},ups:{},slot:0,ts:Date.now(),ch:null};onSub();onPub();draw()}
  function onJoin(code){code=(code||'').trim().toUpperCase();if(code.length!==4)return false;ON={code,host:false,docs:{},myR:{},ups:{},slot:null,ts:0,ch:null};onSub();onPub();draw();return true}
- function onLeave(){try{P2P.reset()}catch(e){}ON=null}
+ function onLeave(){try{const d=ON&&ON.code&&onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid);if(d&&d.del)d.del().catch(()=>{})}catch(e){}try{P2P.reset()}catch(e){}if(ON&&ON._t)clearInterval(ON._t);ON=null}
  function onStartGame(hi){if(G&&G._on)return;const asg=hi.assign;
   withSeed(hi.seed,()=>newGame(hi.mode,hi.mi));G._on=true;
   asg.forEach((a,i)=>{G.heroes[i].ch=a[1];G.heroes[i].nick=a[2]||''});
   startPositions();updateSeen();ON.slot=asg.findIndex(a=>a[0]===net.uid);G.cur=ON.slot;G.scr='opass';G.pickI=G.heroes.length;draw()}
  function onSync(){if(!ON)return;const hi=onHostInfo();
+  if(G&&G._on&&mbAfk(G.round).has(net.uid)&&!ON.myR[G.round]){ON.myR[G.round]={p:null,u:[]};G.scr='owait'}
   if(G&&G._on){const r=G.round;if(ON.myR[r]&&mbAll(r)){Object.entries(ON.docs).forEach(([id,d])=>{if(id!==net.uid&&d&&d.r&&d.r[r]&&d.r[r].c)Commit.lock(mbKey(id,r),d.r[r].c)});if(!Commit.isOpen(mbKey(net.uid,r)))onPub()}}
   if(hi&&hi.start&&hi.assign&&!G){if(hi.assign.some(a=>a[0]===net.uid))onStartGame(hi);else{ON.full=true;draw()}return}
   if(G&&G._on&&G.scr==='owait')onTry();
   else if(!G||!G._on)draw()}
  function onSubmit(){const h=G.heroes[ON.slot],r=G.round;ON.myR[r]={p:h.plans?JSON.parse(JSON.stringify(h.plans)):null,u:ON.ups[r]||[]};onPub();G.scr='owait';onTry()}
  function onTry(){if(!G||G.scr!=='owait')return draw();const hi=onHostInfo(),r=G.round,ents=[];
-  for(let i=0;i<hi.assign.length;i++){const id=hi.assign[i][0],d=ON.docs[id],e=d&&d.r&&d.r[r];if(!e||!e.k)return draw();if(id!==net.uid)Commit.verify(mbKey(id,r),{p:e.p,u:e.u},e.s,e.c,()=>mbCheat(id));ents.push(e)}
+  for(let i=0;i<hi.assign.length;i++){const id=hi.assign[i][0],d=ON.docs[id];let e=d&&d.r&&d.r[r];if(id!==net.uid&&mbAfk(r).has(id)){ents.push({k:1,p:null,u:[]});continue}if(!e||!e.k)return draw();if(id!==net.uid)Commit.verify(mbKey(id,r),{p:e.p,u:e.u},e.s,e.c,()=>mbCheat(id));ents.push(e)}
   ents.forEach((e,i)=>{if(i===ON.slot)return;const h=G.heroes[i];(e.u||[]).forEach(ix=>{const o=upOpts(h)[ix];if(o&&!o.dis){applyUp(h,o);h.pend=Math.max(0,(h.pend||0)-1)}});h.plans=e.p?JSON.parse(JSON.stringify(e.p)):null});
   withSeed(hi.seed+r*7919,()=>resolveRound());G.cur=ON.slot;G.scr=G.winner?'over':'opass';draw()}
  function onDraw(){let h='';
@@ -2945,7 +2969,9 @@ const P2P=(function(){
 const _joinP2P=join;
 join=function(code){/* gospodarz = ten, kto założył pokój (nie wpisał kodu); działa i dla Firebase, i dla przekaźnika */{const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
 const _goMenuP2P=goMenu;
-goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}net._host=false;_goMenuP2P()};
+goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}
+ /* Firebase: wyjście z pokoju usuwa mój dokument (sprzątanie bez płatnego TTL) */
+ try{if(!net.p2p&&net.db&&net.code&&!H){const d=net.db.doc('rooms/'+net.code+'/players/'+net.uid);if(d.del){net.unsub&&net.unsub();net.unsub=null;d.del().catch(()=>{})}}}catch(e){}net._host=false;_goMenuP2P()};
 // komunikat o stanie połączenia
 addRender('online/p2p',_rP2P=>function(){_rP2P();try{const old=document.getElementById('p2pBar');if(old)old.remove();if(!net.p2p||!net.code)return;
  const msg=net.p2pErr?('⚠ '+net.p2pErr):(P2P.ready?'🟢 Połączono z pokojem '+net.code:'⏳ Łączenie z pokojem '+net.code+'… (jeśli trwa długo, sprawdź internet)');
@@ -3519,7 +3545,7 @@ const Bots=(function(){
   function moves(me,from,ph){if(me.ch==='Truchel')return cells.map(c=>c.slice());const r=me.ch==='Byku'?(tb&&ph>0?1:2):1;return cells.filter(c=>dist(c,from)<=r).map(c=>c.slice())}
   /* oczekiwane obrażenia ataku w kierunku d */
   function atkValue(me,from,d,ph,strat){const R=rules(round);let v=0;
-   if(me.ch==='Byku'){if(ph<1)return -1;let c=from.slice();for(;;){c=[c[0]+D[d][0],c[1]+D[d][1]];if(!IN(c))break;let hit=0;enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{if(K(p)===K(c))hit+=w}));if(hit>0){v+=2*hit;break}}return v}
+   if(me.ch==='Byku'){if(ph<1)return -1;let c=from.slice();for(;;){c=[c[0]+D[d][0],c[1]+D[d][1]];if(!IN(c))break;let hit=0;enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{if(K(p)===K(c))hit+=w}));if(hit>0){v+=1*hit;break}}return v}
    if(me.ch==='Truchel'){const c=[from[0]+D[d][0],from[1]+D[d][1]];if(!IN(c))return -1;enemies(me).forEach(o=>{if(dist(o.pos,c)<=1)v+=0.6});return v}
    const sh=CB.shape(me.ch,from,d,ph,R);const first=['Żyleta','Ciotka','Sierżant Przemo'].includes(me.ch);
    enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{const k=sh.findIndex(c=>c[0]===p[0]&&c[1]===p[1]);if(k>=0){const dm=typeof sh[k][2]==='number'?sh[k][2]:1;v+=w*dm*(first?Math.pow(0.85,k):1)}}));return v}
@@ -3625,7 +3651,7 @@ const BalanceLog=(function(){
    g.players.forEach(o=>{if(o.elim&&o.elim.by===p.ch&&o!==p)c.kills++})}));
   return Object.values(C).map(c=>Object.assign(c,{wr:c.fin?c.wins/c.fin:0,expWr:c.fin?c.exp/c.fin:0,ci:wilson(c.wins,c.fin),acc:c.attacks?c.hits/c.attacks:0}))}
  /* ---------- propozycje zmian (tylko tekst; nic nie jest zmieniane automatycznie) ---------- */
- const LEVERS={'Byku':{nerf:'skok o 1 pole / w miejscu 3 → 2 DMG albo szarża 2 → 1 DMG',buff:'dalszy skok 1 → 2 DMG albo szarża 2 → 3 DMG'},
+ const LEVERS={'Byku':{nerf:'skok o 1 pole / w miejscu 3 → 2 DMG',buff:'dalszy skok 1 → 2 DMG albo szarża 1 → 2 DMG'},
   'Wiatrak':{nerf:'boki wachlarza 1 → 0 DMG (tylko środek 2)',buff:'+1 HP albo środek wachlarza 2 → 3 DMG'},
   'Długi':{nerf:'trzecie pole linii 2 → 1 DMG',buff:'pierwsze pole linii 1 → 2 DMG'},
   'Żyleta':{nerf:'zasięg strzału 9 → 5 pól albo 2 → 1 DMG od 3. pola',buff:'+1 HP albo strzał snajperski 3 → 4 DMG'},
@@ -3722,8 +3748,8 @@ if(typeof module!=='undefined')module.exports=BalanceLog;
    if(ref)ref.insertAdjacentHTML('afterend','<button class="mbtn" data-devopen="1" style="min-height:0;padding:6px 12px;opacity:.85"><b style="font-size:15px">🛠 Statystyki balansu</b><small>Dla twórców: wyniki partii, symulacje botów, eksport CSV.</small></button>')}}catch(e){}});
  render();
 })();
-/* ===================== BYKU: skok o 1 pole i w miejscu = 3 DMG, dalszy skok = 1 DMG, szarża = 2 DMG (wszystkie tryby) ===================== */
-(function(){ const TXT='Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.';
+/* ===================== BYKU: skok o 1 pole i w miejscu = 3 DMG, dalszy skok = 1 DMG, szarża = 1 DMG (wszystkie tryby) ===================== */
+(function(){ const TXT='Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 1 DMG i odrzucenie o 1 pole.';
  try{C['Byku'].txt=TXT;if(typeof TBORIG!=='undefined')TBORIG['Byku']=TXT;if(typeof TBTXT!=='undefined')TBTXT['Byku']=TXT}catch(e){}
 })();
 
@@ -4076,6 +4102,7 @@ addRender('online/fair_bar',_r=>function(){_r.apply(this,arguments);try{
  const others=Object.entries(net.pl).filter(([id,p])=>id!==net.uid&&p);
  if(others.some(([,p])=>p._v&&p._v!==GAME_VERSION))msgs.push('⚠ Ktoś w pokoju ma inną wersję gry. Wszyscy odświeżcie stronę, inaczej wyniki rund mogą się różnić.');
  const ch=Object.keys(net.cheat||{});if(ch.length)msgs.push('⚠ Plan gracza '+ch.map(id=>{const p=net.pl[id];return (p&&p.nick)||(p&&p.ch)||'?'}).join(', ')+' nie zgadza się z wcześniej zapisanym skrótem (zmiana planu po zatwierdzeniu wszystkich).');
+ if(st.afkMe===st.round&&st.scr!=='plan')msgs.push('Nie zdążyłeś zaplanować rundy na czas – Twoja postać w tej rundzie stała.');
  if(!msgs.length)return;const d=document.createElement('div');d.id='fairBar';d.className='err';d.textContent=msgs.join(' ');
  d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:9999;background:#7a1f1f;color:#fff;padding:8px 10px;border-radius:8px;font:13px/1.35 system-ui,sans-serif;box-shadow:0 2px 8px #0008';
  document.body.appendChild(d)}catch(e){}});

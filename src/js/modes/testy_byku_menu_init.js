@@ -2,7 +2,7 @@
 const _hintB=planHint;
 planHint=function(pl,ph){if(TB()&&st.ch==='Byku'){
  if(pl.t==='move')return ph>0?'Faza II: skok o 1 pole albo w miejscu. Wyląduj na przeciwniku: 3 DMG dla niego.':'Skok o 1 pole albo w miejscu: 3 DMG. Dalszy skok o 2 pola: 1 DMG.';
- if(pl.t==='atk'&&pl.d!==null)return 'Szarża: '+DN[pl.d]+' (2 DMG i odrzut).'+(zoneR(st.round)<3?' Uwaga: pudło = uderzenie w ścianę strefy, −1 HP.':'')}
+ if(pl.t==='atk'&&pl.d!==null)return 'Szarża: '+DN[pl.d]+' (1 DMG i odrzut).'+(zoneR(st.round)<3?' Uwaga: pudło = uderzenie w ścianę strefy, −1 HP.':'')}
  return _hintB(pl,ph)};
 (function(){const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
  l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:'Skok o 1 pole (albo w miejscu): wylądowanie na polu przeciwnika zadaje mu 3 DMG. Dalszy skok o 2 pola: 1 DMG. Byku nie traci HP.',T:4600,run(a){const to=N(DH,2);a.tok('f0','foe',to).tok('h','hero',DH);

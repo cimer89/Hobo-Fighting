@@ -39,7 +39,9 @@ const P2P=(function(){
 const _joinP2P=join;
 join=function(code){/* gospodarz = ten, kto założył pokój (nie wpisał kodu); działa i dla Firebase, i dla przekaźnika */{const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
 const _goMenuP2P=goMenu;
-goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}net._host=false;_goMenuP2P()};
+goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}
+ /* Firebase: wyjście z pokoju usuwa mój dokument (sprzątanie bez płatnego TTL) */
+ try{if(!net.p2p&&net.db&&net.code&&!H){const d=net.db.doc('rooms/'+net.code+'/players/'+net.uid);if(d.del){net.unsub&&net.unsub();net.unsub=null;d.del().catch(()=>{})}}}catch(e){}net._host=false;_goMenuP2P()};
 // komunikat o stanie połączenia
 addRender('online/p2p',_rP2P=>function(){_rP2P();try{const old=document.getElementById('p2pBar');if(old)old.remove();if(!net.p2p||!net.code)return;
  const msg=net.p2pErr?('⚠ '+net.p2pErr):(P2P.ready?'🟢 Połączono z pokojem '+net.code:'⏳ Łączenie z pokojem '+net.code+'… (jeśli trwa długo, sprawdź internet)');

@@ -90,3 +90,7 @@ Każda para postaci, obie strony startu, strategie agresywny / przewidujący / o
 - Byku wygrywa praktycznie każdy pojedynek z botami, które grają sensownie. Część przewagi może wynikać z tego, że boty nie uciekają przed lądowaniem i szarżą na planszy 19 pól, ale skala (100%) wskazuje na realną przewagę mechaniczną.
 - Truchel 0% z Pasterzem i Przemo oraz Pasterz 100% z Truchlem to najpewniej słabość bota Truchla (kałuże tylko obok wroga).
 - Zmiany balansu wymagają decyzji właściciela.
+
+### Po zmianie szarży Byka 2 → 1 DMG (decyzja z 7.11.2026)
+
+Macierz (`node tests/matchups.js 90 classic`) prawie się nie zmieniła: Byku nadal wygrywa ok. 100% pojedynków z botami. Przewaga bierze się głównie ze skoku (lądowanie 3 DMG w każdej fazie przy 5 HP przeciwników), a nie z szarży.
