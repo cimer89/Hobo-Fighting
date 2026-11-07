@@ -73,7 +73,8 @@ const Combat=(function(){
   const move=(j,to,kind,by,rule)=>{const f=S[j].pos.slice();S[j].pos=to.slice();J({k:kind,id:S[j].id,from:f,to:to.slice(),by:by!==undefined&&by!==null?S[by].id:null,rule})};
 
   for(ph=0;ph<3;ph++){
-   const planOf=i=>L[i].plan[ph]||null;
+   /* faza III należy wyłącznie do Długiego – plan[2] innych postaci jest ignorowany */
+   const planOf=i=>(ph===2&&S[i].ch!=='Długi')?null:(L[i].plan[ph]||null);
    /* dron: 3 akcje – dwie aktywacje (w dowolnych fazach i rundach), trzecia akcja to atak */
    const droneAtk=S.map((x,i)=>{const a=planOf(i);return !x.out&&!!a&&a.t==='drone'&&x.drone>=2});
    const act=S.map((x,i)=>!x.out&&!(ph===2&&x.cancel3)&&!!planOf(i));

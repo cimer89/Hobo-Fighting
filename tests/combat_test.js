@@ -112,4 +112,7 @@ t('[D6] Byku w owcę szarżującą w inną stronę: owca i tak wykonuje szarżę
 t('[D6] zderzenie z owcą liczy bonus +1 Pasterza (2+1)',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,2],[stay([0,2]),A(3)],{sheep:[0,0],dmgb:true})]);eq(dmgOf(S,'b'),3)});
 t('[D7] dron ignoruje owce',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone',m:[0,0]},stay([-3,0])],{drone:2}),F('p','Pasterz',[3,0],[stay([3,0]),stay([3,0])],{sheep:[0,0]}),F('a','Wiatrak',[2,0],[stay([2,0]),stay([2,0])])]);eq(dmgOf(S,'a'),2);eq(S.sheep.p,[0,0])});
 
+/* --- przegląd zewnętrzny (7.11.2026) --- */
+t('faza III tylko dla Długiego: plan[2] innej postaci jest ignorowany',()=>{const S=run([F('d','Długi',[-3,0],[stay([-3,0]),stay([-3,0]),stay([-3,0])]),F('z','Żyleta',[0,0],[stay([0,0]),stay([0,0]),A(0)]),F('a','Wiatrak',[2,0],[stay([2,0]),stay([2,0])])]);eq(dmgOf(S,'a'),0)});
+
 console.log('testy silnika walki:',pass,'zaliczone,',fail,'niezaliczone');fails.forEach(f=>console.log('  ✗',f));process.exit(fail?1:0);
