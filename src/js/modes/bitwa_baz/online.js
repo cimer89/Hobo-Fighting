@@ -7,7 +7,7 @@
  function onDb(){if(net.db&&!net.p2p&&window.firebase&&firebase.apps&&firebase.apps.length)return net.db;if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
  function onPub(){if(!ON||!ON.code)return;const r={};Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3).forEach(k=>r[k]=ON.myR[k]);
   const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r};if(ON.host)d.host=ON.hostInfo;
-  onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d)}
+  try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}}
  function onSub(){onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
  function onHostInfo(){if(!ON)return null;if(ON.host)return ON.hostInfo;const h=Object.values(ON.docs||{}).find(d=>d&&d.host);return h?h.host:null}
  function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];

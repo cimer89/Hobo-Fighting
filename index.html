@@ -1688,7 +1688,11 @@ async function initNet(){
   /* tożsamość na kartę przeglądarki (jak w przekaźniku): dwie karty = dwóch graczy, odświeżenie karty zachowuje gracza */
   try{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)}catch(e){}
   const cred=await firebase.auth().signInAnonymously();
-  net.uid=cred.user.uid;net.db=firebase.firestore();
+  net.uid=cred.user.uid;
+  /* Firestore nie przyjmuje tablic w tablicach (np. pola [q,r] w listach), więc dokument pokoju zapisujemy jako tekst JSON w polu j */
+  const fs=firebase.firestore(),dec=d=>{const x=d.data();return x&&typeof x.j==='string'?JSON.parse(x.j):x};
+  net.db={doc:p=>({set:o=>fs.doc(p).set({j:JSON.stringify(o),t:Date.now()})}),
+   collection:p=>({onSnapshot:(cb,er)=>fs.collection(p).onSnapshot(sn=>cb({docs:sn.docs.map(d=>({id:d.id,data:()=>dec(d)}))}),er||(e=>{console.warn('Firebase:',e);net.err=true;render()}))})};
  }catch(e){console.warn('Firebase:',e);net.db=null}
  render()
 }
@@ -2693,7 +2697,7 @@ const MB=(function(){
  function onDb(){if(net.db&&!net.p2p&&window.firebase&&firebase.apps&&firebase.apps.length)return net.db;if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
  function onPub(){if(!ON||!ON.code)return;const r={};Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3).forEach(k=>r[k]=ON.myR[k]);
   const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r};if(ON.host)d.host=ON.hostInfo;
-  onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d)}
+  try{const pr=onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d);pr&&pr.catch&&pr.catch(e=>console.warn('Bitwa baz online:',e))}catch(e){console.warn('Bitwa baz online:',e)}}
  function onSub(){onDb().collection('rooms/MB'+ON.code+'/players').onSnapshot(sn=>{if(!ON)return;ON.docs={};sn.docs.forEach(d=>ON.docs[d.id]=d.data());onSync()})}
  function onHostInfo(){if(!ON)return null;if(ON.host)return ON.hostInfo;const h=Object.values(ON.docs||{}).find(d=>d&&d.host);return h?h.host:null}
  function onSlots(hi){const n=hi.mode==='1v1'?2:hi.mode==='2v2'?4:6,own=[];

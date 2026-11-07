@@ -8,7 +8,11 @@ async function initNet(){
   /* tożsamość na kartę przeglądarki (jak w przekaźniku): dwie karty = dwóch graczy, odświeżenie karty zachowuje gracza */
   try{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)}catch(e){}
   const cred=await firebase.auth().signInAnonymously();
-  net.uid=cred.user.uid;net.db=firebase.firestore();
+  net.uid=cred.user.uid;
+  /* Firestore nie przyjmuje tablic w tablicach (np. pola [q,r] w listach), więc dokument pokoju zapisujemy jako tekst JSON w polu j */
+  const fs=firebase.firestore(),dec=d=>{const x=d.data();return x&&typeof x.j==='string'?JSON.parse(x.j):x};
+  net.db={doc:p=>({set:o=>fs.doc(p).set({j:JSON.stringify(o),t:Date.now()})}),
+   collection:p=>({onSnapshot:(cb,er)=>fs.collection(p).onSnapshot(sn=>cb({docs:sn.docs.map(d=>({id:d.id,data:()=>dec(d)}))}),er||(e=>{console.warn('Firebase:',e);net.err=true;render()}))})};
  }catch(e){console.warn('Firebase:',e);net.db=null}
  render()
 }
