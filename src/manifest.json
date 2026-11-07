@@ -72,6 +72,8 @@
   "js/ui/round_summary.js",
   "js/modes/training.js",
   "js/modes/tutorial.js",
+  "js/dev/bots.js",
+  "js/dev/balance.js",
   "js/characters/byku_balance.js",
   "js/online/max6.js",
   "js/online/profiles.js",
