@@ -3,8 +3,7 @@ MAXHP=function(ch){return (TB()&&TBHP[ch])||(isSp()&&ch==='Pasterz'?TBHP['Paster
 /* opis na karcie postaci */
 const _tbtSP=tbTexts;
 tbTexts=function(){_tbtSP();if(isSp()&&!TB()&&TBTXT['Pasterz'])C['Pasterz'].txt=TBTXT['Pasterz']};
-const _rSP=render;
-render=function(){try{spInit()}catch(e){console.warn(e)}_rSP()};
+addRender('modes/special_pasterz_init',_rSP=>function(){try{spInit()}catch(e){console.warn(e)}_rSP()});
 /* akcja Kij */
 const _adSP=actDefs;
 actDefs=function(ch,ph){const d=_adSP(ch,ph);if(isSp()&&ch==='Pasterz'&&!d.some(a=>a.t==='staff'))return d.concat([{t:'staff',l:'Kij'}]);return d};

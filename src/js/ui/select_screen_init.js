@@ -1,5 +1,4 @@
-const _r7=render;
-render=function(){_r7();selectOverlay()};
+addRender('ui/select_screen_init#1',_r7=>function(){_r7();selectOverlay()});
 window.addEventListener('click',function(e){
  const t=e.target.closest&&e.target.closest('[data-a="chok"],[data-a="hgo"],[data-a="confirm"],[data-a="vsgo"]');if(!t)return;
  const a=t.dataset.a;if(!H)return;
@@ -44,8 +43,7 @@ Object.assign(IMG,{"Ciotka":''});
 render();
 Object.assign(IMG,{"Ciotka":"@@asset:img/img_ciotka_5.jpg@@"});
 render();
-const _r8=render;
-render=function(){_r8();fitSelBg()};
+addRender('ui/select_screen_init#2',_r8=>function(){_r8();fitSelBg()});
 render();
 BGART["Pasterz"]="@@asset:img/bgart_pasterz.jpg@@";
 BGPOS["Pasterz"]='58% 26%';

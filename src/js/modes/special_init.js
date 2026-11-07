@@ -11,8 +11,7 @@ document.addEventListener('click',function(e){
  if(d.a==='joinb'&&net.db){const el=document.getElementById('code'),v=((el&&el.value)||'').trim().toUpperCase();e.stopImmediatePropagation();if(v.length===4){st.gm=v[0]==='S'?'special':v[0]==='T'?'test':'classic';join(v)}return}
  if(d.n){st.seed=Math.random().toString(36).slice(2,8);return}
  if(d.leg!==undefined){st.legend=!st.legend;e.stopImmediatePropagation();render()}},true);
-const _r5=render;
-render=function(){ICACHE={};_r5()};
+addRender('modes/special_init',_r5=>function(){ICACHE={};_r5()});
 
 /* --- chipy + legenda --- */
 

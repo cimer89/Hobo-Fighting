@@ -1,7 +1,6 @@
 
 
-const _baseRender=render;
-render=function(){_baseRender();injectExtras()};
+addRender('engine/bonuses_init',_baseRender=>function(){_baseRender();injectExtras()});
 
 document.addEventListener('click',function(e){
  if(!st.pick)return;

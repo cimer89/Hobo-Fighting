@@ -65,10 +65,10 @@
     if(rows.length)setTimeout(()=>show(rnd,rows,jr),250)}catch(e){console.warn('rsum',e)}}};
  /* baner "RUNDA N" na początku planowania kolejnej rundy */
  let lastB=null;
- const _rr=render;render=function(){_rr.apply(this,arguments);try{
+ addRender('ui/round_summary',_rr=>function(){_rr.apply(this,arguments);try{
   if(!st.animating&&st.round>=1&&!['menu','lobby','sel','pick','over'].includes(st.scr)&&document.getElementById('stage')){const key=(typeof H!=='undefined'&&H?'h':'n')+st.round;if(lastB!==key){const first=st.round<=1;lastB=key;
     if(!first){const d=document.createElement('div');d.className='rbn';d.innerHTML='RUNDA '+st.round+'<small>'+((typeof H!=='undefined'&&H)?'zaplanuj ruchy':'twój ruch')+'</small>';
      const w=document.getElementById('rsum');setTimeout(()=>{document.body.appendChild(d);setTimeout(()=>d.remove(),1800)},w?400:50)}}}
- }catch(e){}};
+ }catch(e){}});
 })();
 

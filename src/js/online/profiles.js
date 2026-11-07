@@ -84,10 +84,10 @@ const PROF=(function(){
  window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-prof],[data-rank]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
   PROF.init();modal(t.dataset.prof?'prof':'rank')},true);
  /* przyciski w menu wyboru trybu */
- const _r=render;render=function(){_r.apply(this,arguments);try{
+ addRender('online/profiles#1',_r=>function(){_r.apply(this,arguments);try{
   if(st.scr==='lobby'&&!st.gm&&!document.querySelector('.prrow')){const first=app.querySelector('[data-mode]');
    if(first)first.insertAdjacentHTML('beforebegin','<div class="prrow"><button data-prof="1">👤 '+(PROF.nick?hfEsc(PROF.nick):'Profil')+'</button><button data-rank="1">🏆 Ranking</button></div>')}
- }catch(e){}};
+ }catch(e){}});
  setTimeout(()=>PROF.init(),400);
 })();
 (function(){
@@ -104,7 +104,7 @@ const PROF=(function(){
     if(e.k==='dmg'&&cur===net.uid&&e.id!==net.uid&&e.w!=='strefa'&&e.w!=='ścisk')acc.dmg+=e.n||0;
     if(e.k==='out'&&e.id!==net.uid&&cur===net.uid)acc.kos++})}
   return _ra.apply(this,arguments)};
- const _r=render;render=function(){_r.apply(this,arguments);try{
+ addRender('online/profiles#2',_r=>function(){_r.apply(this,arguments);try{
   if((typeof H!=='undefined'&&H)||!net||!net.code||st.scr!=='rev'||st.animating||!PROF.me||!ME.ch)return;
   const items=netItems();if(items.length<2)return;const Rs=resolve(items);if((Rs._pend||[]).length)return;
   const surv=items.filter(o=>Rs[o.id]&&Rs[o.id].eff>0),over=isTeam()?new Set(surv.map(o=>o.q.tm)).size<=1:surv.length<=1;if(!over)return;
@@ -113,6 +113,6 @@ const PROF=(function(){
   const meO=items.find(o=>o.id===net.uid);const win=isTeam()?(surv.length>0&&surv[0].q.tm===ME.tm):(surv.length===1&&surv[0].id===net.uid);
   let pts=0;try{const row=scoreRows(items,Rs).find(r=>r.o.id===net.uid);pts=row?row.total:0}catch(e){}
   PROF.record({win,pts,dmg:acc.key===k?acc.dmg:0,kos:acc.key===k?acc.kos:0,ch:ME.ch,mode:st.gm});
- }catch(e){console.warn('PROF stats',e)}};
+ }catch(e){console.warn('PROF stats',e)}});
 })();
 

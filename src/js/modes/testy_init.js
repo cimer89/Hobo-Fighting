@@ -1,7 +1,6 @@
 /* kształty ataków trybu Testy: engine/combat.js (Combat.shape) */
 Object.keys(C).forEach(k=>TBORIG[k]=C[k].txt);
-const _rTB=render;
-render=function(){tbTexts();try{tbInit()}catch(e){console.warn(e)}_rTB()};
+addRender('modes/testy_init',_rTB=>function(){tbTexts();try{tbInit()}catch(e){console.warn(e)}_rTB()});
 /* przykłady akcji w trybie testów */
 (function(){const oB=DEMOS['Byku'];DEMOS['Byku']=()=>{const l=oB();if(!TB())return l;
   l[0]={t:'Skok',tag:'2 pola: tylko faza I',d:TBTXT['Byku'],T:4800,run(a){const to=N(DH,2,2);a.tok('f0','foe',to).tok('h','hero',DH);

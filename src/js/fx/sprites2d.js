@@ -175,8 +175,7 @@ const _standee2=standee;
 standee=function(ch,delay){return '<g data-s3="'+ch+'"><circle class="s3p" cx="0" cy="4" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="3.5" width="64" height="1" fill="none" stroke="none"/>'+_standee2(ch,delay)+'</g>'};
 const _sheepArt2=sheepArt;
 sheepArt=function(){return '<g data-s3="Owca"><circle class="s3p" cx="0" cy="6" r="0.5" fill="none" stroke="none"/><rect class="s3w" x="-32" y="5.5" width="64" height="1" fill="none" stroke="none"/>'+_sheepArt2()+'</g>'};
-const _r2dB=render;
-render=function(){_r2dB();try{if(document.querySelector('#stage svg'))S2D.init()}catch(e){}};
+addRender('fx/sprites2d',_r2dB=>function(){_r2dB();try{if(document.querySelector('#stage svg'))S2D.init()}catch(e){}});
 render();
 /* przełączniki w panelu dźwięku */
 const _sndPanel2=sndPanel;

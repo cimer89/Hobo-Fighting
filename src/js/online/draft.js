@@ -44,7 +44,7 @@
   const co=ps.find(o=>o.id===cur),ci=ps.indexOf(co);
   return '<div class="selbg" style="--c:#f2c230"></div><div class="seltop"><span class="seltitle">KOLEJKA WYBORU</span></div>'
    +'<div class="drinfo">'+(co?'Teraz wybiera: <b style="color:#ffd84a">'+nm(co,ci)+'</b>':'Wszyscy wybrali.')+'</div><div class="drq">'+rows+'</div><div class="drinfo" style="opacity:.75">Kolejność została wylosowana. Gdy przyjdzie Twoja kolej, zobaczysz ekran wyboru postaci.</div>'}
- const _r=render;render=function(){
+ addRender('online/draft',_r=>function(){
   let L=null,myTurn=false;
   if(online()&&st.scr==='pick'&&!st.chOk&&!ME.chready){L=lob();myTurn=!!(L&&L.ph==='draft'&&curPicker(L)===net.uid);if(myTurn&&isTeam()&&ME.tm)st.team=ME.tm;if(myTurn&&st.ch&&taken(st.ch))st.ch=Object.keys(C).find(n=>!taken(n)&&n!=='Manekin')||st.ch}
   _r.apply(this,arguments);
@@ -56,7 +56,7 @@
    else if(L.ph==='team')ov.innerHTML=teamH(L);
    else if(L.order.includes(net.uid))ov.innerHTML=queueH(L);
    else ov.innerHTML='<div class="selbg" style="--c:#555"></div><div class="seltop"><span class="seltitle">POKÓJ '+net.code+'</span></div><div class="drinfo">Wybór postaci w tym pokoju już trwa. Załóż nowy pokój.</div>';
-  }catch(e){console.warn('draft',e)}};
+  }catch(e){console.warn('draft',e)}});
  window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-dr]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
   const v=t.dataset.dr;
   if(v==='go'&&isHost()){if(isTeam())setLob({ph:'team'});else{const o=players().map(x=>x.id);for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]]}setLob({ph:'draft',order:o})}return}

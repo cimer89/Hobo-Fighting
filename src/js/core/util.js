@@ -1,5 +1,10 @@
 /* ===================== Narzędzia ogólne ===================== */
 /* --- z części: js/000-start.js --- */
+/* Warstwy renderu: każdy moduł dokłada swoją warstwę wokół render() przez addRender(nazwa, poprzedni=>nowa funkcja).
+   Ostatnia dodana warstwa jest zewnętrzna (jej kod „przed” działa pierwszy, „po” – ostatni).
+   Kolejność dodawania wyznacza src/manifest.json; aktualną listę pokazuje RENDER_LAYERS. */
+const RENDER_LAYERS=[];
+function addRender(name,wrap){const inner=render;render=wrap(inner);RENDER_LAYERS.push(name)}
 function dist(q,r){return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r))}
 async function wait(ms){for(let t=0;t<ms&&!st.skipReq;t+=40)await new Promise(r=>setTimeout(r,40))}
 function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function step(){if(st.skipReq){f(1);return res()}const t=Math.min(1,(performance.now()-t0)/ms);f(t);if(t<1)requestAnimationFrame(step);else res()})()})}

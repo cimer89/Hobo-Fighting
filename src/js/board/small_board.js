@@ -13,7 +13,7 @@
  /* kadr planszy: przy mniejszej planszy przybliżamy obraz, żeby pola były większe */
  window.bdVB=function(){const R=window.__BR||3;if(R>=3||!GEO['0,0'])return '62 40 870 900';const c=GEO['0,0'].c,f=(R+2.1)/4.7;
   return [(c[0]-(c[0]-62)*f),(c[1]-(c[1]-40)*f-30*(1-f)*3),870*f,900*f].map(v=>v.toFixed(1)).join(' ')};
- const _r=render;render=function(){setBR(want());return _r.apply(this,arguments)};
+ addRender('board/small_board',_r=>function(){setBR(want());return _r.apply(this,arguments)});
  const _z=zoneR;zoneR=function(r){const z=_z(r),R=window.__BR||3;return z>=R?3:z};
  render();
 })();

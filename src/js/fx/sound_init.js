@@ -92,11 +92,10 @@ capSet=function(t){_capSet(t);if(!t||!st.animating)return;const s=String(t);
 const _openWheel=openWheel;
 openWheel=function(id){_openWheel(id);let k=0;const iv=setInterval(()=>{SND.play('wheel');if(++k>40)clearInterval(iv)},Math.max(40,70));setTimeout(()=>{clearInterval(iv);SND.play('win')},3350)};
 /* --- muzyka zależna od ekranu --- */
-const _r11=render;
-render=function(){_r11();
+addRender('fx/sound_init',_r11=>function(){_r11();
  const sel=document.getElementById('selOv'),vs=sel&&sel.classList.contains('vs');
  if(vs&&!st._vsSnd){st._vsSnd=true;SND.play('vs')}if(!vs)st._vsSnd=false;
  const menu=['splash','lobby','hsetup'].includes(st.scr)||(!!sel&&!vs);
- SND.setMode(st.scr==='splash'&&!st._started?null:(menu?'menu':'battle'));sndBtn()};
+ SND.setMode(st.scr==='splash'&&!st._started?null:(menu?'menu':'battle'));sndBtn()});
 window.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-a="start"]'))st._started=true},true);
 render();

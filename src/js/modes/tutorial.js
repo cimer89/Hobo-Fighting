@@ -143,7 +143,7 @@
  setInterval(()=>{if(!T())return;if(S.phase==='anim'&&st.scr==='hrev'&&!st.animating&&st.animKey){S.phase='wait';S.w0=Date.now();S.sum=false;coach()}if(S.phase==='wait'&&document.getElementById('rsum'))S.sum=true;
   /* wynik lekcji dopiero po zamknięciu karty podsumowania rundy (albo gdy się nie pojawiła) */
   if(S.phase==='wait'&&!st.animating&&!document.getElementById('rsum')&&(S.sum||Date.now()-S.w0>1500)){S.phase='eval';setTimeout(()=>{if(T()&&S.phase==='eval')evaluate()},300)}},250);
- const _r=render;render=function(){_r.apply(this,arguments);try{
+ addRender('modes/tutorial',_r=>function(){_r.apply(this,arguments);try{
   if(T()){if(S.phase!=='result')coach();else if(S.phase==='result'){clear()}
    /* przycisk „Następna runda” chowamy – dalej prowadzi trener */
    document.querySelectorAll('[data-a="hnextr"]').forEach(b=>b.style.display='none')}
@@ -151,7 +151,7 @@
   /* przycisk w menu głównym */
   if(st.scr==='lobby'&&!st.gm&&typeof app!=='undefined'&&!app.querySelector('[data-tutstart]')){const ref=app.querySelector('.mbmain')||[...app.querySelectorAll('[data-mode]')].pop();
    if(ref)ref.insertAdjacentHTML('afterend','<button class="mbtn mtbtn tutb" data-tutstart="1"><b>Samouczek'+(done()?'':' · NOWE')+'</b><small>6 krótkich lekcji na planszy: ruch, fazy, atak, kolizje, strefa, umiejętności. Ok. 3 minuty.</small></button>')}
- }catch(e){console.warn('samouczek',e)}};
+ }catch(e){console.warn('samouczek',e)}});
  window.addEventListener('resize',()=>{if(T())coach()});
  render();
 })();

@@ -143,7 +143,7 @@ if(typeof module!=='undefined')module.exports=BalanceLog;
  /* przerwanie gry (powrót do menu) zapisuje partię jako przerwaną */
  const _gm=goMenu;goMenu=function(){try{BalanceLog.abandon()}catch(e){}return _gm.apply(this,arguments)};
  /* mały przycisk w menu głównym */
- const _r=render;render=function(){_r.apply(this,arguments);try{if(st.scr==='lobby'&&!st.gm&&!app.querySelector('[data-devopen]')){const ref=app.querySelector('[data-tutstart]')||app.querySelector('.mbmain');
-   if(ref)ref.insertAdjacentHTML('afterend','<button class="mbtn" data-devopen="1" style="min-height:0;padding:6px 12px;opacity:.85"><b style="font-size:15px">🛠 Statystyki balansu</b><small>Dla twórców: wyniki partii, symulacje botów, eksport CSV.</small></button>')}}catch(e){}};
+ addRender('dev/balance',_r=>function(){_r.apply(this,arguments);try{if(st.scr==='lobby'&&!st.gm&&!app.querySelector('[data-devopen]')){const ref=app.querySelector('[data-tutstart]')||app.querySelector('.mbmain');
+   if(ref)ref.insertAdjacentHTML('afterend','<button class="mbtn" data-devopen="1" style="min-height:0;padding:6px 12px;opacity:.85"><b style="font-size:15px">🛠 Statystyki balansu</b><small>Dla twórców: wyniki partii, symulacje botów, eksport CSV.</small></button>')}}catch(e){}});
  render();
 })();

@@ -9,6 +9,5 @@ window.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('demoOv'))closeDemo()});
 const _selPickerD=selPickerH;
 selPickerH=function(){const r=_selPickerD();const ch=st.ch||Object.keys(C)[0],d='<p class="seldesc">'+C[ch].txt+'</p>';r.h=r.h.replace(d,d+'<button class="seldemo" data-a="demo" aria-label="Zobacz przykłady akcji">▶ Zobacz akcje</button>');return r};
-const _rDemo=render;
-render=function(){_rDemo();if(document.getElementById('demoOv')&&!(st.scr==='pick'&&document.getElementById('selOv')))closeDemo()};
+addRender('characters/demos_init',_rDemo=>function(){_rDemo();if(document.getElementById('demoOv')&&!(st.scr==='pick'&&document.getElementById('selOv')))closeDemo()});
 render();

@@ -1,5 +1,4 @@
-const _r6=render;
-render=function(){_r6();modalize()};
+addRender('ui/modals_init',_r6=>function(){_r6();modalize()});
 document.addEventListener('click',function(e){
  const t=e.target.closest('[data-a="mmin"],[data-a="mshow"],[data-a="mback"],[data-mapmode]');if(!t)return;
  const d=t.dataset;

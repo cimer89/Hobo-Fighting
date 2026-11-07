@@ -47,7 +47,7 @@
   const Q=resolveFin(H.p.map((q,i)=>({id:'p'+i,q,idx:i})));
   H.p.forEach((p,i)=>{const x=Q['p'+i];p.posr[st.round+1]=x?x.pos:p.posr[st.round];p.hpr[st.round+1]=p.dummy?DHP:(x&&x.eff>0?x.eff:MAXHP(p.ch))});
   st.round++;goPlan();render()},true);
- const _r=render;render=function(){_r.apply(this,arguments);try{
+ addRender('modes/training',_r=>function(){_r.apply(this,arguments);try{
   if(!T())delDummy();
   /* przycisk "Trening" po wybraniu trybu */
   if(st.scr==='lobby'&&st.gm&&!st.tm2&&!document.querySelector('[data-train]')){const all=[...app.querySelectorAll('[data-tm],[data-mbopen]')];const last=all.pop();
@@ -56,7 +56,7 @@
   if(T()&&['plan','hrev'].includes(st.scr)){if(!bar){bar=document.createElement('div');bar.className='trbar';document.body.appendChild(bar)}
    bar.innerHTML='TRENING · R'+st.round+(st.scr==='plan'?'<button data-trreset="1">↺ Manekin na start</button>':'')+'<button data-trend="1">Zakończ</button>'}
   else if(bar)bar.remove();
- }catch(e){console.warn('trening',e)}};
+ }catch(e){console.warn('trening',e)}});
  render();
 })();
 

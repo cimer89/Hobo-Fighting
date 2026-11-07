@@ -13,12 +13,12 @@ main.full[data-lobby]>.row{padding-left:54px}
 @media (max-height:700px){main.full[data-lobby]>img{display:none!important}main.full[data-lobby] button.mbtn small{display:none}}
 .mbtn.mbmain{background:linear-gradient(#e9f3ff,#b9d4f5)!important}`;
  const s0=document.createElement('style');s0.textContent=css;document.head.appendChild(s0);
- const _r=render;render=function(){_r.apply(this,arguments);try{
+ addRender('ui/menu_fix',_r=>function(){_r.apply(this,arguments);try{
   const lob=st.scr==='lobby';if(lob)app.setAttribute('data-lobby','1');else app.removeAttribute('data-lobby');
   if(lob&&!st.gm&&!app.querySelector('.mbmain')){const ms=app.querySelectorAll('[data-mode]'),last=ms[ms.length-1];
    if(last)last.insertAdjacentHTML('afterend','<button class="mbtn mbmain" data-mbopen="1"><b>Bitwa baz</b><small>Drużyny 1v1, 2v2, 3v3 – na jednym telefonie albo online. Odkrywanie mapy, stworki, poziomy. Zniszcz wrogą bazę.</small></button>')}
   if(lob&&st.gm==='test')app.querySelectorAll('[data-mbopen]:not(.mbmain)').forEach(e=>e.remove());
- }catch(e){}};
+ }catch(e){}});
  render();
 })();
 /* kod pokoju Bitwy baz (zaczyna się od B) wpisany w zwykłe „Dołącz kodem” prowadzi do lobby Bitwy baz zamiast do zwykłej poczekalni */

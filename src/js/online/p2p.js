@@ -41,8 +41,7 @@ join=function(code){if(net.p2p){const el=document.getElementById('code'),typed=(
 const _goMenuP2P=goMenu;
 goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}net._host=false;_goMenuP2P()};
 // komunikat o stanie połączenia
-const _rP2P=render;
-render=function(){_rP2P();try{const old=document.getElementById('p2pBar');if(old)old.remove();if(!net.p2p||!net.code)return;
+addRender('online/p2p',_rP2P=>function(){_rP2P();try{const old=document.getElementById('p2pBar');if(old)old.remove();if(!net.p2p||!net.code)return;
  const msg=net.p2pErr?('⚠ '+net.p2pErr):(P2P.ready?'🟢 Połączono z pokojem '+net.code:'⏳ Łączenie z pokojem '+net.code+'… (jeśli trwa długo, sprawdź internet)');
- const d=document.createElement('div');d.id='p2pBar';d.className=net.p2pErr?'err':'';d.textContent=msg;document.body.appendChild(d)}catch(e){}};
+ const d=document.createElement('div');d.id='p2pBar';d.className=net.p2pErr?'err':'';d.textContent=msg;document.body.appendChild(d)}catch(e){}});
 render();
