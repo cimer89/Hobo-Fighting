@@ -70,3 +70,23 @@ node tests/balance_test.js index.html    # test zapisu partii, ekranu, symulacji
 | Testy, 2 | 3000 | **Byku 79% / 50%** | Truchel 27%, Ciotka 35%, Żyleta 37%, Pasterz 39% |
 
 Wynik dla Byka jest jednoznaczny we wszystkich ustawieniach. Pozostałe różnice warto potwierdzić prawdziwymi partiami: boty nie zastawiają kałuż i słabo grają owcą, co może zaniżać wyniki Truchla i Pasterza.
+
+## Macierz pojedynków 1v1 (7.11.2026, `node tests/matchups.js 120 classic`)
+
+Każda para postaci, obie strony startu, strategie agresywny / przewidujący / ostrożny (bez losowego). Procent = wygrane postaci z wiersza przeciw postaci z kolumny.
+
+| | Wiatrak | Długi | Żyleta | Byku | Ciotka | Pasterz | Truchel | Przemo | śr. |
+|---|---|---|---|---|---|---|---|---|---|
+| Wiatrak | – | 40% | 17% | 0% | 47% | 61% | 67% | 30% | 38% |
+| Długi | 60% | – | 46% | 0% | 43% | 63% | 72% | 51% | 48% |
+| Żyleta | 83% | 54% | – | 0% | 76% | 86% | 79% | 70% | 64% |
+| **Byku** | 100% | 100% | 100% | – | 100% | 100% | 98% | 100% | **100%** |
+| Ciotka | 53% | 57% | 24% | 0% | – | 45% | 77% | 25% | 40% |
+| Pasterz | 39% | 37% | 14% | 0% | 55% | – | 100% | 32% | 40% |
+| Truchel | 33% | 28% | 21% | 2% | 23% | 0% | – | 0% | 15% |
+| Przemo | 70% | 49% | 30% | 0% | 75% | 68% | 100% | – | 56% |
+
+- Strona startu nie ma znaczenia: gracz na pierwszej pozycji wygrywa 50,1% (n = 5715).
+- Byku wygrywa praktycznie każdy pojedynek z botami, które grają sensownie. Część przewagi może wynikać z tego, że boty nie uciekają przed lądowaniem i szarżą na planszy 19 pól, ale skala (100%) wskazuje na realną przewagę mechaniczną.
+- Truchel 0% z Pasterzem i Przemo oraz Pasterz 100% z Truchlem to najpewniej słabość bota Truchla (kałuże tylko obok wroga).
+- Zmiany balansu wymagają decyzji właściciela.

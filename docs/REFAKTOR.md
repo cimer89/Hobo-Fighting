@@ -112,7 +112,19 @@ Po każdym etapie uruchamiałem cztery rodzaje sprawdzeń:
 
 Weryfikacja etapu 6: silnik 65/65, golden 1080 + 240 + 30 bez różnic, 15 testów funkcjonalnych, samouczek, balans 11/11, zrzuty ekranów w granicach szumu animacji.
 
-## 6. Co zostało do zrobienia
+## 6. Etap 7 (7.11.2026): online przez Firebase i uczciwość
+
+Po przeglądzie stanu gry przez drugi model (ChatGPT) wprowadzone poprawki techniczne:
+1. **Tajne plany (zobowiązanie i ujawnienie):** `online/commit.js`. Gracz zapisuje najpierw skrót SHA-256 planu z losową solą; plan i sól wysyła dopiero, gdy wszyscy żywi gracze zapisali skróty. Skróty są zamrażane w tej chwili; ujawniony plan niezgodny ze skrótem daje ostrzeżenie. Po zobowiązaniu wszystkich nie da się już edytować planu. Działa w trybach klasycznym, specjalnym, Testy i w Bitwie baz. Sprawdzone na żywo (Firebase): przed ujawnieniem drugi gracz widzi tylko skrót. Test: `node tests/commit_test.js`.
+2. **Wersja gry w pokoju:** `GAME_VERSION` (skrót kodu wstawiany przy budowaniu); gdy ktoś w pokoju ma inną wersję, pojawia się ostrzeżenie.
+3. **Reguły Firestore:** dokument pokoju może mieć tylko pola `j` (JSON, < 300 kB), `t`, `exp`; zapis tylko własnego dokumentu.
+4. **Sprzątanie pokoi:** dokumenty mają pole `exp` (2 dni). Zasadę TTL trzeba włączyć raz w konsoli Google Cloud (Firestore → Czas życia danych → grupa kolekcji `players`, pole `exp`).
+5. **Zapas:** gdy Firebase jest niedostępny, gra przechodzi na przekaźnik ntfy.sh.
+6. **Macierz pojedynków** (`tests/matchups.js`) w `docs/BALANS.md`.
+
+Pozostaje (wymaga serwera lub decyzji): ranking i wyniki liczy klient, więc zmodyfikowany klient może je zawyżyć – pełna ochrona wymaga arbitra na serwerze (Cloud Functions, plan Blaze). Brak reguły czasu na ujawnienie planu (co, gdy ktoś się rozłączy).
+
+## 7. Co zostało do zrobienia
 
 - **Rozdzielenie stanu `G` Bitwy baz** na moduły z jawnymi zależnościami (zamiast fragmentów jednego domknięcia).
 - **Style CSS** – ewentualne grupowanie po ekranach z testem zrzutów.
