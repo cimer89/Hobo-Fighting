@@ -1,6 +1,6 @@
 /* ===================== PROFILE GRACZY, RANKING I STATYSTYKI (Firebase: Firestore + logowanie anonimowe) ===================== */
 /* Wklej tu konfigurację z konsoli Firebase (Ustawienia projektu → Twoje aplikacje → Konfiguracja). */
-const PROF_FB=window.__PROF_FB_TEST||{apiKey:'',authDomain:'',projectId:'',storageBucket:'',messagingSenderId:'',appId:''};
+const PROF_FB=window.__PROF_FB_TEST||((typeof FIREBASE_CONFIG!=='undefined'&&FIREBASE_CONFIG.apiKey!=='WPISZ_TUTAJ')?FIREBASE_CONFIG:null)||{apiKey:'',authDomain:'',projectId:'',storageBucket:'',messagingSenderId:'',appId:''};
 const PROF=(function(){
  let db=null,auth=null,uid=null,me=null,state='off',err='';
  const LSN='hf_nick';

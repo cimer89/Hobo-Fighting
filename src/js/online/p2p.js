@@ -37,7 +37,7 @@ const P2P=(function(){
 // wybór silnika: Firebase gdy jest konfiguracja, w przeciwnym razie P2P
 (function(){const fbOk=window.firebase&&typeof FIREBASE_CONFIG!=='undefined'&&FIREBASE_CONFIG.apiKey!=='WPISZ_TUTAJ';if(!fbOk&&!net.db)P2P.init()})();
 const _joinP2P=join;
-join=function(code){if(net.p2p){const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
+join=function(code){/* gospodarz = ten, kto założył pokój (nie wpisał kodu); działa i dla Firebase, i dla przekaźnika */{const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
 const _goMenuP2P=goMenu;
 goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}net._host=false;_goMenuP2P()};
 // komunikat o stanie połączenia

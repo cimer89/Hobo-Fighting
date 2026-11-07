@@ -5,6 +5,8 @@ async function initNet(){
  try{
   if(!window.firebase||FIREBASE_CONFIG.apiKey==='WPISZ_TUTAJ')return render();
   firebase.initializeApp(FIREBASE_CONFIG);
+  /* tożsamość na kartę przeglądarki (jak w przekaźniku): dwie karty = dwóch graczy, odświeżenie karty zachowuje gracza */
+  try{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)}catch(e){}
   const cred=await firebase.auth().signInAnonymously();
   net.uid=cred.user.uid;net.db=firebase.firestore();
  }catch(e){console.warn('Firebase:',e);net.db=null}

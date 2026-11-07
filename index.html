@@ -1685,6 +1685,8 @@ async function initNet(){
  try{
   if(!window.firebase||FIREBASE_CONFIG.apiKey==='WPISZ_TUTAJ')return render();
   firebase.initializeApp(FIREBASE_CONFIG);
+  /* tożsamość na kartę przeglądarki (jak w przekaźniku): dwie karty = dwóch graczy, odświeżenie karty zachowuje gracza */
+  try{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)}catch(e){}
   const cred=await firebase.auth().signInAnonymously();
   net.uid=cred.user.uid;net.db=firebase.firestore();
  }catch(e){console.warn('Firebase:',e);net.db=null}
@@ -2688,7 +2690,7 @@ const MB=(function(){
  function seedRng(seed){let s=(seed>>>0)%2147483647||1;return ()=>{s=(s*16807)%2147483647;return (s-1)/2147483646}}
  function withSeed(seed,f){const o=Math.random;Math.random=seedRng(seed);try{return f()}finally{Math.random=o}}
  const onNick=()=>{try{return (typeof PROF!=='undefined'&&PROF.nick)||null}catch(e){return null}};
- function onDb(){if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
+ function onDb(){if(net.db&&!net.p2p&&window.firebase&&firebase.apps&&firebase.apps.length)return net.db;if(!net.uid||!net.db||!net.p2p){try{P2P.init()}catch(e){}}return P2P.db}
  function onPub(){if(!ON||!ON.code)return;const r={};Object.keys(ON.myR).map(Number).sort((a,b)=>b-a).slice(0,3).forEach(k=>r[k]=ON.myR[k]);
   const d={nick:onNick()||'',slot:ON.slot,ts:ON.ts||0,ch:ON.ch||null,r};if(ON.host)d.host=ON.hostInfo;
   onDb().doc('rooms/MB'+ON.code+'/players/'+net.uid).set(d)}
@@ -2889,7 +2891,7 @@ const P2P=(function(){
 // wybór silnika: Firebase gdy jest konfiguracja, w przeciwnym razie P2P
 (function(){const fbOk=window.firebase&&typeof FIREBASE_CONFIG!=='undefined'&&FIREBASE_CONFIG.apiKey!=='WPISZ_TUTAJ';if(!fbOk&&!net.db)P2P.init()})();
 const _joinP2P=join;
-join=function(code){if(net.p2p){const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
+join=function(code){/* gospodarz = ten, kto założył pokój (nie wpisał kodu); działa i dla Firebase, i dla przekaźnika */{const el=document.getElementById('code'),typed=((el&&el.value)||'').trim().toUpperCase();net._host=typed!==String(code).toUpperCase()}return _joinP2P(code)};
 const _goMenuP2P=goMenu;
 goMenu=function(){try{if(net.p2p)P2P.reset()}catch(e){}net._host=false;_goMenuP2P()};
 // komunikat o stanie połączenia
@@ -3689,7 +3691,7 @@ if(typeof module!=='undefined')module.exports=BalanceLog;
 
 /* ===================== PROFILE GRACZY, RANKING I STATYSTYKI (Firebase: Firestore + logowanie anonimowe) ===================== */
 /* Wklej tu konfigurację z konsoli Firebase (Ustawienia projektu → Twoje aplikacje → Konfiguracja). */
-const PROF_FB=window.__PROF_FB_TEST||{apiKey:'',authDomain:'',projectId:'',storageBucket:'',messagingSenderId:'',appId:''};
+const PROF_FB=window.__PROF_FB_TEST||((typeof FIREBASE_CONFIG!=='undefined'&&FIREBASE_CONFIG.apiKey!=='WPISZ_TUTAJ')?FIREBASE_CONFIG:null)||{apiKey:'',authDomain:'',projectId:'',storageBucket:'',messagingSenderId:'',appId:''};
 const PROF=(function(){
  let db=null,auth=null,uid=null,me=null,state='off',err='';
  const LSN='hf_nick';
