@@ -121,7 +121,7 @@
   const J=(R._journal||[]).filter(e=>['dmg','skok','skok daleki','skok w miejscu','ruch','eliminacja'].includes(e.k)).slice(0,5).map(e=>Combat.explain(e,nm));
   S.res={ok,why:J.length?'<b>Dziennik rundy:</b><br>'+J.map(hfEsc).join('<br>'):(ok?'':'Nikt nie stracił HP.')};S.phase='result';coach()}
  /* przechwycenie przycisków rundy w samouczku */
- window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-tut],[data-tutstart]');
+ addClick('modes/tutorial',window,e=>{const t=e.target.closest&&e.target.closest('[data-tut],[data-tutstart]');
   if(t){e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
    if(t.dataset.tutstart){start();return}
    const v=t.dataset.tut;

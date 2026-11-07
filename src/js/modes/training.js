@@ -33,7 +33,7 @@
    +Object.keys(C).filter(n=>n!==DUMMY).map(n=>'<button data-trch="'+n+'" style="--c:'+C[n].col+'"><img src="'+IMG[n]+'" alt="">'+(n==='Sierżant Przemo'?'Przemo':n)+'</button>').join('')
    +'</div><button class="x" data-trx="1">← Wróć</button></div>';
   document.body.appendChild(el)}
- window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-train],[data-trch],[data-trx],[data-trreset],[data-trend]');
+ addClick('modes/training',window,e=>{const t=e.target.closest&&e.target.closest('[data-train],[data-trch],[data-trx],[data-trreset],[data-trend]');
   if(t){e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
    if(t.dataset.train){pick();return}
    if(t.dataset.trch){start(t.dataset.trch);return}

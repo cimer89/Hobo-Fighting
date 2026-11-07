@@ -1,4 +1,4 @@
-window.addEventListener('click',e=>{
+addClick('characters/demos_init',window,e=>{
  const b=e.target.closest&&e.target.closest('[data-a="demo"]');
  if(b){e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}openDemo(st.ch||Object.keys(C)[0]);return}
  const ov=document.getElementById('demoOv');if(!ov||!ov.contains(e.target))return;

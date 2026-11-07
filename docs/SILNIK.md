@@ -1,6 +1,6 @@
 # Silnik walki Hobo Fighting
 
-Plik: `src/js/engine/combat.js` (obiekt `Combat`). To jedyne miejsce, gdzie rozpatrywana jest runda w trybie klasycznym, specjalnym i w Testach. Bitwa baz ma własne zasady w `modes/bitwa_baz.js`.
+Plik: `src/js/engine/combat.js` (obiekt `Combat`). To jedyne miejsce, gdzie rozpatrywana jest runda w trybie klasycznym, specjalnym i w Testach. Bitwa baz ma własne zasady w `modes/bitwa_baz/`.
 
 ## Planowanie a wykonanie
 
@@ -50,7 +50,7 @@ Każdy wpis ma:
 
 ## Testy
 
-- `node tests/combat_test.js`: 54 testy interakcji postaci, m.in. ataki każdej postaci, odmiany skoku i szarży Byka, ścisk, drużyny, tarcza, bonus +1, Refleks, kałuże, dron, owca, kij, strzał snajperski, manipulacja Ciotki, faza III Długiego, strefa, eliminacje, dziennik, powtarzalność.
+- `node tests/combat_test.js`: 65 testów interakcji postaci, m.in. ataki każdej postaci, odmiany skoku i szarży Byka, ścisk, drużyny, tarcza, bonus +1, Refleks, kałuże, dron, owca, kij, strzał snajperski, manipulacja Ciotki, faza III Długiego, strefa, eliminacje, dziennik, powtarzalność.
 - `node tests/golden.js` + `tests/gcmp.py`: 1080 losowych rund. Nowy silnik daje wyniki identyczne ze starym `sim()` we wszystkich trybach.
 
 ## Zasady ustalone po zgłoszeniu niejednoznaczności (3.11.2026)

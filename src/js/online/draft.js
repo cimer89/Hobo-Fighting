@@ -57,7 +57,7 @@
    else if(L.order.includes(net.uid))ov.innerHTML=queueH(L);
    else ov.innerHTML='<div class="selbg" style="--c:#555"></div><div class="seltop"><span class="seltitle">POKÓJ '+net.code+'</span></div><div class="drinfo">Wybór postaci w tym pokoju już trwa. Załóż nowy pokój.</div>';
   }catch(e){console.warn('draft',e)}});
- window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-dr]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
+ addClick('online/draft',window,e=>{const t=e.target.closest&&e.target.closest('[data-dr]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
   const v=t.dataset.dr;
   if(v==='go'&&isHost()){if(isTeam())setLob({ph:'team'});else{const o=players().map(x=>x.id);for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]]}setLob({ph:'draft',order:o})}return}
   if(v.startsWith('team:')){const tm=v.slice(5);if(players().filter(o=>o.id!==net.uid&&o.q.tm===tm).length>=2)return;ME.tm=tm;st.team=tm;save();render();return}

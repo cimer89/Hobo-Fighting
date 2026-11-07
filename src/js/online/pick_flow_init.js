@@ -1,4 +1,4 @@
-window.addEventListener('click',function(e){
+addClick('online/pick_flow_init',window,function(e){
  if(H||!net.db)return;
  const t=e.target.closest&&e.target.closest('[data-a="chok"],[data-a="vsgo"],[data-a="cback"]');if(!t)return;
  const a=t.dataset.a;e.stopImmediatePropagation();

@@ -67,12 +67,12 @@ const SND=(function(){
   nextT=ctx.currentTime+.05;step=0;seqTimer=setInterval(tick,25)}
  return {play,setMode,unlock,S,gains,persist,files}})();
 document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.sv){SND.S.vol[t.dataset.sv]=+t.value;SND.gains();SND.persist();if(t.dataset.sv==='sfx')SND.play('click')}});
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#sndBtn,[data-smute]');if(!t)return;e.stopImmediatePropagation();
+addClick('fx/sound_init#1',document,e=>{const t=e.target.closest&&e.target.closest('#sndBtn,[data-smute]');if(!t)return;e.stopImmediatePropagation();
  if(t.id==='sndBtn'){SND.unlock();sndPanel();return}
  SND.S.mute=!SND.S.mute;SND.gains();SND.persist();t.textContent=SND.S.mute?'Włącz dźwięk':'Wycisz wszystko';sndBtn()},true);
 /* --- odblokowanie i dźwięki interfejsu --- */
 ['pointerdown','touchstart','keydown'].forEach(ev=>window.addEventListener(ev,()=>SND.unlock(),{capture:true,passive:true}));
-window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('button,[data-k]');if(!t||t.disabled||t.id==='sndBtn')return;
+addClick('fx/sound_init#2',window,e=>{const t=e.target.closest&&e.target.closest('button,[data-k]');if(!t||t.disabled||t.id==='sndBtn')return;
  const a=t.dataset&&t.dataset.a;
  if(t.dataset.ch)SND.play('select');else if(['ok','confirm','chok','hnext','start'].includes(a))SND.play('confirm');else if(a==='vsgo')SND.play('phase');else SND.play('click')},true);
 /* --- dźwięki animacji: na podstawie opisu zdarzenia --- */
@@ -97,5 +97,5 @@ addRender('fx/sound_init',_r11=>function(){_r11();
  if(vs&&!st._vsSnd){st._vsSnd=true;SND.play('vs')}if(!vs)st._vsSnd=false;
  const menu=['splash','lobby','hsetup'].includes(st.scr)||(!!sel&&!vs);
  SND.setMode(st.scr==='splash'&&!st._started?null:(menu?'menu':'battle'));sndBtn()});
-window.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-a="start"]'))st._started=true},true);
+addClick('fx/sound_init#3',window,e=>{if(e.target.closest&&e.target.closest('[data-a="start"]'))st._started=true},true);
 render();

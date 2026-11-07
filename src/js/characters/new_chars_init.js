@@ -6,7 +6,7 @@ Object.assign(C,{
 Object.assign(INI,{P:'Pasterz',T:'Truchel',S:'Sierżant Przemo'});
 
 /* --- zapis stanu na kolejną rundę --- */
-document.addEventListener('click',function(e){
+addClick('characters/new_chars_init',document,function(e){
  if(e.target.closest&&e.target.closest('[data-a="newgame"]')){location.reload();return}
  const t=e.target.closest('[data-a="next"],[data-a="hnextr"]');if(!t)return;
  const r=st.round,items=curItems(),fin=(st._fin&&st._finRound===r)?st._fin:null;if(!fin)return;

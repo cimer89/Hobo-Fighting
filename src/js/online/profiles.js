@@ -81,7 +81,7 @@ const PROF=(function(){
    if(a==='save'){const v=(document.getElementById('prNick')||{}).value||'';const c=PROF.check(v);if(c){msg=c;m._redraw();return}
     t.disabled=true;try{await PROF.setNick(v);m._edit=false;msg=''}catch(err){msg=err.message||String(err)}m._redraw()}});
   m._redraw()}
- window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-prof],[data-rank]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
+ addClick('online/profiles',window,e=>{const t=e.target.closest&&e.target.closest('[data-prof],[data-rank]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
   PROF.init();modal(t.dataset.prof?'prof':'rank')},true);
  /* przyciski w menu wyboru trybu */
  addRender('online/profiles#1',_r=>function(){_r.apply(this,arguments);try{

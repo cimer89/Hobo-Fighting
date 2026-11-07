@@ -22,7 +22,7 @@ main.full[data-lobby]>.row{padding-left:54px}
  render();
 })();
 /* kod pokoju Bitwy baz (zaczyna się od B) wpisany w zwykłe „Dołącz kodem” prowadzi do lobby Bitwy baz zamiast do zwykłej poczekalni */
-window.addEventListener('click',function(e){const t=e.target.closest&&e.target.closest('[data-a="joinb"]');if(!t)return;
+addClick('ui/menu_fix',window,function(e){const t=e.target.closest&&e.target.closest('[data-a="joinb"]');if(!t)return;
  const el=document.getElementById('code'),v=((el&&el.value)||'').trim().toUpperCase();if(v.length!==4||v[0]!=='B')return;
  e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}
  const ob=document.querySelector('[data-mbopen]');if(ob)ob.click();else{try{MB.open()}catch(_){}}

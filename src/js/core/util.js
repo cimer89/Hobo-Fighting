@@ -5,6 +5,11 @@
    Kolejność dodawania wyznacza src/manifest.json; aktualną listę pokazuje RENDER_LAYERS. */
 const RENDER_LAYERS=[];
 function addRender(name,wrap){const inner=render;render=wrap(inner);RENDER_LAYERS.push(name)}
+/* Globalne obsługi kliknięć: rejestrowane po nazwie, w kolejności z manifestu. Kolejność w CLICK_HANDLERS
+   to kolejność wywołania w obrębie tej samej fazy (najpierw capture na window, potem na document, potem bubbling
+   na document i window); obsługa może zatrzymać kolejne przez stopImmediatePropagation(). */
+const CLICK_HANDLERS=[];
+function addClick(name,target,fn,opt){target.addEventListener('click',fn,opt);CLICK_HANDLERS.push(name+' @'+(target===window?'window':'document')+(opt?' capture':''))}
 function dist(q,r){return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r))}
 async function wait(ms){for(let t=0;t<ms&&!st.skipReq;t+=40)await new Promise(r=>setTimeout(r,40))}
 function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function step(){if(st.skipReq){f(1);return res()}const t=Math.min(1,(performance.now()-t0)/ms);f(t);if(t<1)requestAnimationFrame(step);else res()})()})}

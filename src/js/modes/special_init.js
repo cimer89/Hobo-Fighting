@@ -1,7 +1,7 @@
 let ICACHE={};
 
 /* --- menu --- */
-document.addEventListener('click',function(e){
+addClick('modes/special_init#1',document,function(e){
  ICACHE={};
  const t=e.target.closest('[data-mode],[data-a="modeback"],[data-a="create"],[data-a="joinb"],[data-n],[data-leg]');if(!t)return;
  const d=t.dataset;
@@ -15,7 +15,7 @@ addRender('modes/special_init',_r5=>function(){ICACHE={};_r5()});
 
 /* --- chipy + legenda --- */
 
-document.addEventListener('click',function(e){
+addClick('modes/special_init#2',document,function(e){
  if(!isSp())return;
  const t=e.target.closest('[data-a="next"],[data-a="hnextr"]');if(!t)return;
  const r=st.round,items=curItems(),fin=(st._fin&&st._finRound===r)?st._fin:null;if(!fin)return;

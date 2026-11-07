@@ -4,7 +4,7 @@
 /* --- pasek informacji z drużyną --- */
 
 /* --- obsługa kliknięć (przed starszymi obsługami) --- */
-window.addEventListener('click',function(e){
+addClick('modes/teams_init',window,function(e){
  const t=e.target.closest&&e.target.closest('[data-tm],[data-a="modeback"],[data-a="create"],[data-a="joinb"],[data-a="hgo"],[data-team],[data-a="confirm"],[data-a="chok"]');if(!t)return;
  const d=t.dataset;
  if(d.tm){st.tm2=d.tm;e.stopImmediatePropagation();render();return}

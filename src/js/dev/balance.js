@@ -132,7 +132,7 @@ if(typeof module!=='undefined')module.exports=BalanceLog;
   const step=()=>{const k=Math.min(CH,opt.games-done);Bots.series(Object.assign({},opt,{games:k,seed:opt.seed+done})).forEach(BalanceLog.add);done+=k;if(pr)pr.style.width=(100*done/opt.games)+'%';
    if(done<opt.games)setTimeout(step,0);else{simRun=false;F.src='bot';F.mode=opt.mode;F.n=String(opt.players);view()}};step()}
  document.addEventListener('change',e=>{const t=e.target.closest&&e.target.closest('[data-dvf]');if(t){F[t.dataset.dvf]=t.value;view()}});
- window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-dv],[data-devopen]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();
+ addClick('dev/balance',window,e=>{const t=e.target.closest&&e.target.closest('[data-dv],[data-devopen]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();
   if(t.dataset.devopen){view();return}const v=t.dataset.dv;
   if(v==='close'){const el=document.getElementById('devSt');if(el)el.remove();return}
   if(v==='sim'){simulate();return}

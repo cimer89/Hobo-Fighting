@@ -182,8 +182,8 @@ const _sndPanel2=sndPanel;
 sndPanel=function(){_sndPanel2();const el=document.getElementById('sndPanel');if(!el)return;const sm=el.querySelector('small');
  const b=document.createElement('button');b.setAttribute('data-s2d','1');b.textContent=S2D.enabled()?'Postacie rysunkowe: włączone':'Postacie rysunkowe: wyłączone';if(sm)el.insertBefore(b,sm);else el.appendChild(b);
  if(typeof B3D!=='undefined'){const c=document.createElement('button');c.setAttribute('data-b3d','1');c.textContent=B3D.enabled()?'Nowa plansza: włączona':'Nowa plansza: wyłączona';if(sm)el.insertBefore(c,sm);else el.appendChild(c)}};
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-s2d]');if(!t)return;e.stopImmediatePropagation();
+addClick('fx/sprites2d#1',document,e=>{const t=e.target.closest&&e.target.closest('[data-s2d]');if(!t)return;e.stopImmediatePropagation();
  const v=!S2D.enabled();S2D.setEnabled(v);t.textContent=v?'Postacie rysunkowe: włączone':'Postacie rysunkowe: wyłączone'},true);
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b3d]');if(!t||typeof B3D==='undefined')return;e.stopImmediatePropagation();
+addClick('fx/sprites2d#2',document,e=>{const t=e.target.closest&&e.target.closest('[data-b3d]');if(!t||typeof B3D==='undefined')return;e.stopImmediatePropagation();
  const v=!B3D.enabled();B3D.setEnabled(v);t.textContent=v?'Nowa plansza: włączona':'Nowa plansza: wyłączona'},true);
 

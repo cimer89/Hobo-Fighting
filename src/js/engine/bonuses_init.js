@@ -2,12 +2,12 @@
 
 addRender('engine/bonuses_init',_baseRender=>function(){_baseRender();injectExtras()});
 
-document.addEventListener('click',function(e){
+addClick('engine/bonuses_init#1',document,function(e){
  if(!st.pick)return;
  const t=e.target.closest('[data-k]');if(!t)return;
  e.stopImmediatePropagation();pickCell(t.dataset.k);render()},true);
 
-document.addEventListener('click',function(e){
+addClick('engine/bonuses_init#2',document,function(e){
  const t=e.target.closest('[data-roll],[data-pick],[data-stay],[data-bdtog]');if(!t||st.animating)return;
  const ds=t.dataset;
  if(ds.roll!==undefined){openWheel(ds.roll);return}
@@ -15,7 +15,7 @@ document.addEventListener('click',function(e){
  if(ds.stay!==undefined){const p=playerOf(ds.stay);if(p&&mine(ds.stay)){p.dg=p.dg||{};p.dg[st.round]='stay';saveP(p)}render();return}
  if(ds.bdtog!==undefined){const pl=st.plan[st.ph];if(pl)pl.bd=!pl.bd;render();return}});
 
-document.addEventListener('click',function(e){
+addClick('engine/bonuses_init#3',document,function(e){
  const t=e.target.closest('[data-a="next"],[data-a="hnextr"]');if(!t)return;
  st.pick=null;
  const items=curItems(),Rs=resolve(items);st._fin=Rs;st._finRound=st.round;st._finMode=H?'h':'n';let changed=false;

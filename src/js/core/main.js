@@ -1,5 +1,5 @@
 /* ===================== Start: obsługa kliknięć planowania, pierwszy render, połączenie ===================== */
-document.addEventListener('click',e=>{
+addClick('core/main',document,e=>{
  const t=e.target.closest('[data-ch],[data-t],[data-a],[data-k],[data-hp],[data-n]');if(!t)return;
  const ds=t.dataset,pl=st.plan[st.ph];
  if(st.animating&&ds.a!=='skip')return;

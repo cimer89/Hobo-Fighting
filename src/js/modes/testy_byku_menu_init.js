@@ -16,5 +16,5 @@ planHint=function(pl,ph){if(TB()&&st.ch==='Byku'){
   dmAt(1800,()=>{a.mv('h',[0,-2],'fast')});
   dmAt(2200,()=>{a.act('h','shk');a.dmg('h','−1');a.cap('<b>Bum!</b> Ściana strefy: Byku −1 HP i zatrzymuje się przy niej.')})}});
  return l}})();
-window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-a="newgame"]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}goMenu()},true);
+addClick('modes/testy_byku_menu_init',window,e=>{const t=e.target.closest&&e.target.closest('[data-a="newgame"]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();try{SND.play('click')}catch(_){}goMenu()},true);
 render();

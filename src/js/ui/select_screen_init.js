@@ -1,5 +1,5 @@
 addRender('ui/select_screen_init#1',_r7=>function(){_r7();selectOverlay()});
-window.addEventListener('click',function(e){
+addClick('ui/select_screen_init',window,function(e){
  const t=e.target.closest&&e.target.closest('[data-a="chok"],[data-a="hgo"],[data-a="confirm"],[data-a="vsgo"]');if(!t)return;
  const a=t.dataset.a;if(!H)return;
  if(a==='chok'&&st.scr==='pick'&&!st.chOk){e.stopImmediatePropagation();

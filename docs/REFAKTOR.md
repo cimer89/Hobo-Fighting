@@ -95,10 +95,25 @@ Po każdym etapie uruchamiałem cztery rodzaje sprawdzeń:
 | 3. Łaty `eval` | identyczny | 0 | 0 | 0 | – | – |
 | 4. Moduły | identyczny | 0 | 0 | 0 | ≤ 0,3% pikseli (szum animacji) | 15/15 |
 
-## 5. Co zostało do zrobienia
+## 5. Etap 6 (7.11.2026): przegląd zewnętrzny i porządki
 
-- **Łańcuch owijek `render` (25 warstw)** można zamienić na jawną listę kroków przed i po renderze. To zmiana struktury, która wymaga ostrożnego testowania kolejności. Proponuję jako osobny etap.
-- **Globalne obsługi kliknięć (23)** warto zebrać w jeden rozdzielacz akcji z jawną kolejnością.
-- **Bitwa baz (`modes/bitwa_baz.js`, 480 linii)** to jedno domknięcie. Można je rozbić na mapy, silnik, rysowanie i online, ale wymaga to wyniesienia wspólnego stanu `G`.
-- **Style CSS** zostały w 18 sekcjach w pierwotnej kolejności (od niej zależy kaskada). Można je pogrupować po ekranach.
+1. **Przegląd silnika przez drugi model (ChatGPT).** Zgłosił 8 uwag. Każdą sprawdziłem w kodzie i testem:
+   - **Faza III dla innych postaci niż Długi** – potwierdzone na wejściu silnika (interfejs i tak na to nie pozwala). Silnik ignoruje teraz `plan[2]` innych postaci. Test w `combat_test.js`.
+   - **Utrata fazy III Długiego po odrzucie w fazie I** – zgodne z zasadą postaci („trzecia przepada, jeśli ktoś go przesunie”).
+   - **Przesunięcie Ciotki czekające na wybór pola** – runda jest liczona ponownie po wyborze, wynik pośredni nie jest ostateczny.
+   - **Dwa Byki na jednym polu** – nie występuje (D2).
+   - **Moment zużycia bonusu (tarcza, kałuża)** – zachowanie zamierzone.
+   - **Lądowanie Byka na polu z sojusznikiem i wrogiem (2v2)** oraz **owca Pasterza wyeliminowanego w fazie I** – zasady niejednoznaczne, przekazane do decyzji.
+   - Na pytanie o strzał snajperski, kij, szarżę owcy, manipulację, truciznę i strefę: „brak” błędów.
+2. **Render:** 25 owijek `const _rX=render;render=function(){…}` zamienionych na `addRender('nazwa', poprzedni=>function(){…})`. Treść każdej warstwy i kolejność bez zmian; lista warstw w `RENDER_LAYERS` (w konsoli przeglądarki).
+3. **Kliknięcia:** 27 globalnych obsług na `window`/`document` rejestrowanych przez `addClick('nazwa', cel, fn, capture)`; kolejność w `CLICK_HANDLERS`. Zachowanie (capture, `stopImmediatePropagation`) bez zmian, bo to nadal te same nasłuchy w tej samej kolejności. Jeden centralny rozdzielacz zmieniłby semantykę zatrzymywania zdarzeń między `window` a `document`, więc go nie wprowadzałem.
+4. **Bitwa baz** podzielona na 8 plików w `src/js/modes/bitwa_baz/` (dane, mapy, postacie, silnik, rysowanie, online, ekrany, wejście). To fragmenty jednego domknięcia sklejane wg manifestu; zbudowany plik jest identyczny jak przed podziałem (poza komentarzami-nagłówkami).
+5. **CSS:** kolejności sekcji nie zmieniałem – od niej zależy kaskada, a zysk byłby tylko porządkowy.
+
+Weryfikacja etapu 6: silnik 65/65, golden 1080 + 240 + 30 bez różnic, 15 testów funkcjonalnych, samouczek, balans 11/11, zrzuty ekranów w granicach szumu animacji.
+
+## 6. Co zostało do zrobienia
+
+- **Rozdzielenie stanu `G` Bitwy baz** na moduły z jawnymi zależnościami (zamiast fragmentów jednego domknięcia).
+- **Style CSS** – ewentualne grupowanie po ekranach z testem zrzutów.
 - **Narzędzia migracji** (jednorazowe) są w `tools/migracja/`, gdyby trzeba było odtworzyć któryś krok.
