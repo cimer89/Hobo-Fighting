@@ -26,7 +26,7 @@ const Bots=(function(){
   /* start: pola na krawędzi, rozłożone równomiernie */
   const ring=cells.filter(c=>dist(c,[0,0])===BR);const off=ri(ring.length);
   const P=chars.map((ch,i)=>({id:'p'+i,ch,strat:(cfg.strats&&cfg.strats[i])||'agresywny',pos:ring[(off+Math.floor(i*ring.length/n))%ring.length].slice(),hp:maxHp(ch,mode),max:maxHp(ch,mode),
-   alive:true,sheep:null,drone:false,stat:{dealt:0,taken:0,attacks:0,hits:0,abil:{},elim:null}}));
+   alive:true,sheep:null,drone:0,stat:{dealt:0,taken:0,attacks:0,hits:0,abil:{},elim:null}}));
   let puddles=[],round=1;const MAXR=40;
   const rules=r=>({tb,pnb:tb,zone:zoneR(r),br:BR,selfLand:false,zylR:9,zyl2:2});
   const enemies=me=>P.filter(o=>o.alive&&o!==me);
@@ -44,7 +44,7 @@ const Bots=(function(){
    if(me.ch==='Byku'&&e&&K(e.pos)===K(c))return (strat==='ostrożny'?2:3.2)+zp;
    if(strat==='ostrożny')return zp+(d>=2&&d<=3?0.6:d<2?-0.8:0.2)-dist(c,[0,0])*0.05;
    return zp-d*0.35}
-  function plan(me){const pl=[];let from=me.pos.slice();const strat=me.strat;
+  function plan(me){const pl=[];let from=me.pos.slice();const strat=me.strat;me._dc=me.drone||0;
    for(let ph=0;ph<nPh(me.ch);ph++){
     const opts=[];
     const mv=moves(me,from,ph);
@@ -53,13 +53,13 @@ const Bots=(function(){
     if(me.ch==='Pasterz'){
      if(!me.sheep){const e=nearest(me,from);const nb=D.map(d=>[from[0]+d[0],from[1]+d[1]]).filter(IN);if(nb.length){const m=nb.sort((a,b)=>(e?dist(a,e.pos)-dist(b,e.pos):0))[0];opts.push({a:{t:'summon',m,d:null},v:1.2})}}
      else{for(let d=0;d<6;d++){let c=me.sheep.slice(),v=0;for(;;){c=[c[0]+D[d][0],c[1]+D[d][1]];if(!IN(c))break;enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{if(K(p)===K(c))v+=w*(tb?2:1)}))}if(v>0)opts.push({a:{t:'atk',m:null,d},v})}}}
-    else if(me.ch==='Sierżant Przemo'&&!me._dr&&ph===0&&!me.drone){opts.push({a:{t:'drone',m:null,d:null},v:1.1})}
-    else if(me.ch==='Sierżant Przemo'&&(me.drone||me._dr)&&ph===1){const e=nearest(me,from);if(e)opts.push({a:{t:'drone',m:e.pos.slice(),d:null},v:1.5})}
+    /* dron: dwie aktywacje (na raty), trzecia akcja = atak 2 DMG */
+    else if(me.ch==='Sierżant Przemo'){const c=me._dc;if(c<2)opts.push({a:{t:'drone',m:null,d:null},v:0.75});else{const e=nearest(me,from);if(e)opts.push({a:{t:'drone',m:e.pos.slice(),d:null},v:2.2})}}
     if(me.ch!=='Pasterz')for(let d=0;d<6;d++){const v=atkValue(me,from,d,ph,strat);if(v>0)opts.push({a:{t:'atk',m:null,d},v:v*(strat==='ostrożny'?0.9:1.1)})}
     opts.sort((a,b)=>b.v-a.v);const best=opts.filter(o=>o.v>=opts[0].v-1e-9);const ch=pick(best).a;
-    if(ch.t==='drone'&&ph===0)me._dr=true;
+    if(ch.t==='drone')me._dc=me._dc>=2?0:me._dc+1;
     pl.push(ch);if(ch.t==='move')from=ch.m}
-   me._dr=false;return pl}
+   return pl}
   const rounds=[];
   while(round<=MAXR){const live=P.filter(o=>o.alive);if(live.length<=1)break;
    const fighters=live.map(o=>({id:o.id,ch:o.ch,pos:o.pos.slice(),hp:o.hp,plan:plan(o),sh:false,dmgb:false,drone:o.drone,sheep:o.sheep,dg:undefined,tm:null}));
@@ -72,11 +72,11 @@ const Bots=(function(){
    /* statystyki rundy */
    S.forEach(x=>{const o=P.find(p=>p.id===x.id);o.stat.dealt+=x.pts.d;o.stat.taken+=Math.max(0,o.hp-Math.max(0,x.hp))});
    S.ev.forEach(e=>{const o=P.find(p=>p.id===e.id);if(!o)return;if(['atk','charge','scharge','drone'].includes(e.k)&&!e.none){o.stat.attacks++;if(e.hit||e.target)o.stat.hits++}});
-   S.journal.forEach(e=>{const o=P.find(p=>p.id===e.id);if(!o)return;const A={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'dron aktywny':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
+   S.journal.forEach(e=>{const o=P.find(p=>p.id===e.id);if(!o)return;const A={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'aktywacja drona':1,'atak drona':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
     if(A[e.k])o.stat.abil[e.k]=(o.stat.abil[e.k]||0)+1;
     if(e.k==='przesunięcie'&&e.by){const q=P.find(p=>p.id===e.by);if(q)q.stat.abil['manipulacja']=(q.stat.abil['manipulacja']||0)+1}});
    S.ev.forEach(e=>{if(e.k==='atk'&&e.snipe){const o=P.find(p=>p.id===e.id);o.stat.abil['strzał snajperski']=(o.stat.abil['strzał snajperski']||0)+1}});
-   S.forEach(x=>{const o=P.find(p=>p.id===x.id);o.hp=Math.max(0,x.hp);o.pos=x.pos.slice();o.sheep=(S.sheep&&S.sheep[x.id])||null;o.drone=!!(S.droneOn&&S.droneOn[x.id]);
+   S.forEach(x=>{const o=P.find(p=>p.id===x.id);o.hp=Math.max(0,x.hp);o.pos=x.pos.slice();o.sheep=(S.sheep&&S.sheep[x.id])||null;o.drone=(S.droneOn&&S.droneOn[x.id])||0;
     if(x.out&&o.alive){o.alive=false;const last=S.journal.filter(e=>e.k==='dmg'&&e.id===x.id).pop();const by=last&&last.by?P.find(p=>p.id===last.by):null;o.stat.elim={round,cause:last?last.cause:'?',by:by?by.ch:null}}});
    puddles=puddles.concat(S.pudNew||[]);rounds.push(round);round++}
   const alive=P.filter(o=>o.alive);const winner=alive.length===1?alive[0]:null;

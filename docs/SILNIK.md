@@ -16,10 +16,10 @@ Plik: `src/js/engine/combat.js` (obiekt `Combat`). To jedyne miejsce, gdzie rozp
 | Krok | Co się dzieje |
 |---|---|
 | 1 ruch | wszystkie ruchy naraz: skok Byka (o 1, o 2, w miejscu), teleport Truchla |
-| 2 przygotowanie | ruch i przywołanie owcy, aktywacja drona |
+| 2 przygotowanie | ruch i przywołanie owcy, aktywacja drona (1/3, 2/3 – na raty, także w różnych rundach) |
 | 3 unik | (faza II) unik z bonusu Refleks |
 | 4 kolizje | lądowanie Byka: o 1 pole i w miejscu 3 DMG, o 2 pola 1 DMG; w pozostałych przypadkach ścisk −1 dla wszystkich na polu |
-| 5 dron | (faza II) najbliższa postać; remis → najwięcej HP; dalej losowanie z ziarna |
+| 5 dron | trzecia akcja drona (w dowolnej fazie): 2 DMG najbliższej postaci; remis → najwięcej HP; dalej losowanie z ziarna |
 | 6 strzał snajperski | (faza II) Żyleta po celowaniu w fazie I, 3 DMG |
 | 7 kij pasterski | 2 pola, 2 DMG |
 | 8 ataki | zwykłe ataki, po kolei wg kolejności graczy |

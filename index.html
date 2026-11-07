@@ -765,11 +765,11 @@ const DEMOS={
    dmAt(2300,()=>{a.mv('f0',p,0,[0,-2])});
    dmAt(3000,()=>{a.dmg('f0',TB()?'−2':'−1');a.cap('Wróg wszedł w kałużę: obrażenia na koniec fazy.')})}},dmCrush()],
  'Sierżant Przemo':()=>[dmMove(),dmLine('Pistolet','Pistolet strzela na wprost i trafia pierwszą postać: 1 DMG.',[N(DH,2,2),N(DH,2,3)],[[0,'−1']],{nolab:true,shot:N(DH,2,2),col:'#ffb070',c1:'Strzał leci prosto…',c2:'…i trafia <b>pierwszą</b> postać: 1 DMG.'}),
-  {t:'Dron',d:'Faza I: aktywujesz drona. Faza II: wysyłasz go nad wybrane pole, a on atakuje najbliższą postać.',T:5400,run(a){const to=[1,-2],f1=[1,-3],f2=[-3,2];a.tok('h','hero',DH).tok('f0','foe',f1).tok('f1','foe',f2);
-   dmAt(300,()=>{a.tok('dr','drone',DH);a.act('dr','dmpop');a.cap('<b>Faza I:</b> aktywacja drona (cała akcja fazy).')});
-   dmAt(1700,()=>{a.mark([to],'pick');a.cap('<b>Faza II:</b> wybierasz pole, nad które leci dron.')});
+  {t:'Dron',d:'Dron to 3 akcje: dwie aktywacje (można na raty, w różnych fazach i rundach), a trzecia wysyła go nad wybrane pole – atakuje najbliższą postać za 2 DMG.',T:5400,run(a){const to=[1,-2],f1=[1,-3],f2=[-3,2];a.tok('h','hero',DH).tok('f0','foe',f1).tok('f1','foe',f2);
+   dmAt(300,()=>{a.tok('dr','drone',DH);a.act('dr','dmpop');a.cap('<b>Akcje 1 i 2:</b> składasz drona – możesz to zrobić na raty.')});
+   dmAt(1700,()=>{a.mark([to],'pick');a.cap('<b>Akcja 3:</b> wybierasz pole, nad które leci dron.')});
    dmAt(2400,()=>{a.clear();a.mv('dr',to)});
-   dmAt(3100,()=>{a.mark([f1],'hit');a.shot(to,f1,'#ff6b5b');a.dmg('f0',TB()?'−2':'−1');a.cap('Dron atakuje <b>najbliższą</b> postać: '+(TB()?2:1)+' DMG.')})}},dmCrush()]};
+   dmAt(3100,()=>{a.mark([f1],'hit');a.shot(to,f1,'#ff6b5b');a.dmg('f0','−2');a.cap('Dron atakuje <b>najbliższą</b> postać: 2 DMG.')})}},dmCrush()]};
 function demoH(){const ch=DM.ch,list=DEMOS[ch](),d=list[DM.i],r=(ROLE[ch]||[''])[0];
  let hx='';cells.forEach(c=>{const [x,y]=dmXY(c);hx+='<polygon class="dmhx" data-dk="'+c[0]+','+c[1]+'" points="'+dmHexPts()+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')"/>'});
  return '<div class="dmbox" style="--c:'+C[ch].col+'"><div class="dmhead"><img src="'+IMG[ch]+'" alt=""><div><small>'+r+'</small><b>'+ch.toUpperCase()+'</b></div><button class="dmx" data-dm="x" aria-label="Zamknij">✕</button></div>'
@@ -849,7 +849,7 @@ const TBTXT={
  'Byku':'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.',
  'Pasterz':'Zaczyna z owcą obok. Owca (1 HP): ruch, szarża 2 DMG przez całą linię. Osłania przed strzałami. 7 HP.',
  'Truchel':'Teleport na dowolne pole. Zamiast ataku kałuża trucizny (3 rundy, 2 DMG na koniec każdej fazy).',
- 'Sierżant Przemo':'Pistolet 1 DMG (jak Żyleta). Dron 2 DMG: faza I aktywacja, faza II wysłanie, atakuje najbliższą postać. 4 HP.'};
+ 'Sierżant Przemo':'Pistolet 1 DMG (jak Żyleta). Dron: 3 akcje – dwie aktywacje (można na raty), trzecia wysyła drona: 2 DMG najbliższej postaci. 4 HP.'};
 function tbTexts(){Object.keys(C).forEach(k=>{C[k].txt=(TB()&&TBTXT[k])||TBORIG[k]})}
 function tbInit(){if(!TB())return;
  const all=H?H.p:Object.values(net.pl||{});const mine=H?H.p:(net.db?[ME]:[]);
@@ -886,7 +886,8 @@ function sheepAtPhase(ph){const q=curP();if(!q)return null;let s=q.sheepr&&q.she
   else if(x.t==='smove'&&x.m&&s)s=x.m.slice();
   else if(x.t==='atk'&&x.d!==null&&s){const dd=D[x.d];let cur=s.slice();for(;;){const nq=cur[0]+dd[0],nr=cur[1]+dd[1];if(!IN(nq,nr))break;cur=[nq,nr]}s=cur}}
  return s}
-function droneAt(ph){const q=curP();if(!q)return false;let d=!!(q.dr&&q.dr[st.round]);for(let i=0;i<ph;i++){const x=st.plan[i];if(x&&x.t==='drone')d=(i===0)}return d}
+/* liczba aktywacji drona (0–2) na początku fazy ph: stan z początku rundy + akcje drona zaplanowane wcześniej (trzecia akcja = atak, licznik od zera) */
+function droneAt(ph){const q=curP();if(!q)return 0;let d=q.dr&&q.dr[st.round]?(q.dr[st.round]===true?2:+q.dr[st.round]):0;for(let i=0;i<ph;i++){const x=st.plan[i];if(x&&x.t==='drone')d=d>=2?0:d+1}return d}
 function entState(){
  const r=st.round,its=curItems(),rev=(st.scr==='rev'||st.scr==='hrev');
  if(rev&&!st.animating){let Rs=null;try{Rs=resolve(its)}catch(e){}
@@ -924,10 +925,10 @@ function winTeam(items,Rs){const al=items.filter(o=>Rs[o.id]&&Rs[o.id].eff>0),ts
 
    KOLEJNOŚĆ ROZPATRYWANIA (każda faza I, II, III; faza III tylko gdy działa Długi):
     1 ruch            – wszystkie ruchy jednocześnie (skok Byka, teleport Truchla)
-    2 przygotowanie   – ruch owcy, przywołanie owcy, aktywacja drona
+    2 przygotowanie   – ruch owcy, przywołanie owcy, aktywacja drona (1/3, 2/3 – także w różnych rundach)
     3 unik            – (faza II) unik z bonusu Refleks
     4 kolizje         – lądowanie Byka (z bonusem +1) / ścisk na wspólnym polu
-    5 dron            – (faza II) atak drona Sierżanta
+    5 dron            – trzecia akcja drona: atak 2 DMG (dowolna faza)
     6 strzał snajperski – (faza II) Żyleta po celowaniu
     7 kij pasterski
     8 ataki           – zwykłe ataki, po kolei wg kolejności graczy
@@ -966,7 +967,7 @@ const Combat=(function(){
 
  function run(I){
   const R=I.rules,L=I.fighters,round=I.round,pd=I.pushes,zone=R.zone,IN=(q,r)=>dist(q,r)<=R.br;
-  const S=L.map(x=>({id:x.id,ch:x.ch,pos:x.pos.slice(),hp:x.hp,log:[],out:false,sh:!!x.sh,shUsed:false,dmgb:!!x.dmgb,dmgbUsed:false,moved:false,cancel3:false,drone:!!x.drone,pts:{d:0,m:0},tm:x.tm||null})),ev=[],pend=[],journal=[];
+  const S=L.map(x=>({id:x.id,ch:x.ch,pos:x.pos.slice(),hp:x.hp,log:[],out:false,sh:!!x.sh,shUsed:false,dmgb:!!x.dmgb,dmgbUsed:false,moved:false,cancel3:false,drone:x.drone===true?2:(+x.drone||0),pts:{d:0,m:0},tm:x.tm||null})),ev=[],pend=[],journal=[];
   const SHP=[];L.forEach((x,i)=>{if(x.sheep)SHP.push({o:i,pos:x.sheep.slice(),alive:true})});
   const PU=(I.puddles||[]).map(p=>Object.assign({},p)),pudNew=[];
   const rnd=rng(I.seed);
@@ -983,6 +984,8 @@ const Combat=(function(){
 
   for(ph=0;ph<3;ph++){
    const planOf=i=>L[i].plan[ph]||null;
+   /* dron: 3 akcje – dwie aktywacje (w dowolnych fazach i rundach), trzecia akcja to atak */
+   const droneAtk=S.map((x,i)=>{const a=planOf(i);return !x.out&&!!a&&a.t==='drone'&&x.drone>=2});
    const act=S.map((x,i)=>!x.out&&!(ph===2&&x.cancel3)&&!!planOf(i));
    if(ph===2&&!S.some((x,i)=>act[i]&&x.ch==='Długi'))break;
    ev.push({k:'phase',ph});
@@ -1005,7 +1008,7 @@ const Combat=(function(){
    S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a)return;
     if(a.t==='smove'){const s=sheepOf(i);if(s){const f=s.pos.slice();s.pos=a.m.slice();ev.push({k:'smove',id:x.id,from:f,to:a.m.slice(),ph});J({k:'ruch owcy',id:x.id,from:f,to:a.m.slice(),by:x.id,rule:'plan gracza'})}}
     else if(a.t==='summon'&&!sheepOf(i)){SHP.push({o:i,pos:a.m.slice(),alive:true});ev.push({k:'summon',id:x.id,to:a.m.slice(),ph});J({k:'przywołanie owcy',id:x.id,to:a.m.slice(),by:x.id,rule:'plan gracza'})}
-    else if(a.t==='drone'&&ph===0&&!x.drone){x.drone=true;ev.push({k:'droneon',id:x.id,ph});J({k:'dron aktywny',id:x.id,by:x.id,rule:'plan gracza'})}});
+    else if(a.t==='drone'&&!droneAtk[i]){x.drone++;ev.push({k:'droneon',id:x.id,ph,n:x.drone});J({k:'aktywacja drona',id:x.id,by:x.id,n:x.drone,rule:'aktywacja '+x.drone+'/3'})}});
    /* 3 unik (bonus Refleks, faza II) */
    step=STEPS[2];
    if(ph===1)S.forEach((x,i)=>{const d=L[i].dg;if(!x.out&&Array.isArray(d)){const from=x.pos.slice();x.pos=d.slice();ev.push({k:'move',id:x.id,from,to:d.slice(),ph,dodge:true});J({k:'unik',id:x.id,from,to:d.slice(),by:x.id,rule:'bonus Refleks'})}});
@@ -1017,16 +1020,16 @@ const Combat=(function(){
     const fj=g.filter(i=>S[i].ch==='Byku'&&(mv[i]>=1||(planOf(i)&&planOf(i).t==='move')));
     if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i)),la=planOf(fj[0]),lx=((la&&la.bd)||S[fj[0]].dmgb)?1:0;others.forEach(i=>dmg(i,(mv[fj[0]]===2?1:3)+lx,'lądowanie Byka',fj[0]));if(others.length)useBonus(S[fj[0]]);if(R.tb&&R.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
     else if(!g.every(i=>S[i].tm&&S[i].tm===S[g[0]].tm))g.forEach(i=>dmg(i,1,'ścisk'))});
-   /* 5 dron (faza II): najbliższa postać; remis -> najwięcej HP; dalej losowo z ziarna */
+   /* 5 dron (trzecia akcja drona, dowolna faza): najbliższa postać; remis -> najwięcej HP; dalej losowo z ziarna */
    step=STEPS[4];
-   if(ph===1)S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='drone'||!x.drone)return;
+   S.forEach((x,i)=>{const a=planOf(i);if(!droneAtk[i]||x.out)return;
     const to=a.m?a.m.slice():x.pos.slice();let best=[],bd=1e9;
     S.forEach((y,j)=>{if(j===i||y.out||ally(i,j))return;const d=dist(y.pos[0]-to[0],y.pos[1]-to[1]);if(d<bd){bd=d;best=[j]}else if(d===bd)best.push(j)});
     if(best.length>1){const mh=Math.max(...best.map(j=>S[j].hp));best=best.filter(j=>S[j].hp===mh)}
     const draw=best.length>1;const tgt=best.length?best[draw?Math.floor(rnd()*best.length):0]:-1;
     if(draw)J({k:'losowanie',id:x.id,among:best.map(j=>S[j].id),pick:S[tgt].id,rule:'remis celów drona'});
-    x.drone=false;ev.push({k:'drone',id:x.id,to,target:tgt>=0?S[tgt].id:null,ph});
-    if(tgt>=0){ev.push({k:'hit',id:S[tgt].id,ph});dmg(tgt,(R.tb?2:1)+((a.bd||x.dmgb)?1:0),'dron',i);trig(x.id,'Sierżant Przemo');useBonus(x)}});
+    x.drone=0;ev.push({k:'drone',id:x.id,to,target:tgt>=0?S[tgt].id:null,ph});J({k:'atak drona',id:x.id,to,by:x.id,rule:'akcja 3/3'});
+    if(tgt>=0){ev.push({k:'hit',id:S[tgt].id,ph});dmg(tgt,2+((a.bd||x.dmgb)?1:0),'dron',i);trig(x.id,'Sierżant Przemo');useBonus(x)}});
    /* 6 strzał snajperski (faza II, po celowaniu w fazie I) */
    step=STEPS[5];
    S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='snipe'||ph!==1)return;const a0=L[i].plan[0];if(!a0||a0.t!=='aim'||a0.d==null)return;
@@ -1128,7 +1131,7 @@ const Combat=(function(){
    if(x.hp<=0){x.out=true;ev.push({k:'out',id:x.id});J({k:'eliminacja',id:x.id,hp:x.hp,rule:'HP ≤ 0 po strefie'})}});
   SHP.forEach(s=>{if(S[s.o].out)s.alive=false});
   S.sheep={};SHP.forEach(s=>{if(s.alive)S.sheep[S[s.o].id]=s.pos.slice()});
-  S.droneOn={};S.forEach(x=>{if(x.drone&&!x.out)S.droneOn[x.id]=true});
+  S.droneOn={};S.forEach(x=>{if(x.drone&&!x.out)S.droneOn[x.id]=x.drone});
   S.pudNew=pudNew;S.pudAll=PU;S.ev=ev;S.pend=pend;S.journal=journal;return S}
 
  /* czytelny opis wpisu dziennika */
@@ -1137,6 +1140,8 @@ const Combat=(function(){
   if(e.k==='shield')return 'Faza '+f+' ['+e.step+']: tarcza '+n(e.id)+' blokuje 1 punkt ('+e.cause+')';
   if(e.k==='sheep')return 'Faza '+f+' ['+e.step+']: owca gracza '+n(e.id)+' trafiona'+(e.by?' przez '+n(e.by):'')+' – zginie po rozpatrzeniu ataków';
   if(e.k==='śmierć owcy')return 'Faza '+f+': owca gracza '+n(e.id)+' ginie';
+  if(e.k==='aktywacja drona')return 'Faza '+f+': '+n(e.id)+' składa drona ('+e.n+'/3)';
+  if(e.k==='atak drona')return 'Faza '+f+' [dron]: '+n(e.id)+' wysyła drona nad pole '+e.to.join(',');
   if(e.k==='eliminacja')return 'Faza '+f+': '+n(e.id)+' odpada ('+e.rule+')';
   if(e.from&&e.to)return 'Faza '+f+' ['+e.step+']: '+e.k+' '+n(e.id)+' '+e.from.join(',')+' → '+e.to.join(',')+(e.by&&e.by!==e.id?' (sprawca: '+n(e.by)+')':'')+(e.rule?' – '+e.rule:'');
   return 'Faza '+f+' ['+e.step+']: '+e.k+' '+n(e.id)+(e.rule?' – '+e.rule:'')}
@@ -1162,7 +1167,7 @@ function resolve(items){
  const L=items.filter(o=>alive(o.q,r)).map(o=>{const q=o.q,b=q.bon,usable=!!b&&(q.bonR===undefined||q.bonR<r);
   return {id:o.id,ch:q.ch,pos:q.posr[r],hp:q.hpr&&q.hpr[r]!==undefined?q.hpr[r]:5,plan:q.plans[r],
    sh:usable&&b.k===4,refl:usable&&b.k===6,dg:(q.dg&&q.dg[r]!==undefined)?q.dg[r]:undefined,
-   sheep:(q.sheepr&&q.sheepr[r])||null,dmgb:usable&&b.k===2,drone:!!(q.dr&&q.dr[r]),tm:(isTeam()&&q.tm)||null}});
+   sheep:(q.sheepr&&q.sheepr[r])||null,dmgb:usable&&b.k===2,drone:(q.dr&&q.dr[r])?(q.dr[r]===true?2:+q.dr[r]):0,tm:(isTeam()&&q.tm)||null}});
  const PUD=[];items.forEach(o=>(o.q.pud||[]).forEach(p=>{if(p.r0<r&&r-p.r0<=2)PUD.push(p)}));
  const pd={};items.forEach(o=>{if(o.q.push&&o.q.push[r])pd[o.id]=o.q.push[r]});
  const SS=sim(L,r,pd,PUD),out={};
@@ -1195,13 +1200,13 @@ function actDefs(ch,ph){
  if(ch==='Byku')return [{t:'move',l:'Skok'},{t:'atk',l:'Szarża',dis:ph<1}];
  if(ch==='Pasterz'){const s=sheepAtPhase(ph);return [{t:'move',l:'Ruch'},{t:'smove',l:'Ruch owcy',dis:!s},{t:'summon',l:'Przywołaj',dis:!!s},{t:'atk',l:'Szarża owcy',dis:!s}]}
  if(ch==='Truchel')return [{t:'move',l:'Teleport'},{t:'atk',l:'Kałuża'}];
- if(ch==='Sierżant Przemo'){const on=droneAt(ph);return [{t:'move',l:'Ruch'},{t:'atk',l:'Pistolet'},{t:'drone',l:ph===0?'Dron (aktywuj)':'Dron (wyślij)',dis:ph===0?on:(ph===1?!on:true)}]}
+ if(ch==='Sierżant Przemo'){const c=droneAt(ph);return [{t:'move',l:'Ruch'},{t:'atk',l:'Pistolet'},{t:'drone',l:c>=2?'Dron: atak (3/3)':'Dron: aktywuj ('+(c+1)+'/3)'}]}
  return [{t:'move',l:'Ruch'},{t:'atk',l:'Atak'}]}
 function actTxt(ch,x,pos,ph){const t=x.t;
  if(t==='move')return K(...x.m)===K(...pos)?'zostaje':(ch==='Byku'?'skok → ':ch==='Truchel'?'teleport → ':'ruch → ')+x.m.join(', ');
  if(t==='smove')return 'ruch owcy → '+x.m.join(', ');
  if(t==='summon')return 'przywołuje owcę → '+x.m.join(', ');
- if(t==='drone')return ph===0?'aktywuje drona':'wysyła drona → '+(x.m?x.m.join(', '):'?');
+ if(t==='drone')return x.m?'wysyła drona → '+x.m.join(', '):'aktywuje drona';
  return (ch==='Byku'?'szarża ':ch==='Pasterz'?'szarża owcy ':ch==='Truchel'?'kałuża ':ch==='Sierżant Przemo'?'pistolet ':'atak ')+DN[x.d]}
 function planTxt(p){let pos=p.posr[st.round];return p.plans[st.round].map((x,i)=>{const t=actTxt(p.ch,x,pos,i);if(x.t==='move')pos=x.m;return 'Faza '+['I','II','III'][i]+': '+t}).join(' · ')}
 /* --- z części: ŻYLETA: STRZAŁ SNAJPERSKI (Testy) --- */
@@ -1303,7 +1308,7 @@ function pickCell(k){
 function stepperHtml(cur,tot){const N=['I','II','III'],ci=N.indexOf(cur),n=N.indexOf(tot)+1;let h='<div class="stepper"><b>FAZA</b>';for(let i=0;i<n;i++)h+='<i class="'+(i===ci?'on':(i<ci?'done':''))+'">'+N[i]+'</i>';return h+'</div>'}
 /* --- z części: NOWE POSTACIE (Pasterz, Truchel, Sierżant Przemo) + PUNKTACJA --- */
 function actBtns(pl,ph){const defs=actDefs(st.ch,ph),w=defs.length>3?'44':defs.length===3?'30':'46';return '<div class="row acts" style="--n:'+defs.length+'">'+defs.map(d=>'<button class="'+(pl.t===d.t?'on':'')+'" data-t="'+d.t+'" '+(d.dis?'disabled':'')+'>'+d.l+'</button>').join('')+'</div>'}
-function planOk(pl,ph){const t=pl.t;if(t==='move'||t==='smove'||t==='summon')return !!pl.m;if(t==='atk')return pl.d!==null;if(t==='drone')return ph===0?true:!!pl.m;return false}
+function planOk(pl,ph){const t=pl.t;if(t==='move'||t==='smove'||t==='summon')return !!pl.m;if(t==='atk')return pl.d!==null;if(t==='drone')return droneAt(ph)>=2?!!pl.m:true;return false}
 function planHint(pl,ph){const ch=st.ch;
  if(ch==='Pasterz'){if(!pl.t)return sheepAtPhase(ph)?'Owca jest już na mapie: rusz siebie, rusz owcę albo szarżuj nią.':'Wybierz akcję: ruch albo przywołanie owcy.';
   if(pl.t==='move')return 'Ruch Pasterza o 1 pole lub zostań.';
@@ -1313,18 +1318,18 @@ function planHint(pl,ph){const ch=st.ch;
  if(ch==='Truchel'){if(pl.t==='move')return 'Teleport: dotknij dowolnego pola (także zajętego).';
   if(pl.t==='atk')return pl.d===null?'Dotknij sąsiedniego pola, na którym powstanie kałuża.':'Kałuża: '+DN[pl.d]+' (trucizna przez 3 rundy).'}
  if(ch==='Sierżant Przemo'){if(pl.t==='atk')return pl.d===null?'Pistolet: dotknij sąsiedniego pola, by wybrać kierunek (1 DMG).':'Pistolet: '+DN[pl.d]+' (1 DMG, trafia pierwszą postać).';
-  if(pl.t==='drone')return ph===0?'Aktywujesz drona (to cała akcja fazy I).':'Dotknij pola, nad które lecisz dronem. Dron zaatakuje najbliższą postać.'}
+  if(pl.t==='drone'){const c=droneAt(ph);return c>=2?'Trzecia akcja drona: dotknij pola, nad które lecisz. Dron zaatakuje najbliższą postać (2 DMG).':'Składasz drona: aktywacja '+(c+1)+'/3. Resztę możesz dokończyć w kolejnych fazach albo rundach – trzecia akcja to atak.'}}
  return ''}
 function planTap(pl,q,r,from,i){const ch=st.ch,ph=st.ph;
  if(pl.t==='move'){if(ch==='Truchel'){pl.m=[q,r];return}if(i>=0||(q===from[0]&&r===from[1])||(ch==='Byku'&&dist(q-from[0],r-from[1])<=(TB()&&ph>0?1:2)))pl.m=[q,r];return}
  if(pl.t==='atk'){if(ch==='Pasterz'){const s=sheepAtPhase(ph);if(!s)return;const j=D.findIndex(([a,b])=>s[0]+a===q&&s[1]+b===r);if(j>=0)pl.d=j;return}if(i>=0)pl.d=i;return}
  if(pl.t==='smove'){const s=sheepAtPhase(ph);if(s&&dist(q-s[0],r-s[1])<=1)pl.m=[q,r];return}
  if(pl.t==='summon'){if(i>=0)pl.m=[q,r];return}
- if(pl.t==='drone'&&ph>=1)pl.m=[q,r]}
+ if(pl.t==='drone'&&droneAt(ph)>=2)pl.m=[q,r]}
 function extraHL(hl,pl,from,ph){
  const ch=st.ch,OK={fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)'},PUR='color-mix(in srgb,#b36cff 26%,transparent)',SEL='color-mix(in srgb,#b36cff 55%,transparent)';
  if(ch==='Truchel'&&pl.t==='move'){cells.forEach(([q,r])=>{hl[K(q,r)]={fill:PUR}});if(pl.m)hl[K(...pl.m)]={fill:SEL,stroke:'var(--ink)',t:'→'};return}
- if(ch==='Sierżant Przemo'&&pl.t==='drone'&&ph>=1){cells.forEach(([q,r])=>{hl[K(q,r)]={fill:PUR}});if(pl.m)hl[K(...pl.m)]={fill:SEL,stroke:'var(--ink)',t:'✈'};return}
+ if(ch==='Sierżant Przemo'&&pl.t==='drone'&&droneAt(ph)>=2){cells.forEach(([q,r])=>{hl[K(q,r)]={fill:PUR}});if(pl.m)hl[K(...pl.m)]={fill:SEL,stroke:'var(--ink)',t:'✈'};return}
  if(ch==='Pasterz'){const s=sheepAtPhase(ph);
   if(pl.t==='summon'){nbCells(from).forEach(c=>{hl[K(...c)]=Object.assign({},OK)});if(pl.m)hl[K(...pl.m)]={fill:'color-mix(in srgb,var(--ok) 55%,transparent)',stroke:'var(--ink)',t:'O'}}
   else if(pl.t==='smove'&&s){nbCells(s).concat([s]).forEach(c=>{hl[K(...c)]=Object.assign({},OK)});if(pl.m)hl[K(...pl.m)]={fill:'color-mix(in srgb,var(--ok) 55%,transparent)',stroke:'var(--ink)',t:'O'}}
@@ -1773,7 +1778,7 @@ async function runAnim(){
    else if(e.k==='smove'){const a=cellC(e.from),c=cellC(e.to);capSet(nmOf(e.id)+': ruch owcy');await tween(520,t=>{const k=EASE(t);shPos(e.id,a[0]+(c[0]-a[0])*k,a[1]+(c[1]-a[1])*k-Math.sin(Math.PI*k)*26)});shPos(e.id,c[0],c[1]);await wait(150)}
    else if(e.k==='scharge'){if(e.none){capSet('Brak owcy do szarży');await wait(300)}else{const a=cellC(e.from),c=cellC(e.to);capSet(nmOf(e.id)+': szarża owcy!');cam([(a[0]+c[0])/2,(a[1]+c[1])/2],1.2);await tween(Math.max(420,200*Math.max(1,e.steps)),t=>{const k=EASE(t);shPos(e.id,a[0]+(c[0]-a[0])*k,a[1]+(c[1]-a[1])*k)});shPos(e.id,c[0],c[1]);if(e.hit){burst(c[0],c[1]-30,'#ffffff',10);shakeStage(8)}if(e.back){await wait(220);capSet(nmOf(e.id)+': pudło, owca wraca');await tween(Math.max(380,150*Math.max(1,e.steps)),t=>{const k=EASE(t);shPos(e.id,c[0]+(a[0]-c[0])*k,c[1]+(a[1]-c[1])*k-Math.sin(Math.PI*k)*18)});shPos(e.id,a[0],a[1])}await wait(e.hit?250:400)}}
    else if(e.k==='sheephit'){const c=cellC(e.pos);burst(c[0],c[1]-20,'#ffffff',12);const s=document.getElementById('sh-'+e.id);if(s)s.remove();ovAdd('<g transform="translate('+c[0]+','+(c[1]-80)+')"><text class="fl big">OWCA!</text></g>');capSet('Owca '+nmOf(e.id)+' zginęła');await wait(850)}
-   else if(e.k==='droneon'){const p=st.curPos[e.id]||[0,0];exAdd(droneEl(e.id,p));capSet(nmOf(e.id)+' aktywuje drona');burst(p[0],p[1]-80,'#cfd3da',8);await wait(650)}
+   else if(e.k==='droneon'){const p=st.curPos[e.id]||[0,0];exAdd(droneEl(e.id,p));capSet(nmOf(e.id)+' składa drona'+(e.n?' ('+e.n+'/3)':''));burst(p[0],p[1]-80,'#cfd3da',8);await wait(650)}
    else if(e.k==='drone'){const d=document.getElementById('dr-'+e.id),p=st.curPos[e.id]||[0,0],to=cellC(e.to);capSet(nmOf(e.id)+' wysyła drona');cam(to,1.15);
     const sx=p[0],sy=p[1]-76,ex=to[0],ey=to[1]-60;
     await tween(750,t=>{const k=EASE(t);if(d)d.setAttribute('transform','translate('+(sx+(ex-sx)*k).toFixed(1)+','+(sy+(ey-sy)*k-Math.sin(Math.PI*k)*40).toFixed(1)+') scale('+depthScale(ey).toFixed(3)+')')});
@@ -1985,7 +1990,7 @@ Object.assign(ART,{"Pasterz": '', "Truchel": '', "Sierżant Przemo": ''});
 Object.assign(C,{
  'Pasterz':{col:'#c8a26b',txt:'Owca (1 HP): przywołaj, poruszaj, szarżuj nią (2 DMG). Osłania przed strzałami. Jedna owca na planszy.'},
  'Truchel':{col:'#19b5a5',txt:'Teleport na dowolne pole. Zamiast ataku tworzy kałużę trucizny (3 rundy, obrażenia na koniec każdej fazy).'},
- 'Sierżant Przemo':{col:'#d9544f',txt:'Pistolet 1 DMG (jak Żyleta). Dron: faza I aktywacja, faza II wysłanie, atakuje najbliższą postać.'}});
+ 'Sierżant Przemo':{col:'#d9544f',txt:'Pistolet 1 DMG (jak Żyleta). Dron: 3 akcje – dwie aktywacje (można na raty, w różnych fazach i rundach), trzecia akcja wysyła drona: 2 DMG najbliższej postaci.'}});
 Object.assign(INI,{P:'Pasterz',T:'Truchel',S:'Sierżant Przemo'});
 
 /* --- zapis stanu na kolejną rundę --- */
@@ -1996,7 +2001,7 @@ document.addEventListener('click',function(e){
  items.forEach(o=>{if(!mine(o.id))return;const q=o.q;
   q.sheepr=q.sheepr||{};q.dr=q.dr||{};q.pts=q.pts||{};
   q.sheepr[r+1]=(fin._sheep&&fin._sheep[o.id])?fin._sheep[o.id].slice():null;
-  q.dr[r+1]=!!(fin._drone&&fin._drone[o.id]);
+  q.dr[r+1]=(fin._drone&&fin._drone[o.id])||0;
   const x=fin[o.id];if(x&&x.pts)q.pts[r]={d:x.pts.d,m:x.pts.m};
   (fin._pudNew||[]).forEach(p=>{if(p.o===o.id){q.pud=q.pud||[];q.pud.push({k:p.k,o:p.o,r0:p.r0,b:p.b})}})});
  if(!H)save();},true);
@@ -3446,7 +3451,7 @@ const Bots=(function(){
   /* start: pola na krawędzi, rozłożone równomiernie */
   const ring=cells.filter(c=>dist(c,[0,0])===BR);const off=ri(ring.length);
   const P=chars.map((ch,i)=>({id:'p'+i,ch,strat:(cfg.strats&&cfg.strats[i])||'agresywny',pos:ring[(off+Math.floor(i*ring.length/n))%ring.length].slice(),hp:maxHp(ch,mode),max:maxHp(ch,mode),
-   alive:true,sheep:null,drone:false,stat:{dealt:0,taken:0,attacks:0,hits:0,abil:{},elim:null}}));
+   alive:true,sheep:null,drone:0,stat:{dealt:0,taken:0,attacks:0,hits:0,abil:{},elim:null}}));
   let puddles=[],round=1;const MAXR=40;
   const rules=r=>({tb,pnb:tb,zone:zoneR(r),br:BR,selfLand:false,zylR:9,zyl2:2});
   const enemies=me=>P.filter(o=>o.alive&&o!==me);
@@ -3464,7 +3469,7 @@ const Bots=(function(){
    if(me.ch==='Byku'&&e&&K(e.pos)===K(c))return (strat==='ostrożny'?2:3.2)+zp;
    if(strat==='ostrożny')return zp+(d>=2&&d<=3?0.6:d<2?-0.8:0.2)-dist(c,[0,0])*0.05;
    return zp-d*0.35}
-  function plan(me){const pl=[];let from=me.pos.slice();const strat=me.strat;
+  function plan(me){const pl=[];let from=me.pos.slice();const strat=me.strat;me._dc=me.drone||0;
    for(let ph=0;ph<nPh(me.ch);ph++){
     const opts=[];
     const mv=moves(me,from,ph);
@@ -3473,13 +3478,13 @@ const Bots=(function(){
     if(me.ch==='Pasterz'){
      if(!me.sheep){const e=nearest(me,from);const nb=D.map(d=>[from[0]+d[0],from[1]+d[1]]).filter(IN);if(nb.length){const m=nb.sort((a,b)=>(e?dist(a,e.pos)-dist(b,e.pos):0))[0];opts.push({a:{t:'summon',m,d:null},v:1.2})}}
      else{for(let d=0;d<6;d++){let c=me.sheep.slice(),v=0;for(;;){c=[c[0]+D[d][0],c[1]+D[d][1]];if(!IN(c))break;enemies(me).forEach(o=>guess(o,strat).forEach(([p,w])=>{if(K(p)===K(c))v+=w*(tb?2:1)}))}if(v>0)opts.push({a:{t:'atk',m:null,d},v})}}}
-    else if(me.ch==='Sierżant Przemo'&&!me._dr&&ph===0&&!me.drone){opts.push({a:{t:'drone',m:null,d:null},v:1.1})}
-    else if(me.ch==='Sierżant Przemo'&&(me.drone||me._dr)&&ph===1){const e=nearest(me,from);if(e)opts.push({a:{t:'drone',m:e.pos.slice(),d:null},v:1.5})}
+    /* dron: dwie aktywacje (na raty), trzecia akcja = atak 2 DMG */
+    else if(me.ch==='Sierżant Przemo'){const c=me._dc;if(c<2)opts.push({a:{t:'drone',m:null,d:null},v:0.75});else{const e=nearest(me,from);if(e)opts.push({a:{t:'drone',m:e.pos.slice(),d:null},v:2.2})}}
     if(me.ch!=='Pasterz')for(let d=0;d<6;d++){const v=atkValue(me,from,d,ph,strat);if(v>0)opts.push({a:{t:'atk',m:null,d},v:v*(strat==='ostrożny'?0.9:1.1)})}
     opts.sort((a,b)=>b.v-a.v);const best=opts.filter(o=>o.v>=opts[0].v-1e-9);const ch=pick(best).a;
-    if(ch.t==='drone'&&ph===0)me._dr=true;
+    if(ch.t==='drone')me._dc=me._dc>=2?0:me._dc+1;
     pl.push(ch);if(ch.t==='move')from=ch.m}
-   me._dr=false;return pl}
+   return pl}
   const rounds=[];
   while(round<=MAXR){const live=P.filter(o=>o.alive);if(live.length<=1)break;
    const fighters=live.map(o=>({id:o.id,ch:o.ch,pos:o.pos.slice(),hp:o.hp,plan:plan(o),sh:false,dmgb:false,drone:o.drone,sheep:o.sheep,dg:undefined,tm:null}));
@@ -3492,11 +3497,11 @@ const Bots=(function(){
    /* statystyki rundy */
    S.forEach(x=>{const o=P.find(p=>p.id===x.id);o.stat.dealt+=x.pts.d;o.stat.taken+=Math.max(0,o.hp-Math.max(0,x.hp))});
    S.ev.forEach(e=>{const o=P.find(p=>p.id===e.id);if(!o)return;if(['atk','charge','scharge','drone'].includes(e.k)&&!e.none){o.stat.attacks++;if(e.hit||e.target)o.stat.hits++}});
-   S.journal.forEach(e=>{const o=P.find(p=>p.id===e.id);if(!o)return;const A={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'dron aktywny':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
+   S.journal.forEach(e=>{const o=P.find(p=>p.id===e.id);if(!o)return;const A={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'aktywacja drona':1,'atak drona':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
     if(A[e.k])o.stat.abil[e.k]=(o.stat.abil[e.k]||0)+1;
     if(e.k==='przesunięcie'&&e.by){const q=P.find(p=>p.id===e.by);if(q)q.stat.abil['manipulacja']=(q.stat.abil['manipulacja']||0)+1}});
    S.ev.forEach(e=>{if(e.k==='atk'&&e.snipe){const o=P.find(p=>p.id===e.id);o.stat.abil['strzał snajperski']=(o.stat.abil['strzał snajperski']||0)+1}});
-   S.forEach(x=>{const o=P.find(p=>p.id===x.id);o.hp=Math.max(0,x.hp);o.pos=x.pos.slice();o.sheep=(S.sheep&&S.sheep[x.id])||null;o.drone=!!(S.droneOn&&S.droneOn[x.id]);
+   S.forEach(x=>{const o=P.find(p=>p.id===x.id);o.hp=Math.max(0,x.hp);o.pos=x.pos.slice();o.sheep=(S.sheep&&S.sheep[x.id])||null;o.drone=(S.droneOn&&S.droneOn[x.id])||0;
     if(x.out&&o.alive){o.alive=false;const last=S.journal.filter(e=>e.k==='dmg'&&e.id===x.id).pop();const by=last&&last.by?P.find(p=>p.id===last.by):null;o.stat.elim={round,cause:last?last.cause:'?',by:by?by.ch:null}}});
    puddles=puddles.concat(S.pudNew||[]);rounds.push(round);round++}
   const alive=P.filter(o=>o.alive);const winner=alive.length===1?alive[0]:null;
@@ -3520,7 +3525,7 @@ const BalanceLog=(function(){
  let mem=null;const all=()=>mem||(mem=load());
  const add=g=>{all().push(g);if(mem.length>MAX)mem=mem.slice(-MAX);store(mem)};
  const clear=src=>{mem=all().filter(g=>src&&g.src!==src);store(mem)};
- const ABIL={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'dron aktywny':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
+ const ABIL={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'aktywacja drona':1,'atak drona':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
 
  /* ---------- zapis prawdziwych partii (z ekranu wyników rundy) ---------- */
  let CUR=null;

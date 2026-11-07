@@ -2,7 +2,7 @@
 Object.assign(C,{
  'Pasterz':{col:'#c8a26b',txt:'Owca (1 HP): przywołaj, poruszaj, szarżuj nią (2 DMG). Osłania przed strzałami. Jedna owca na planszy.'},
  'Truchel':{col:'#19b5a5',txt:'Teleport na dowolne pole. Zamiast ataku tworzy kałużę trucizny (3 rundy, obrażenia na koniec każdej fazy).'},
- 'Sierżant Przemo':{col:'#d9544f',txt:'Pistolet 1 DMG (jak Żyleta). Dron: faza I aktywacja, faza II wysłanie, atakuje najbliższą postać.'}});
+ 'Sierżant Przemo':{col:'#d9544f',txt:'Pistolet 1 DMG (jak Żyleta). Dron: 3 akcje – dwie aktywacje (można na raty, w różnych fazach i rundach), trzecia akcja wysyła drona: 2 DMG najbliższej postaci.'}});
 Object.assign(INI,{P:'Pasterz',T:'Truchel',S:'Sierżant Przemo'});
 
 /* --- zapis stanu na kolejną rundę --- */
@@ -13,7 +13,7 @@ document.addEventListener('click',function(e){
  items.forEach(o=>{if(!mine(o.id))return;const q=o.q;
   q.sheepr=q.sheepr||{};q.dr=q.dr||{};q.pts=q.pts||{};
   q.sheepr[r+1]=(fin._sheep&&fin._sheep[o.id])?fin._sheep[o.id].slice():null;
-  q.dr[r+1]=!!(fin._drone&&fin._drone[o.id]);
+  q.dr[r+1]=(fin._drone&&fin._drone[o.id])||0;
   const x=fin[o.id];if(x&&x.pts)q.pts[r]={d:x.pts.d,m:x.pts.m};
   (fin._pudNew||[]).forEach(p=>{if(p.o===o.id){q.pud=q.pud||[];q.pud.push({k:p.k,o:p.o,r0:p.r0,b:p.b})}})});
  if(!H)save();},true);

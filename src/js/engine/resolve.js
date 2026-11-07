@@ -18,7 +18,7 @@ function resolve(items){
  const L=items.filter(o=>alive(o.q,r)).map(o=>{const q=o.q,b=q.bon,usable=!!b&&(q.bonR===undefined||q.bonR<r);
   return {id:o.id,ch:q.ch,pos:q.posr[r],hp:q.hpr&&q.hpr[r]!==undefined?q.hpr[r]:5,plan:q.plans[r],
    sh:usable&&b.k===4,refl:usable&&b.k===6,dg:(q.dg&&q.dg[r]!==undefined)?q.dg[r]:undefined,
-   sheep:(q.sheepr&&q.sheepr[r])||null,dmgb:usable&&b.k===2,drone:!!(q.dr&&q.dr[r]),tm:(isTeam()&&q.tm)||null}});
+   sheep:(q.sheepr&&q.sheepr[r])||null,dmgb:usable&&b.k===2,drone:(q.dr&&q.dr[r])?(q.dr[r]===true?2:+q.dr[r]):0,tm:(isTeam()&&q.tm)||null}});
  const PUD=[];items.forEach(o=>(o.q.pud||[]).forEach(p=>{if(p.r0<r&&r-p.r0<=2)PUD.push(p)}));
  const pd={};items.forEach(o=>{if(o.q.push&&o.q.push[r])pd[o.id]=o.q.push[r]});
  const SS=sim(L,r,pd,PUD),out={};

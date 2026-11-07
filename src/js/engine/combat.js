@@ -15,10 +15,10 @@
 
    KOLEJNOŚĆ ROZPATRYWANIA (każda faza I, II, III; faza III tylko gdy działa Długi):
     1 ruch            – wszystkie ruchy jednocześnie (skok Byka, teleport Truchla)
-    2 przygotowanie   – ruch owcy, przywołanie owcy, aktywacja drona
+    2 przygotowanie   – ruch owcy, przywołanie owcy, aktywacja drona (1/3, 2/3 – także w różnych rundach)
     3 unik            – (faza II) unik z bonusu Refleks
     4 kolizje         – lądowanie Byka (z bonusem +1) / ścisk na wspólnym polu
-    5 dron            – (faza II) atak drona Sierżanta
+    5 dron            – trzecia akcja drona: atak 2 DMG (dowolna faza)
     6 strzał snajperski – (faza II) Żyleta po celowaniu
     7 kij pasterski
     8 ataki           – zwykłe ataki, po kolei wg kolejności graczy
@@ -57,7 +57,7 @@ const Combat=(function(){
 
  function run(I){
   const R=I.rules,L=I.fighters,round=I.round,pd=I.pushes,zone=R.zone,IN=(q,r)=>dist(q,r)<=R.br;
-  const S=L.map(x=>({id:x.id,ch:x.ch,pos:x.pos.slice(),hp:x.hp,log:[],out:false,sh:!!x.sh,shUsed:false,dmgb:!!x.dmgb,dmgbUsed:false,moved:false,cancel3:false,drone:!!x.drone,pts:{d:0,m:0},tm:x.tm||null})),ev=[],pend=[],journal=[];
+  const S=L.map(x=>({id:x.id,ch:x.ch,pos:x.pos.slice(),hp:x.hp,log:[],out:false,sh:!!x.sh,shUsed:false,dmgb:!!x.dmgb,dmgbUsed:false,moved:false,cancel3:false,drone:x.drone===true?2:(+x.drone||0),pts:{d:0,m:0},tm:x.tm||null})),ev=[],pend=[],journal=[];
   const SHP=[];L.forEach((x,i)=>{if(x.sheep)SHP.push({o:i,pos:x.sheep.slice(),alive:true})});
   const PU=(I.puddles||[]).map(p=>Object.assign({},p)),pudNew=[];
   const rnd=rng(I.seed);
@@ -74,6 +74,8 @@ const Combat=(function(){
 
   for(ph=0;ph<3;ph++){
    const planOf=i=>L[i].plan[ph]||null;
+   /* dron: 3 akcje – dwie aktywacje (w dowolnych fazach i rundach), trzecia akcja to atak */
+   const droneAtk=S.map((x,i)=>{const a=planOf(i);return !x.out&&!!a&&a.t==='drone'&&x.drone>=2});
    const act=S.map((x,i)=>!x.out&&!(ph===2&&x.cancel3)&&!!planOf(i));
    if(ph===2&&!S.some((x,i)=>act[i]&&x.ch==='Długi'))break;
    ev.push({k:'phase',ph});
@@ -96,7 +98,7 @@ const Combat=(function(){
    S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a)return;
     if(a.t==='smove'){const s=sheepOf(i);if(s){const f=s.pos.slice();s.pos=a.m.slice();ev.push({k:'smove',id:x.id,from:f,to:a.m.slice(),ph});J({k:'ruch owcy',id:x.id,from:f,to:a.m.slice(),by:x.id,rule:'plan gracza'})}}
     else if(a.t==='summon'&&!sheepOf(i)){SHP.push({o:i,pos:a.m.slice(),alive:true});ev.push({k:'summon',id:x.id,to:a.m.slice(),ph});J({k:'przywołanie owcy',id:x.id,to:a.m.slice(),by:x.id,rule:'plan gracza'})}
-    else if(a.t==='drone'&&ph===0&&!x.drone){x.drone=true;ev.push({k:'droneon',id:x.id,ph});J({k:'dron aktywny',id:x.id,by:x.id,rule:'plan gracza'})}});
+    else if(a.t==='drone'&&!droneAtk[i]){x.drone++;ev.push({k:'droneon',id:x.id,ph,n:x.drone});J({k:'aktywacja drona',id:x.id,by:x.id,n:x.drone,rule:'aktywacja '+x.drone+'/3'})}});
    /* 3 unik (bonus Refleks, faza II) */
    step=STEPS[2];
    if(ph===1)S.forEach((x,i)=>{const d=L[i].dg;if(!x.out&&Array.isArray(d)){const from=x.pos.slice();x.pos=d.slice();ev.push({k:'move',id:x.id,from,to:d.slice(),ph,dodge:true});J({k:'unik',id:x.id,from,to:d.slice(),by:x.id,rule:'bonus Refleks'})}});
@@ -108,16 +110,16 @@ const Combat=(function(){
     const fj=g.filter(i=>S[i].ch==='Byku'&&(mv[i]>=1||(planOf(i)&&planOf(i).t==='move')));
     if(fj.length){const others=g.filter(i=>!fj.includes(i)&&!ally(fj[0],i)),la=planOf(fj[0]),lx=((la&&la.bd)||S[fj[0]].dmgb)?1:0;others.forEach(i=>dmg(i,(mv[fj[0]]===2?1:3)+lx,'lądowanie Byka',fj[0]));if(others.length)useBonus(S[fj[0]]);if(R.tb&&R.selfLand&&others.length)fj.forEach(i=>dmg(i,1,'ścisk'));if(others.length>=2)S[fj[0]].pts.m+=others.length-1}
     else if(!g.every(i=>S[i].tm&&S[i].tm===S[g[0]].tm))g.forEach(i=>dmg(i,1,'ścisk'))});
-   /* 5 dron (faza II): najbliższa postać; remis -> najwięcej HP; dalej losowo z ziarna */
+   /* 5 dron (trzecia akcja drona, dowolna faza): najbliższa postać; remis -> najwięcej HP; dalej losowo z ziarna */
    step=STEPS[4];
-   if(ph===1)S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='drone'||!x.drone)return;
+   S.forEach((x,i)=>{const a=planOf(i);if(!droneAtk[i]||x.out)return;
     const to=a.m?a.m.slice():x.pos.slice();let best=[],bd=1e9;
     S.forEach((y,j)=>{if(j===i||y.out||ally(i,j))return;const d=dist(y.pos[0]-to[0],y.pos[1]-to[1]);if(d<bd){bd=d;best=[j]}else if(d===bd)best.push(j)});
     if(best.length>1){const mh=Math.max(...best.map(j=>S[j].hp));best=best.filter(j=>S[j].hp===mh)}
     const draw=best.length>1;const tgt=best.length?best[draw?Math.floor(rnd()*best.length):0]:-1;
     if(draw)J({k:'losowanie',id:x.id,among:best.map(j=>S[j].id),pick:S[tgt].id,rule:'remis celów drona'});
-    x.drone=false;ev.push({k:'drone',id:x.id,to,target:tgt>=0?S[tgt].id:null,ph});
-    if(tgt>=0){ev.push({k:'hit',id:S[tgt].id,ph});dmg(tgt,(R.tb?2:1)+((a.bd||x.dmgb)?1:0),'dron',i);trig(x.id,'Sierżant Przemo');useBonus(x)}});
+    x.drone=0;ev.push({k:'drone',id:x.id,to,target:tgt>=0?S[tgt].id:null,ph});J({k:'atak drona',id:x.id,to,by:x.id,rule:'akcja 3/3'});
+    if(tgt>=0){ev.push({k:'hit',id:S[tgt].id,ph});dmg(tgt,2+((a.bd||x.dmgb)?1:0),'dron',i);trig(x.id,'Sierżant Przemo');useBonus(x)}});
    /* 6 strzał snajperski (faza II, po celowaniu w fazie I) */
    step=STEPS[5];
    S.forEach((x,i)=>{const a=planOf(i);if(x.out||!a||a.t!=='snipe'||ph!==1)return;const a0=L[i].plan[0];if(!a0||a0.t!=='aim'||a0.d==null)return;
@@ -219,7 +221,7 @@ const Combat=(function(){
    if(x.hp<=0){x.out=true;ev.push({k:'out',id:x.id});J({k:'eliminacja',id:x.id,hp:x.hp,rule:'HP ≤ 0 po strefie'})}});
   SHP.forEach(s=>{if(S[s.o].out)s.alive=false});
   S.sheep={};SHP.forEach(s=>{if(s.alive)S.sheep[S[s.o].id]=s.pos.slice()});
-  S.droneOn={};S.forEach(x=>{if(x.drone&&!x.out)S.droneOn[x.id]=true});
+  S.droneOn={};S.forEach(x=>{if(x.drone&&!x.out)S.droneOn[x.id]=x.drone});
   S.pudNew=pudNew;S.pudAll=PU;S.ev=ev;S.pend=pend;S.journal=journal;return S}
 
  /* czytelny opis wpisu dziennika */
@@ -228,6 +230,8 @@ const Combat=(function(){
   if(e.k==='shield')return 'Faza '+f+' ['+e.step+']: tarcza '+n(e.id)+' blokuje 1 punkt ('+e.cause+')';
   if(e.k==='sheep')return 'Faza '+f+' ['+e.step+']: owca gracza '+n(e.id)+' trafiona'+(e.by?' przez '+n(e.by):'')+' – zginie po rozpatrzeniu ataków';
   if(e.k==='śmierć owcy')return 'Faza '+f+': owca gracza '+n(e.id)+' ginie';
+  if(e.k==='aktywacja drona')return 'Faza '+f+': '+n(e.id)+' składa drona ('+e.n+'/3)';
+  if(e.k==='atak drona')return 'Faza '+f+' [dron]: '+n(e.id)+' wysyła drona nad pole '+e.to.join(',');
   if(e.k==='eliminacja')return 'Faza '+f+': '+n(e.id)+' odpada ('+e.rule+')';
   if(e.from&&e.to)return 'Faza '+f+' ['+e.step+']: '+e.k+' '+n(e.id)+' '+e.from.join(',')+' → '+e.to.join(',')+(e.by&&e.by!==e.id?' (sprawca: '+n(e.by)+')':'')+(e.rule?' – '+e.rule:'');
   return 'Faza '+f+' ['+e.step+']: '+e.k+' '+n(e.id)+(e.rule?' – '+e.rule:'')}

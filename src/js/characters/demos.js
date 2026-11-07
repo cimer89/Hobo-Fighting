@@ -96,11 +96,11 @@ const DEMOS={
    dmAt(2300,()=>{a.mv('f0',p,0,[0,-2])});
    dmAt(3000,()=>{a.dmg('f0',TB()?'−2':'−1');a.cap('Wróg wszedł w kałużę: obrażenia na koniec fazy.')})}},dmCrush()],
  'Sierżant Przemo':()=>[dmMove(),dmLine('Pistolet','Pistolet strzela na wprost i trafia pierwszą postać: 1 DMG.',[N(DH,2,2),N(DH,2,3)],[[0,'−1']],{nolab:true,shot:N(DH,2,2),col:'#ffb070',c1:'Strzał leci prosto…',c2:'…i trafia <b>pierwszą</b> postać: 1 DMG.'}),
-  {t:'Dron',d:'Faza I: aktywujesz drona. Faza II: wysyłasz go nad wybrane pole, a on atakuje najbliższą postać.',T:5400,run(a){const to=[1,-2],f1=[1,-3],f2=[-3,2];a.tok('h','hero',DH).tok('f0','foe',f1).tok('f1','foe',f2);
-   dmAt(300,()=>{a.tok('dr','drone',DH);a.act('dr','dmpop');a.cap('<b>Faza I:</b> aktywacja drona (cała akcja fazy).')});
-   dmAt(1700,()=>{a.mark([to],'pick');a.cap('<b>Faza II:</b> wybierasz pole, nad które leci dron.')});
+  {t:'Dron',d:'Dron to 3 akcje: dwie aktywacje (można na raty, w różnych fazach i rundach), a trzecia wysyła go nad wybrane pole – atakuje najbliższą postać za 2 DMG.',T:5400,run(a){const to=[1,-2],f1=[1,-3],f2=[-3,2];a.tok('h','hero',DH).tok('f0','foe',f1).tok('f1','foe',f2);
+   dmAt(300,()=>{a.tok('dr','drone',DH);a.act('dr','dmpop');a.cap('<b>Akcje 1 i 2:</b> składasz drona – możesz to zrobić na raty.')});
+   dmAt(1700,()=>{a.mark([to],'pick');a.cap('<b>Akcja 3:</b> wybierasz pole, nad które leci dron.')});
    dmAt(2400,()=>{a.clear();a.mv('dr',to)});
-   dmAt(3100,()=>{a.mark([f1],'hit');a.shot(to,f1,'#ff6b5b');a.dmg('f0',TB()?'−2':'−1');a.cap('Dron atakuje <b>najbliższą</b> postać: '+(TB()?2:1)+' DMG.')})}},dmCrush()]};
+   dmAt(3100,()=>{a.mark([f1],'hit');a.shot(to,f1,'#ff6b5b');a.dmg('f0','−2');a.cap('Dron atakuje <b>najbliższą</b> postać: 2 DMG.')})}},dmCrush()]};
 function demoH(){const ch=DM.ch,list=DEMOS[ch](),d=list[DM.i],r=(ROLE[ch]||[''])[0];
  let hx='';cells.forEach(c=>{const [x,y]=dmXY(c);hx+='<polygon class="dmhx" data-dk="'+c[0]+','+c[1]+'" points="'+dmHexPts()+'" transform="translate('+x.toFixed(1)+','+y.toFixed(1)+')"/>'});
  return '<div class="dmbox" style="--c:'+C[ch].col+'"><div class="dmhead"><img src="'+IMG[ch]+'" alt=""><div><small>'+r+'</small><b>'+ch.toUpperCase()+'</b></div><button class="dmx" data-dm="x" aria-label="Zamknij">✕</button></div>'

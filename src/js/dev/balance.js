@@ -9,7 +9,7 @@ const BalanceLog=(function(){
  let mem=null;const all=()=>mem||(mem=load());
  const add=g=>{all().push(g);if(mem.length>MAX)mem=mem.slice(-MAX);store(mem)};
  const clear=src=>{mem=all().filter(g=>src&&g.src!==src);store(mem)};
- const ABIL={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'dron aktywny':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
+ const ABIL={'skok':1,'skok daleki':1,'skok w miejscu':1,'teleport':1,'przywołanie owcy':1,'ruch owcy':1,'aktywacja drona':1,'atak drona':1,'szarża':1,'szarża owcy':1,'kałuża':1,'unik':1};
 
  /* ---------- zapis prawdziwych partii (z ekranu wyników rundy) ---------- */
  let CUR=null;

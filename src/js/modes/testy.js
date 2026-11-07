@@ -13,7 +13,7 @@ const TBTXT={
  'Byku':'Skok o 1 pole albo w miejscu: lądowanie na przeciwniku = 3 DMG (także gdy ktoś wejdzie na pole Byka). Dalszy skok (o 2 pola) = 1 DMG. Szarża (faza II): na wprost do pierwszej postaci, 2 DMG i odrzucenie o 1 pole.',
  'Pasterz':'Zaczyna z owcą obok. Owca (1 HP): ruch, szarża 2 DMG przez całą linię. Osłania przed strzałami. 7 HP.',
  'Truchel':'Teleport na dowolne pole. Zamiast ataku kałuża trucizny (3 rundy, 2 DMG na koniec każdej fazy).',
- 'Sierżant Przemo':'Pistolet 1 DMG (jak Żyleta). Dron 2 DMG: faza I aktywacja, faza II wysłanie, atakuje najbliższą postać. 4 HP.'};
+ 'Sierżant Przemo':'Pistolet 1 DMG (jak Żyleta). Dron: 3 akcje – dwie aktywacje (można na raty), trzecia wysyła drona: 2 DMG najbliższej postaci. 4 HP.'};
 function tbTexts(){Object.keys(C).forEach(k=>{C[k].txt=(TB()&&TBTXT[k])||TBORIG[k]})}
 function tbInit(){if(!TB())return;
  const all=H?H.p:Object.values(net.pl||{});const mine=H?H.p:(net.db?[ME]:[]);

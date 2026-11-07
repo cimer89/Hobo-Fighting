@@ -27,7 +27,7 @@ function pickCell(k){
 function stepperHtml(cur,tot){const N=['I','II','III'],ci=N.indexOf(cur),n=N.indexOf(tot)+1;let h='<div class="stepper"><b>FAZA</b>';for(let i=0;i<n;i++)h+='<i class="'+(i===ci?'on':(i<ci?'done':''))+'">'+N[i]+'</i>';return h+'</div>'}
 /* --- z części: NOWE POSTACIE (Pasterz, Truchel, Sierżant Przemo) + PUNKTACJA --- */
 function actBtns(pl,ph){const defs=actDefs(st.ch,ph),w=defs.length>3?'44':defs.length===3?'30':'46';return '<div class="row acts" style="--n:'+defs.length+'">'+defs.map(d=>'<button class="'+(pl.t===d.t?'on':'')+'" data-t="'+d.t+'" '+(d.dis?'disabled':'')+'>'+d.l+'</button>').join('')+'</div>'}
-function planOk(pl,ph){const t=pl.t;if(t==='move'||t==='smove'||t==='summon')return !!pl.m;if(t==='atk')return pl.d!==null;if(t==='drone')return ph===0?true:!!pl.m;return false}
+function planOk(pl,ph){const t=pl.t;if(t==='move'||t==='smove'||t==='summon')return !!pl.m;if(t==='atk')return pl.d!==null;if(t==='drone')return droneAt(ph)>=2?!!pl.m:true;return false}
 function planHint(pl,ph){const ch=st.ch;
  if(ch==='Pasterz'){if(!pl.t)return sheepAtPhase(ph)?'Owca jest już na mapie: rusz siebie, rusz owcę albo szarżuj nią.':'Wybierz akcję: ruch albo przywołanie owcy.';
   if(pl.t==='move')return 'Ruch Pasterza o 1 pole lub zostań.';
@@ -37,18 +37,18 @@ function planHint(pl,ph){const ch=st.ch;
  if(ch==='Truchel'){if(pl.t==='move')return 'Teleport: dotknij dowolnego pola (także zajętego).';
   if(pl.t==='atk')return pl.d===null?'Dotknij sąsiedniego pola, na którym powstanie kałuża.':'Kałuża: '+DN[pl.d]+' (trucizna przez 3 rundy).'}
  if(ch==='Sierżant Przemo'){if(pl.t==='atk')return pl.d===null?'Pistolet: dotknij sąsiedniego pola, by wybrać kierunek (1 DMG).':'Pistolet: '+DN[pl.d]+' (1 DMG, trafia pierwszą postać).';
-  if(pl.t==='drone')return ph===0?'Aktywujesz drona (to cała akcja fazy I).':'Dotknij pola, nad które lecisz dronem. Dron zaatakuje najbliższą postać.'}
+  if(pl.t==='drone'){const c=droneAt(ph);return c>=2?'Trzecia akcja drona: dotknij pola, nad które lecisz. Dron zaatakuje najbliższą postać (2 DMG).':'Składasz drona: aktywacja '+(c+1)+'/3. Resztę możesz dokończyć w kolejnych fazach albo rundach – trzecia akcja to atak.'}}
  return ''}
 function planTap(pl,q,r,from,i){const ch=st.ch,ph=st.ph;
  if(pl.t==='move'){if(ch==='Truchel'){pl.m=[q,r];return}if(i>=0||(q===from[0]&&r===from[1])||(ch==='Byku'&&dist(q-from[0],r-from[1])<=(TB()&&ph>0?1:2)))pl.m=[q,r];return}
  if(pl.t==='atk'){if(ch==='Pasterz'){const s=sheepAtPhase(ph);if(!s)return;const j=D.findIndex(([a,b])=>s[0]+a===q&&s[1]+b===r);if(j>=0)pl.d=j;return}if(i>=0)pl.d=i;return}
  if(pl.t==='smove'){const s=sheepAtPhase(ph);if(s&&dist(q-s[0],r-s[1])<=1)pl.m=[q,r];return}
  if(pl.t==='summon'){if(i>=0)pl.m=[q,r];return}
- if(pl.t==='drone'&&ph>=1)pl.m=[q,r]}
+ if(pl.t==='drone'&&droneAt(ph)>=2)pl.m=[q,r]}
 function extraHL(hl,pl,from,ph){
  const ch=st.ch,OK={fill:'color-mix(in srgb,var(--ok) 35%,transparent)',stroke:'var(--ok)'},PUR='color-mix(in srgb,#b36cff 26%,transparent)',SEL='color-mix(in srgb,#b36cff 55%,transparent)';
  if(ch==='Truchel'&&pl.t==='move'){cells.forEach(([q,r])=>{hl[K(q,r)]={fill:PUR}});if(pl.m)hl[K(...pl.m)]={fill:SEL,stroke:'var(--ink)',t:'→'};return}
- if(ch==='Sierżant Przemo'&&pl.t==='drone'&&ph>=1){cells.forEach(([q,r])=>{hl[K(q,r)]={fill:PUR}});if(pl.m)hl[K(...pl.m)]={fill:SEL,stroke:'var(--ink)',t:'✈'};return}
+ if(ch==='Sierżant Przemo'&&pl.t==='drone'&&droneAt(ph)>=2){cells.forEach(([q,r])=>{hl[K(q,r)]={fill:PUR}});if(pl.m)hl[K(...pl.m)]={fill:SEL,stroke:'var(--ink)',t:'✈'};return}
  if(ch==='Pasterz'){const s=sheepAtPhase(ph);
   if(pl.t==='summon'){nbCells(from).forEach(c=>{hl[K(...c)]=Object.assign({},OK)});if(pl.m)hl[K(...pl.m)]={fill:'color-mix(in srgb,var(--ok) 55%,transparent)',stroke:'var(--ink)',t:'O'}}
   else if(pl.t==='smove'&&s){nbCells(s).concat([s]).forEach(c=>{hl[K(...c)]=Object.assign({},OK)});if(pl.m)hl[K(...pl.m)]={fill:'color-mix(in srgb,var(--ok) 55%,transparent)',stroke:'var(--ink)',t:'O'}}

@@ -283,6 +283,10 @@ We wszystkich trybach owca zostaje na polu, na którym skończyła szarżę. Sza
 
 Po końcu gry przycisk **Menu główne** wraca do wyboru trybu bez przeładowania strony.
 
+## Sierżant Przemo: dron na 3 akcje
+
+Dron wymaga **3 akcji**: dwóch aktywacji i trzeciej, która go wysyła. Aktywacje można robić na raty, w dowolnych fazach i rundach. Można na przykład aktywować w fazach I i II, w następnej rundzie się poruszyć albo strzelić, a dopiero potem wysłać drona. Przycisk pokazuje postęp („Dron: aktywuj (1/3)”, „(2/3)”, „Dron: atak (3/3)”). Atak zadaje **2 DMG** najbliższej postaci (z bonusem +1 – 3), we wszystkich trybach. Po ataku dron trzeba składać od nowa.
+
 ## Pasterz: szarża owcy
 
 Szarża owcy zadaje **2 DMG we wszystkich trybach** (wcześniej 1 DMG w trybie klasycznym), z bonusem +1 DMG – 3. W trybie klasycznym owca nadal zatrzymuje się na pierwszej postaci, a w specjalnym i w Testach przebiega przez linię. Zderzenie owcy z szarżującym naprzeciw Bykiem też zadaje Bykowi 2 DMG.

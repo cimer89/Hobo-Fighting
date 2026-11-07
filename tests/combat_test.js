@@ -50,13 +50,20 @@ t('Truchel: kałuża nie rani samego Truchla',()=>{const S=run([F('t','Truchel',
 t('Truchel: nowa kałuża powstaje na sąsiednim polu',()=>{const S=run([F('t','Truchel',[0,0],[A(0),stay([0,0])])]);eq(S.pudNew.map(p=>p.k),['1,0'])});
 t('Testy: trucizna +1',()=>{const S=run([F('t','Truchel',[0,0],[stay([0,0]),stay([0,0])]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])],{round:2,rules:{tb:true},puddles:[{k:'1,0',o:'t',r0:1,b:0}]});eq(dmgOf(S,'a'),4)});
 
-/* --- Sierżant: dron --- */
-t('dron: aktywacja w fazie I, atak w fazie II na najbliższą postać (1 DMG)',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])]),F('b','Ciotka',[3,0],[stay([3,0]),stay([3,0])])]);eq(dmgOf(S,'a'),1);eq(dmgOf(S,'b'),0)});
-t('dron: remis odległości – cel z większym HP',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])],{hp:3}),F('b','Ciotka',[-1,0],[stay([-1,0]),stay([-1,0])],{hp:4})]);eq(by(S,'b').hp,3);eq(by(S,'a').hp,3)});
-t('dron: pełny remis – losowanie z ziarna, zapisane w dzienniku',()=>{const mk=()=>[F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])]),F('b','Ciotka',[-1,0],[stay([-1,0]),stay([-1,0])])];
+/* --- Sierżant: dron (3 akcje: dwie aktywacje na raty, trzecia = atak 2 DMG) --- */
+const DR=m=>({t:'drone',m:m||null});
+t('dron: dwie aktywacje w fazach I i II – stan przechodzi na następną rundę',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[DR(),DR()]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])]);eq(S.droneOn.s,2);eq(dmgOf(S,'a'),0)});
+t('dron: aktywacja, ruch, potem trzecia akcja atakuje (na raty przez dwie rundy)',()=>{
+ const R1=run([F('s','Sierżant Przemo',[-3,0],[DR(),M([-2,0])]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])]);eq(R1.droneOn.s,1);
+ const R2=run([F('s','Sierżant Przemo',[-2,0],[DR(),DR([0,0])],{drone:R1.droneOn.s}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])],{round:2});eq(dmgOf(R2,'a'),2);eq(R2.droneOn.s,undefined,'po ataku dron od zera')});
+t('dron: trzecia akcja w fazie I też atakuje',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[DR([0,0]),M([-2,0])],{drone:2}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])]);eq(dmgOf(S,'a'),2);eq(S.journal.find(e=>e.k==='atak drona').ph,0)});
+t('dron: najbliższa postać, 2 DMG',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[DR([0,0]),stay([-3,0])],{drone:2}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])]),F('b','Ciotka',[3,0],[stay([3,0]),stay([3,0])])]);eq(dmgOf(S,'a'),2);eq(dmgOf(S,'b'),0)});
+t('dron: remis odległości – cel z większym HP',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[DR([0,0]),stay([-3,0])],{drone:2}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])],{hp:3}),F('b','Ciotka',[-1,0],[stay([-1,0]),stay([-1,0])],{hp:4})]);eq(by(S,'b').hp,2);eq(by(S,'a').hp,3)});
+t('dron: pełny remis – losowanie z ziarna, zapisane w dzienniku',()=>{const mk=()=>[F('s','Sierżant Przemo',[-3,0],[DR([0,0]),stay([-3,0])],{drone:2}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])]),F('b','Ciotka',[-1,0],[stay([-1,0]),stay([-1,0])])];
  const S=run(mk(),{seed:'x:d:1'});const d=S.journal.find(e=>e.k==='losowanie');eq(!!d,true);eq(d.among,['a','b']);
  const hits=new Set();for(let i=0;i<40;i++){const R=run(mk(),{seed:'s'+i+':d:1'});hits.add(R.journal.find(e=>e.k==='losowanie').pick)}eq(hits.size,2,'różne ziarna dają różne wyniki losowania')});
-t('Testy: dron 2 DMG',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])],{rules:{tb:true}});eq(dmgOf(S,'a'),2)});
+t('dron: bonus +1 DMG = 3',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[DR([0,0]),stay([-3,0])],{drone:2,dmgb:true}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])]);eq(dmgOf(S,'a'),3)});
+t('dron: dawny zapis „aktywny” (true) = gotowy do ataku',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[DR([0,0]),stay([-3,0])],{drone:true}),F('a','Wiatrak',[1,0],[stay([1,0]),stay([1,0])])]);eq(dmgOf(S,'a'),2)});
 
 /* --- Pasterz i owca --- */
 t('Pasterz: przywołanie owcy',()=>{const S=run([F('p','Pasterz',[0,0],[{t:'summon',m:[1,0]},stay([0,0])])]);eq(S.sheep.p,[1,0])});
@@ -84,7 +91,7 @@ t('ataki w jednej fazie są jednoczesne: wyeliminowany w tej fazie i tak atakuje
 
 /* --- dziennik i powtarzalność --- */
 t('dziennik: każda utrata HP ma przyczynę, sprawcę i krok',()=>{const S=run([F('w','Wiatrak',[0,0],[A(0),stay([0,0])]),F('a','Długi',[1,0],[stay([1,0]),stay([1,0])])]);const e=S.journal.find(x=>x.k==='dmg');eq([e.cause,e.by,e.step,e.ph],['atak Wiatrak','w','ataki',0])});
-t('powtarzalność: ten sam stan, plany i ziarno = identyczny wynik',()=>{const mk=()=>[F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('a','Wiatrak',[1,0],[A(3),M([0,0])]),F('b','Byku',[-1,0],[M([1,0]),A(0)]),F('p','Pasterz',[0,2],[{t:'summon',m:[0,1]},A(1)])];
+t('powtarzalność: ten sam stan, plany i ziarno = identyczny wynik',()=>{const mk=()=>[F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone'}]),F('a','Wiatrak',[1,0],[A(3),M([0,0])]),F('b','Byku',[-1,0],[M([1,0]),A(0)]),F('p','Pasterz',[0,2],[{t:'summon',m:[0,1]},A(1)])];
  const ser=S=>JSON.stringify({S,ev:S.ev,j:S.journal,sheep:S.sheep});const a=ser(run(mk(),{seed:'q'})),b=ser(run(mk(),{seed:'q'}));eq(a===b,true)});
 t('wejście nie jest modyfikowane przez silnik',()=>{const f=[F('w','Wiatrak',[0,0],[A(0),stay([0,0])]),F('a','Długi',[1,0],[stay([1,0]),stay([1,0])])];const before=JSON.stringify(f);run(f);eq(JSON.stringify(f),before)});
 
@@ -103,6 +110,6 @@ t('[D5] kolizja po odrzuceniu/przesunięciu rani też sojuszników i nie daje pu
 t('[D6] Byku w owcę szarżującą naprzeciw: Byku dostaje obrażenia szarży owcy, owca ginie po atakach',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,2],[stay([0,2]),A(3)],{sheep:[0,0]})]);eq(why(S,'b'),['zderzenie z owcą<p']);eq(S.sheep.p,undefined)});
 t('[D6] Byku w owcę szarżującą w inną stronę: owca i tak wykonuje szarżę, potem ginie',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,3],[stay([0,3]),A(5)],{sheep:[0,0]}),F('a','Ciotka',[0,2],[stay([0,2]),stay([0,2])])]);eq(dmgOf(S,'b'),0);eq(dmgOf(S,'a'),2);eq(S.sheep.p,undefined)});
 t('[D6] zderzenie z owcą liczy bonus +1 Pasterza (2+1)',()=>{const S=run([F('b','Byku',[-3,0],[stay([-3,0]),A(0)]),F('p','Pasterz',[0,2],[stay([0,2]),A(3)],{sheep:[0,0],dmgb:true})]);eq(dmgOf(S,'b'),3)});
-t('[D7] dron ignoruje owce',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone'},{t:'drone',m:[0,0]}]),F('p','Pasterz',[3,0],[stay([3,0]),stay([3,0])],{sheep:[0,0]}),F('a','Wiatrak',[2,0],[stay([2,0]),stay([2,0])])]);eq(dmgOf(S,'a'),1);eq(S.sheep.p,[0,0])});
+t('[D7] dron ignoruje owce',()=>{const S=run([F('s','Sierżant Przemo',[-3,0],[{t:'drone',m:[0,0]},stay([-3,0])],{drone:2}),F('p','Pasterz',[3,0],[stay([3,0]),stay([3,0])],{sheep:[0,0]}),F('a','Wiatrak',[2,0],[stay([2,0]),stay([2,0])])]);eq(dmgOf(S,'a'),2);eq(S.sheep.p,[0,0])});
 
 console.log('testy silnika walki:',pass,'zaliczone,',fail,'niezaliczone');fails.forEach(f=>console.log('  ✗',f));process.exit(fail?1:0);

@@ -13,7 +13,8 @@ function sheepAtPhase(ph){const q=curP();if(!q)return null;let s=q.sheepr&&q.she
   else if(x.t==='smove'&&x.m&&s)s=x.m.slice();
   else if(x.t==='atk'&&x.d!==null&&s){const dd=D[x.d];let cur=s.slice();for(;;){const nq=cur[0]+dd[0],nr=cur[1]+dd[1];if(!IN(nq,nr))break;cur=[nq,nr]}s=cur}}
  return s}
-function droneAt(ph){const q=curP();if(!q)return false;let d=!!(q.dr&&q.dr[st.round]);for(let i=0;i<ph;i++){const x=st.plan[i];if(x&&x.t==='drone')d=(i===0)}return d}
+/* liczba aktywacji drona (0–2) na początku fazy ph: stan z początku rundy + akcje drona zaplanowane wcześniej (trzecia akcja = atak, licznik od zera) */
+function droneAt(ph){const q=curP();if(!q)return 0;let d=q.dr&&q.dr[st.round]?(q.dr[st.round]===true?2:+q.dr[st.round]):0;for(let i=0;i<ph;i++){const x=st.plan[i];if(x&&x.t==='drone')d=d>=2?0:d+1}return d}
 function entState(){
  const r=st.round,its=curItems(),rev=(st.scr==='rev'||st.scr==='hrev');
  if(rev&&!st.animating){let Rs=null;try{Rs=resolve(its)}catch(e){}
