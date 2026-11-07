@@ -30,5 +30,5 @@ const {chromium}=require('playwright');
  const [dl]=await Promise.all([p.waitForEvent('download'),p.tap('[data-dv="csvc"]')]);const path=await dl.path();const csv=require('fs').readFileSync(path,'utf8');
  chk('CSV postaci',csv.includes('postac;partie')&&csv.split('\n').length>=9);console.log(csv.split('\n').slice(0,3).join('\n'));
  const [dl2]=await Promise.all([p.waitForEvent('download'),p.tap('[data-dv="csvp"]')]);const csv2=require('fs').readFileSync(await dl2.path(),'utf8');chk('CSV graczy',csv2.split('\n').length>=200);
- await p.screenshot({path:process.argv[3]||'/dev/null',fullPage:false});
+ if(process.argv[3])await p.screenshot({path:process.argv[3]});
  chk('bez błędów strony',!errs.length);console.log('testy balansu:',ok,'zaliczone,',bad,'niezaliczone',errs.slice(0,3));await b.close();process.exit(bad?1:0)})().catch(e=>{console.log('FAILED',e.message);process.exit(1)});
