@@ -27,6 +27,8 @@ Na tym etapie działa już tryb na jednym telefonie.
 
 ## Część 2: Konfiguracja Firebase (pokoje online)
 
+> **Stan (7.11.2026): skonfigurowane.** Projekt `hobo-fighting-74cc3`: logowanie anonimowe, domena `cimer89.github.io`, Firestore w Warszawie (`europe-central2`), reguły z pliku `firestore.rules`. Konfiguracja jest w `src/js/online/config.js` i działa dla pokoi (klasyczny, specjalny, Testy, Bitwa baz) oraz profili i rankingu. Dokumenty pokoi są zapisywane jako tekst JSON (pole `j`), bo Firestore nie przyjmuje tablic w tablicach. Poniższa instrukcja przydaje się tylko przy zakładaniu nowego projektu.
+
 ### 2.1 Projekt i baza danych
 
 1. Wejdź na https://console.firebase.google.com i zaloguj się kontem Google.
@@ -424,7 +426,7 @@ Tryb online przesyła ruchy przez darmowy serwer ntfy.sh (zwykłe HTTPS, bez kon
 2. Pozostali na pierwszym ekranie (wybór trybu) wpisują kod i klikają **Dołącz kodem**.
 3. Pasek na dole pokazuje stan połączenia. Nikt nie musi być „gospodarzem”: każdy telefon wysyła swój stan, a pozostali go odbierają. Nie odświeżaj strony w trakcie partii.
 
-Bitwa baz działa na razie tylko na jednym telefonie. Jeśli kiedyś wpiszesz konfigurację Firebase w `FIREBASE_CONFIG`, gra użyje Firebase zamiast ntfy.sh.
+Bitwa baz online działa przez Firebase (gdy `FIREBASE_CONFIG` jest wpisany), a bez niego przez przekaźnik ntfy.sh.
 
 ## Dźwięki
 
