@@ -122,7 +122,10 @@ if(typeof module!=='undefined')module.exports=BalanceLog;
    +'<div class="note">Boty: agresywny (atakuje tam, gdzie wróg stoi), przewidujący (celuje tam, gdzie wróg może przejść), ostrożny (dystans i strefa), losowy. Składy losowane bez powtórzeń postaci. Tryb specjalny nie jest symulowany (przedmioty i bonusy).</div><div class="prog"><i id="dvProg"></i></div>';
   h+='<h3>Eksport i dane</h3><div class="f"><button data-dv="csvp">⬇ CSV: gracze w partiach</button><button data-dv="csvc">⬇ CSV: podsumowanie postaci</button><button data-dv="clrb">Usuń symulacje</button><button data-dv="clrg">Usuń prawdziwe partie</button></div><div class="note">Eksport uwzględnia bieżące filtry. Separator: średnik (Excel w polskiej wersji).</div>';
   el.innerHTML=h}
- function download(name,text){const blob=new Blob(['﻿'+text],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+ /* zapis pliku: w artefakcie Claude przez uprawnienie „downloads” (z potwierdzeniem), poza nim zwykłym linkiem */
+ async function download(name,text){try{if(window.claude&&window.claude.use){const dl=await window.claude.use('downloads');if(dl){try{await dl.save({filename:name,data:new Blob(['\ufeff'+text],{type:'text/csv;charset=utf-8'})})}catch(e){}return}}}catch(e){}
+  download0(name,text)}
+ function download0(name,text){const blob=new Blob(['﻿'+text],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
   try{navigator.clipboard&&navigator.clipboard.writeText(text).catch(()=>{})}catch(e){}}
  function simulate(){if(simRun)return;simRun=true;const el=document.getElementById('devSt');const g=k=>el.querySelector('[data-dvs="'+k+'"]').value;
   const opt={mode:g('mode'),players:+g('players'),strat:g('strat'),games:+g('games'),seed:Date.now()%1e9};let done=0;const CH=25,pr=document.getElementById('dvProg');
