@@ -42,6 +42,7 @@
   "js/online/net.js",
   "js/online/screens.js",
   "js/fx/anim.js",
+  "js/fx/particles.js",
   "js/fx/sound.js",
   "js/core/main.js",
   "js/engine/bonuses_init.js",

@@ -187,3 +187,10 @@ addClick('fx/sprites2d#1',document,e=>{const t=e.target.closest&&e.target.closes
 addClick('fx/sprites2d#2',document,e=>{const t=e.target.closest&&e.target.closest('[data-b3d]');if(!t||typeof B3D==='undefined')return;e.stopImmediatePropagation();
  const v=!B3D.enabled();B3D.setEnabled(v);t.textContent=v?'Nowa plansza: włączona':'Nowa plansza: wyłączona'},true);
 
+/* przełącznik efektów cząsteczkowych (fx/particles.js) w panelu dźwięku */
+const _sndPanel3=sndPanel;
+const pfxOn=()=>{try{return localStorage.getItem('hf_pfx')!=='0'}catch(e){return true}};
+sndPanel=function(){_sndPanel3();const el=document.getElementById('sndPanel');if(!el)return;const sm=el.querySelector('small');
+ const b=document.createElement('button');b.setAttribute('data-pfx','1');b.textContent=pfxOn()?'Efekty cząsteczkowe: włączone':'Efekty cząsteczkowe: wyłączone';if(sm)el.insertBefore(b,sm);else el.appendChild(b)};
+addClick('fx/sprites2d#3',document,e=>{const t=e.target.closest&&e.target.closest('[data-pfx]');if(!t)return;e.stopImmediatePropagation();
+ const v=!pfxOn();try{localStorage.setItem('hf_pfx',v?'1':'0')}catch(x){}if(!v)PFX.clear();t.textContent=v?'Efekty cząsteczkowe: włączone':'Efekty cząsteczkowe: wyłączone';if(v)PFX.play('dice',0,-40)},true);

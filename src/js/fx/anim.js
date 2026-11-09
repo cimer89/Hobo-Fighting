@@ -26,7 +26,7 @@ async function runAnim(){
  try{
   await wait(350);
   for(let i=0;i<ev.length;i++){
-   const e=ev[i];try{S2D.ev(e)}catch(_){}if(st.skipReq)break;ovSet('');
+   const e=ev[i];try{S2D.ev(e)}catch(_){}try{PFX.ev(e)}catch(_){}if(st.skipReq)break;ovSet('');
    if(e.k==='phase'){cam(null,1);phaseBanner(['FAZA I','FAZA II','FAZA III'][e.ph]);capSet(['Faza I','Faza II','Faza III'][e.ph]);await wait(1100)}
    else if(e.k==='move'&&e.tele){
     const t=document.getElementById('tk-'+e.id),a=cellC(e.from),c=cellC(e.to);capSet(nmOf(e.id)+' teleportuje się');burst(a[0],a[1]-30,'#b36cff',10);
@@ -34,7 +34,7 @@ async function runAnim(){
     tokMove(e.id,c[0],c[1]);st.logPos[e.id]=e.to.slice();burst(c[0],c[1]-30,'#b36cff',10);
     if(t)t.animate([{opacity:0},{opacity:1}],{duration:260,fill:'forwards'});await wait(360)}
    else if(e.k==='move'){
-    const b=[e];while(ev[i+1]&&ev[i+1].k==='move'&&ev[i+1].ph===e.ph&&!!ev[i+1].dodge===!!e.dodge)b.push(ev[++i]);
+    const b=[e];while(ev[i+1]&&ev[i+1].k==='move'&&ev[i+1].ph===e.ph&&!!ev[i+1].dodge===!!e.dodge)b.push(ev[++i]);b.slice(1).forEach(x=>{try{PFX.ev(x)}catch(_){}});
     capSet(b.length>1?'Ruchy':nmOf(e.id)+(e.dodge?' robi unik':(e.jump?' skacze':' rusza się')));cam(null,1);
     b.forEach(m=>{const a=cellC(m.from);burst(a[0],a[1]+22,'#c9b58a',5)});
     await tween(640,t=>{const k=EASE(t);b.forEach(m=>{const a=cellC(m.from),c=cellC(m.to);tokMove(m.id,a[0]+(c[0]-a[0])*k,a[1]+(c[1]-a[1])*k);hopSet(m.id,Math.sin(Math.PI*k)*(m.far?1.9:1))})});b.forEach(m=>hopSet(m.id,0));
@@ -49,7 +49,7 @@ async function runAnim(){
     if(e.hit){burst(endc[0],endc[1]-34,C[e.ch].col,11);await wait(240)}
     else{ovAdd('<g transform="translate('+endc[0]+','+(endc[1]-18)+')"><text class="fl miss big">PUDŁO</text></g>');await wait(800)}}
    else if(e.k==='dmg'){
-    const b=[e];while(ev[i+1]&&ev[i+1].k==='dmg'&&ev[i+1].ph===e.ph&&ev[i+1].w===e.w)b.push(ev[++i]);
+    const b=[e];while(ev[i+1]&&ev[i+1].k==='dmg'&&ev[i+1].ph===e.ph&&ev[i+1].w===e.w)b.push(ev[++i]);b.slice(1).forEach(x=>{try{PFX.ev(x)}catch(_){}});
     await wait(90);
     let h='';b.forEach(d=>{const p=st.curPos[d.id]||[0,0];h+='<g transform="translate('+p[0]+','+(p[1]-150)+')"><text class="fl big">−'+d.n+'</text></g>'});
     ovSet(h);shakeStage(9);
