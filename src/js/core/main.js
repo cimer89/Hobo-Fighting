@@ -37,7 +37,16 @@ addClick('core/main',document,e=>{
  render();
 });
 render();
-window.addEventListener('resize',()=>render());
+/* Telefon: otwarcie klawiatury zmienia wysokość okna (resize). Przebudowa ekranu w tym momencie
+   usuwała pole tekstowe (np. kod pokoju) i klawiatura się chowała. Nie przebudowujemy ekranu, gdy pisze się
+   w polu tekstowym, a render() przywraca fokus i treść pola, gdy ekran odświeży się z innego powodu. */
+function typing(){const a=document.activeElement;return !!(a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&!/^(range|checkbox|radio|button|submit)$/i.test(a.type))))}
+{const _r=render;render=function(){const a=typing()?document.activeElement:null,id=a&&a.id,v=a&&a.value,s0=a&&a.selectionStart,s1=a&&a.selectionEnd;
+ const out=_r.apply(this,arguments);
+ if(id){const n=document.getElementById(id);if(n&&n!==a){n.value=v;try{n.focus({preventScroll:true});n.setSelectionRange(s0,s1)}catch(e){}}}
+ return out}}
+let lastVW=window.innerWidth;
+window.addEventListener('resize',()=>{const w=window.innerWidth;if(typing()&&Math.abs(w-lastVW)<2)return;lastVW=w;render()});
 //@@if github
 initNet();
 //@@else
