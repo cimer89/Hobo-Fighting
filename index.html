@@ -1684,7 +1684,7 @@ function goMenu(){
    Plan i sól wysyła dopiero, gdy wszyscy żywi gracze zapisali swoje skróty.
    Skróty innych graczy są „zamrażane” w chwili, gdy wszyscy się zobowiązali; ujawniony plan musi do nich pasować,
    inaczej gracz jest oznaczany jako podejrzany (zmiana planu po zobaczeniu cudzych). */
-const GAME_VERSION='ada32be1c8';
+const GAME_VERSION='753a1fbdc2';
 const Commit=(function(){
  const ok=!!(window.crypto&&crypto.subtle&&window.TextEncoder);
  const hex=a=>[...new Uint8Array(a)].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -2132,12 +2132,8 @@ addClick('core/main',document,e=>{
 render();
 /* Telefon: otwarcie klawiatury zmienia wysokość okna (resize). Przebudowa ekranu w tym momencie
    usuwała pole tekstowe (np. kod pokoju) i klawiatura się chowała. Nie przebudowujemy ekranu, gdy pisze się
-   w polu tekstowym, a render() przywraca fokus i treść pola, gdy ekran odświeży się z innego powodu. */
+   w polu tekstowym; fokus i treść pola przy innych odświeżeniach pilnuje warstwa ui/focus_keep.js. */
 function typing(){const a=document.activeElement;return !!(a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&!/^(range|checkbox|radio|button|submit)$/i.test(a.type))))}
-{const _r=render;render=function(){const a=typing()?document.activeElement:null,id=a&&a.id,v=a&&a.value,s0=a&&a.selectionStart,s1=a&&a.selectionEnd;
- const out=_r.apply(this,arguments);
- if(id){const n=document.getElementById(id);if(n&&n!==a){n.value=v;try{n.focus({preventScroll:true});n.setSelectionRange(s0,s1)}catch(e){}}}
- return out}}
 let lastVW=window.innerWidth;
 window.addEventListener('resize',()=>{const w=window.innerWidth;if(typing()&&Math.abs(w-lastVW)<2)return;lastVW=w;render()});
 initNet();
@@ -4284,6 +4280,14 @@ addRender('online/fair_bar',_r=>function(){_r.apply(this,arguments);try{
  if(!msgs.length)return;const d=document.createElement('div');d.id='fairBar';d.className='err';d.textContent=msgs.join(' ');
  d.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:9999;background:#7a1f1f;color:#fff;padding:8px 10px;border-radius:8px;font:13px/1.35 system-ui,sans-serif;box-shadow:0 2px 8px #0008';
  document.body.appendChild(d)}catch(e){}});
+/* ===================== Fokus pól tekstowych ===================== */
+/* Zewnętrzna warstwa renderu (ostatnia w manifeście): gdy ekran przebuduje się w trakcie pisania (np. sygnał z serwera,
+   odświeżenie lobby), nowe pole o tym samym id dostaje z powrotem treść, kursor i fokus – klawiatura telefonu się nie chowa. */
+addRender('ui/focus_keep',inner=>function(){
+ const a=typing()?document.activeElement:null,id=a&&a.id,v=a&&a.value,s0=a&&a.selectionStart,s1=a&&a.selectionEnd;
+ const out=inner.apply(this,arguments);
+ if(id){const n=document.getElementById(id);if(n&&n!==a){n.value=v;try{n.focus({preventScroll:true});n.setSelectionRange(s0,s1)}catch(e){}}}
+ return out});
 </script>
 </body>
 </html>

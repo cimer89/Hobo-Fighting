@@ -90,6 +90,7 @@
   "js/online/draft.js",
   "js/board/board2d.js",
   "js/board/small_board.js",
-  "js/online/fair_bar.js"
+  "js/online/fair_bar.js",
+  "js/ui/focus_keep.js"
  ]
 }
